@@ -1,0 +1,21 @@
+[project]
+name = "codex-review"
+version = "0.1.0"
+description = "Independently review a plan or code target with Codex, verify each finding, then apply the fixes it accepts."
+requires-python = ">=3.9"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_functions = ["should_*"]
+addopts = "-q -m 'not l2'"
+pythonpath = ["src"]
+markers = [
+    "l2: drives a real Claude session (§14) — costs tokens, not deterministic; opt in with -m l2",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
