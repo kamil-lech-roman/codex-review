@@ -215,20 +215,31 @@ one is refused rather than read as an empty block:
 
 `passed` and `failed` are **derived from the sealed `verify.rc`**, never asserted, and the
 driver enforces which evidence each result requires: `passed`/`failed` need all three ids,
-`denied` needs the command id plus its denial fields, and the three non-run results take none.
+`denied` needs the command id plus its denial fields, and the non-run results take none.
+`not-reached` is the third non-run result, but the driver sets it alone (a scope violation
+closes at `record-apply`), so it is never submitted.
 
 `record-verification` **always** closes the job, including under `--no-verify`
 (`not-run-explicitly`) and when nothing landed (`not-applicable`). Exits `12` failed, `13`
-denied, `14` probes incomplete — all real outcomes, none of them errors to be worked around.
+denied, `14` probes incomplete, and `11` when the apply was `apply-incomplete` (the job is
+closed, unlike at `record-apply`) — all real outcomes, none of them errors to be worked around.
 
-The two non-run results are **derived, in this order**, and the derivation wins: no verify
-command (`--no-verify`, or no `--verify` given) → `not-run-explicitly`, **even when nothing
-landed**; otherwise nothing landed → `not-applicable`; otherwise the command ran and the
-result is `passed`/`failed`/`denied`. Submit the derived result. A submission naming a
-different one — `not-applicable` on a job with no verify command, `not-run-explicitly` where
-a command exists but nothing landed, `passed` where no command exists — is refused with exit
-`8` and `verification-result-contradicted`, whose `submitted` and `derived` details name both.
-Nothing is recorded and the job stays open for a corrected submission.
+**The derivation decides the result, in this order:**
+
+1. no verify command (`--no-verify`, or no `--verify` given) → `not-run-explicitly`, **even
+   when nothing landed**;
+2. otherwise nothing landed → `not-applicable`;
+3. otherwise the command ran, and the sealed evidence picks `passed`, `failed` or `denied`
+   (a command the operator was refused is `denied`).
+
+Submit the derived result; where 1 or 2 decides alone you may omit `result` and the job
+closes with it. A `result` that names anything else — `not-applicable` on a job with no verify
+command, `not-run-explicitly` where a command exists but nothing landed, `passed` where no
+command exists, `not-applicable` where the command ran, or `passed` against a sealed `rc` that
+says `failed` — is refused with exit `8` and `verification-result-contradicted`. Its details
+name both: `submitted` (only when it is a string; `submitted_type` otherwise), and `derived`
+or, in tier 3, `allowed`. No verification is recorded and the job stays open for a corrected
+submission; the refused attempt is journaled under `attempts/`.
 
 ## Resuming
 

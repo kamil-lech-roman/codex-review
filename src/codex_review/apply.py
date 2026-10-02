@@ -21,6 +21,8 @@ VERIFICATION_CITATIONS = ("command_evidence_id", "output_evidence_id",
 #: claims nothing landed, so it is the one outcome the bytes can refute.
 ACCOUNTS = {"applied": True, "denied": True, "failed": True, "no-change": False}
 
+RAN_RESULTS = ("passed", "failed", "denied")
+
 VERIFICATION_RESULTS = ("passed", "failed", "denied", "not-run-explicitly",
                         "not-applicable", "not-reached")
 
@@ -261,9 +263,11 @@ def check_verification_evidence(result, block):
 def verification_result(submitted, target, application_result, moved):
     """One precedence, total over every combination (§8).
 
-    The derivation is the source of truth for the non-run results: a submission that names a
-    different one is refused, naming both, rather than replaced. `scope-violation` never
-    reaches here — record-apply closes it as `not-reached` without an apply.json to verify.
+    The derivation is the source of truth: a submission naming a result it does not allow is
+    refused, naming both, rather than replaced. Where the derivation alone decides, an
+    omitted result is not a contradiction — a caller delivering partial results gets the
+    derived one. `scope-violation` never reaches here: record-apply closes it as
+    `not-reached` without an apply.json to verify.
     """
     if application_result == "scope-violation":
         return "not-reached"
@@ -271,15 +275,27 @@ def verification_result(submitted, target, application_result, moved):
         return _agree_with_derivation(submitted, "not-run-explicitly")
     if not moved:
         return _agree_with_derivation(submitted, "not-applicable")
-    require(submitted in ("passed", "failed", "denied"), "bad-verification-result",
-            "the command ran, so the result must say how it went", result=submitted)
+    # The command ran: the sealed evidence picks among these, so the result must be named.
+    if submitted not in RAN_RESULTS:
+        _refuse_contradicting(submitted, list(RAN_RESULTS))
     return submitted
 
 
 def _agree_with_derivation(submitted, derived):
-    require(submitted == derived, "verification-result-contradicted",
-            "the submitted result contradicts the one derived from the job; the derivation "
-            "decides (no verify command → not-run-explicitly, then nothing landed → "
-            "not-applicable)",
-            submitted=submitted, derived=derived)
+    if submitted is not None and submitted != derived:
+        _refuse_contradicting(submitted, [derived], derived=derived)
     return derived
+
+
+def _refuse_contradicting(submitted, allowed, **derived):
+    """Echo only a string back: anything else (NaN, a deeply nested array) cannot be
+    trusted to survive the envelope, so it is named by type instead."""
+    is_text = isinstance(submitted, str)
+    raise ContractViolation(
+        "verification-result-contradicted",
+        "the submitted result contradicts what the job derives (no verify command → "
+        "not-run-explicitly, then nothing landed → not-applicable, else the command ran "
+        "and the result is one of `allowed`)",
+        submitted=submitted if is_text else None,
+        submitted_type=type(submitted).__name__,
+        allowed=allowed, **derived)

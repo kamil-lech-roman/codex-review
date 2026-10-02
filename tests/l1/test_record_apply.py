@@ -59,7 +59,8 @@ def probed(review, plan_file_factory, outside_any_repo, codex_reply):
 @pytest.fixture
 def probed_with_verify(review, plan_file_factory, outside_any_repo, codex_reply):
     """The same job, with a verify command configured — a denial is only reachable
-    where a command exists that could have been denied."""
+    where a command exists that could have been denied, and `not-applicable` is only the
+    derived result where one exists to be skipped."""
     return probe_a_job(review, plan_file_factory, outside_any_repo, codex_reply,
                        "--verify", "true")
 
@@ -249,7 +250,7 @@ def should_close_with_not_applicable_when_nothing_landed(review, probed_with_ver
     """
     given a verify command configured but no fix landed
     when verification is recorded
-    then the result is not-applicable, by the bytes rather than the result names
+    then the result is not-applicable — derived from the job, and the submission agrees
     """
     job_id, job_dir, _plan = probed_with_verify
     submit_apply(review, job_id, job_dir,
@@ -342,6 +343,132 @@ def should_refuse_passed_when_no_verify_command_exists(review, probed):
     details = result.envelope["error"]["details"]
     assert (details["submitted"], details["derived"]) == ("passed", "not-run-explicitly"), result
     assert not (job_dir / "verification.json").exists(), result
+
+
+def record_verification(review, job_id, job_dir, block, raw_result=None):
+    """Submit `block`; `raw_result` splices literal JSON text in place of its `result`."""
+    block = dict(block)
+    if raw_result is not None:
+        block["result"] = "@@raw@@"
+    text = json.dumps({
+        "apply_sha256": hashlib.sha256((job_dir / "apply.json").read_bytes()).hexdigest(),
+        "verification": block,
+    })
+    if raw_result is not None:
+        text = text.replace('"@@raw@@"', raw_result)
+    path = job_dir / "staging" / "verification.json"
+    path.write_text(text)
+    return review("record-verification", job_id, "--verification-file", str(path))
+
+
+def nothing_landed(review, job_id, job_dir):
+    return submit_apply(review, job_id, job_dir,
+                        [{"finding_id": "F-1", "result": "no-change", "note": "could not fix"}])
+
+
+def should_close_with_not_run_explicitly_when_no_verify_command_and_nothing_landed(
+        review, probed):
+    """
+    given a job with no verify command, where nothing landed
+    when the derived result `not-run-explicitly` is submitted
+    then the job closes with it — no verify command decides before nothing landing does
+    """
+    job_id, job_dir, _plan = probed
+    nothing_landed(review, job_id, job_dir)
+
+    result = record_verification(review, job_id, job_dir, {"result": "not-run-explicitly"})
+
+    assert result.exit_code == 11, result
+    recorded = json.loads((job_dir / "verification.json").read_text())
+    assert recorded["verification_result"] == "not-run-explicitly"
+
+
+@pytest.mark.parametrize("block", [
+    {}, {"result": None}, {"status": "not-applicable"},
+], ids=["no-block-fields", "null-result", "mistyped-key"])
+def should_close_with_the_derived_result_when_the_result_is_omitted(review, probed, block):
+    """
+    given a calling agent delivering partial results, with no `result` to submit
+    when verification is recorded where the derivation decides alone
+    then the job closes with the derived result — an omission contradicts nothing
+    """
+    job_id, job_dir, _plan = probed
+    nothing_landed(review, job_id, job_dir)
+
+    result = record_verification(review, job_id, job_dir, block)
+
+    assert result.exit_code == 11, result
+    recorded = json.loads((job_dir / "verification.json").read_text())
+    assert recorded["verification_result"] == "not-run-explicitly"
+
+
+@pytest.mark.parametrize("raw_result", ["5", "[1]", '{"a": 1}', "true", "NaN", "Infinity"])
+def should_refuse_a_result_that_is_not_a_string_without_breaking_the_envelope(
+        review, probed, raw_result):
+    """
+    given a submitted result that is not a string, including JSON that Python accepts
+    but strict parsers reject
+    when verification is recorded
+    then it is refused and the envelope is still strictly valid JSON
+    """
+    job_id, job_dir, _plan = probed
+    nothing_landed(review, job_id, job_dir)
+
+    def reject_constant(name):
+        raise AssertionError("non-JSON constant in the envelope: " + name)
+
+    result = record_verification(review, job_id, job_dir, {}, raw_result=raw_result)
+
+    assert result.exit_code == 8, result
+    envelope = json.loads(result.stdout, parse_constant=reject_constant)
+    assert envelope["error"]["code"] == "verification-result-contradicted", result
+    assert envelope["error"]["details"]["submitted"] is None, result
+    assert not (job_dir / "verification.json").exists(), result
+
+
+def should_refuse_not_applicable_when_a_verify_command_ran_naming_what_is_allowed(
+        review, probed_with_verify):
+    """
+    given a job with a verify command, where a fix landed
+    when the operator submits `not-applicable`
+    then it is refused with the same code as the other tiers, naming what the derivation
+    allows, rather than a different code that says the command ran
+    """
+    job_id, job_dir, plan = probed_with_verify
+    plan.write_text("# a plan\n\nfixed.\n")
+    submit_apply(review, job_id, job_dir, [{"finding_id": "F-1", "result": "applied"}])
+
+    result = record_verification(review, job_id, job_dir, {"result": "not-applicable"})
+
+    assert result.exit_code == 8, result
+    error = result.envelope["error"]
+    assert error["code"] == "verification-result-contradicted", result
+    assert error["details"]["submitted"] == "not-applicable", result
+    assert error["details"]["allowed"] == ["passed", "failed", "denied"], result
+    assert not (job_dir / "verification.json").exists(), result
+
+
+def should_leave_the_job_open_and_journal_the_attempt_when_a_result_is_refused(
+        review, probed):
+    """
+    given a refused contradicting submission
+    when the derived result is then submitted
+    then the refusal had recorded no verification, only an attempt, and the job closes
+    """
+    job_id, job_dir, _plan = probed
+    nothing_landed(review, job_id, job_dir)
+
+    refused = record_verification(review, job_id, job_dir, {"result": "not-applicable"})
+
+    assert refused.exit_code == 8, refused
+    assert not (job_dir / "verification.json").exists(), refused
+    assert (job_dir / "attempts").is_dir(), refused
+    status = review("status", job_id).envelope["payload"]
+    assert status["stage"] == "applied-unverified", status
+    corrected = record_verification(review, job_id, job_dir,
+                                    {"result": refused.envelope["error"]["details"]["derived"]})
+    assert corrected.exit_code == 11, corrected
+    assert (job_dir / "verification.json").is_file(), corrected
 
 
 def should_report_not_run_explicitly_without_a_verify_command(review, probed):

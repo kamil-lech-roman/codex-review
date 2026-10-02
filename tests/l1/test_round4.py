@@ -89,6 +89,9 @@ def should_refuse_a_passed_result_the_sealed_return_code_contradicts(
     result = submit_verification(review, job_id, job_dir, block)
 
     assert result.exit_code == 8, result
+    assert result.envelope["error"]["code"] == "verification-result-contradicted", result
+    details = result.envelope["error"]["details"]
+    assert (details["submitted"], details["derived"]) == ("passed", "failed"), result
 
 
 def should_accept_a_failed_result_the_sealed_return_code_agrees_with(

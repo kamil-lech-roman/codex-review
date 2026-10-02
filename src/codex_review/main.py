@@ -905,7 +905,7 @@ def record_verification(argv):
             if resolved_result in ("passed", "failed"):
                 derived = apply_module.derive_verification(job_dir, job_id, block)
                 apply_module.require(
-                    derived == resolved_result, "verification-contradicted",
+                    derived == resolved_result, "verification-result-contradicted",
                     "the sealed return code contradicts the submitted result",
                     submitted=resolved_result, derived=derived)
         except (OSError, ValueError) as error:
