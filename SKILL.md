@@ -221,6 +221,15 @@ driver enforces which evidence each result requires: `passed`/`failed` need all 
 (`not-run-explicitly`) and when nothing landed (`not-applicable`). Exits `12` failed, `13`
 denied, `14` probes incomplete — all real outcomes, none of them errors to be worked around.
 
+The two non-run results are **derived, in this order**, and the derivation wins: no verify
+command (`--no-verify`, or no `--verify` given) → `not-run-explicitly`, **even when nothing
+landed**; otherwise nothing landed → `not-applicable`; otherwise the command ran and the
+result is `passed`/`failed`/`denied`. Submit the derived result. A submission naming a
+different one — `not-applicable` on a job with no verify command, `not-run-explicitly` where
+a command exists but nothing landed, `passed` where no command exists — is refused with exit
+`8` and `verification-result-contradicted`, whose `submitted` and `derived` details name both.
+Nothing is recorded and the job stays open for a corrected submission.
+
 ## Resuming
 
 ```

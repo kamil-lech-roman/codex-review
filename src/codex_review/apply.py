@@ -259,13 +259,27 @@ def check_verification_evidence(result, block):
 
 
 def verification_result(submitted, target, application_result, moved):
-    """One precedence, total over every combination (§8)."""
+    """One precedence, total over every combination (§8).
+
+    The derivation is the source of truth for the non-run results: a submission that names a
+    different one is refused, naming both, rather than replaced. `scope-violation` never
+    reaches here — record-apply closes it as `not-reached` without an apply.json to verify.
+    """
     if application_result == "scope-violation":
         return "not-reached"
     if target.get("verify_command") is None:
-        return "not-run-explicitly"
+        return _agree_with_derivation(submitted, "not-run-explicitly")
     if not moved:
-        return "not-applicable"
+        return _agree_with_derivation(submitted, "not-applicable")
     require(submitted in ("passed", "failed", "denied"), "bad-verification-result",
             "the command ran, so the result must say how it went", result=submitted)
     return submitted
+
+
+def _agree_with_derivation(submitted, derived):
+    require(submitted == derived, "verification-result-contradicted",
+            "the submitted result contradicts the one derived from the job; the derivation "
+            "decides (no verify command → not-run-explicitly, then nothing landed → "
+            "not-applicable)",
+            submitted=submitted, derived=derived)
+    return derived

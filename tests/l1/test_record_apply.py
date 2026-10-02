@@ -245,11 +245,36 @@ def should_close_the_job_on_a_scope_violation(review, make_repo, codex_reply):
     assert review("status", job_id).envelope["payload"]["stage"] == "failed"
 
 
-def should_close_with_not_applicable_when_nothing_landed(review, probed):
+def should_close_with_not_applicable_when_nothing_landed(review, probed_with_verify):
     """
     given a verify command configured but no fix landed
     when verification is recorded
     then the result is not-applicable, by the bytes rather than the result names
+    """
+    job_id, job_dir, _plan = probed_with_verify
+    submit_apply(review, job_id, job_dir,
+                 [{"finding_id": "F-1", "result": "no-change", "note": "could not fix"}])
+    payload = {
+        "apply_sha256": hashlib.sha256((job_dir / "apply.json").read_bytes()).hexdigest(),
+        "verification": {"result": "not-applicable"},
+    }
+    path = job_dir / "staging" / "verification.json"
+    path.write_text(json.dumps(payload))
+
+    result = review("record-verification", job_id, "--verification-file", str(path))
+
+    assert (job_dir / "verification.json").is_file(), result
+    recorded = json.loads((job_dir / "verification.json").read_text())
+    assert recorded["verification_result"] == "not-applicable"
+    assert review("status", job_id).envelope["payload"]["stage"] == "applied"
+
+
+def should_refuse_not_applicable_when_no_verify_command_makes_it_not_run_explicitly(
+        review, probed):
+    """
+    given a job prepared with no verify command, where nothing landed
+    when the operator submits `not-applicable`
+    then it is refused naming both results, rather than recorded as `not-run-explicitly`
     """
     job_id, job_dir, _plan = probed
     submit_apply(review, job_id, job_dir,
@@ -263,8 +288,60 @@ def should_close_with_not_applicable_when_nothing_landed(review, probed):
 
     result = review("record-verification", job_id, "--verification-file", str(path))
 
-    assert (job_dir / "verification.json").is_file(), result
-    assert review("status", job_id).envelope["payload"]["stage"] == "applied"
+    assert result.exit_code == 8, result
+    error = result.envelope["error"]
+    assert error["code"] == "verification-result-contradicted", result
+    assert error["details"]["submitted"] == "not-applicable", result
+    assert error["details"]["derived"] == "not-run-explicitly", result
+    assert not (job_dir / "verification.json").exists(), result
+
+
+def should_refuse_not_run_explicitly_when_a_verify_command_exists_but_nothing_landed(
+        review, probed_with_verify):
+    """
+    given a job with a verify command, where nothing landed
+    when the operator submits `not-run-explicitly`
+    then it is refused naming both results, since `not-applicable` is what the bytes say
+    """
+    job_id, job_dir, _plan = probed_with_verify
+    submit_apply(review, job_id, job_dir,
+                 [{"finding_id": "F-1", "result": "no-change", "note": "could not fix"}])
+    path = job_dir / "staging" / "verification.json"
+    path.write_text(json.dumps({
+        "apply_sha256": hashlib.sha256((job_dir / "apply.json").read_bytes()).hexdigest(),
+        "verification": {"result": "not-run-explicitly"},
+    }))
+
+    result = review("record-verification", job_id, "--verification-file", str(path))
+
+    assert result.exit_code == 8, result
+    details = result.envelope["error"]["details"]
+    assert (details["submitted"], details["derived"]) == ("not-run-explicitly",
+                                                         "not-applicable"), result
+    assert not (job_dir / "verification.json").exists(), result
+
+
+def should_refuse_passed_when_no_verify_command_exists(review, probed):
+    """
+    given a job with no verify command, where a fix landed
+    when the operator submits `passed`
+    then it is refused naming both results, rather than recorded as `not-run-explicitly`
+    """
+    job_id, job_dir, plan = probed
+    plan.write_text("# a plan\n\nfixed.\n")
+    submit_apply(review, job_id, job_dir, [{"finding_id": "F-1", "result": "applied"}])
+    path = job_dir / "staging" / "verification.json"
+    path.write_text(json.dumps({
+        "apply_sha256": hashlib.sha256((job_dir / "apply.json").read_bytes()).hexdigest(),
+        "verification": {"result": "passed"},
+    }))
+
+    result = review("record-verification", job_id, "--verification-file", str(path))
+
+    assert result.exit_code == 8, result
+    details = result.envelope["error"]["details"]
+    assert (details["submitted"], details["derived"]) == ("passed", "not-run-explicitly"), result
+    assert not (job_dir / "verification.json").exists(), result
 
 
 def should_report_not_run_explicitly_without_a_verify_command(review, probed):
