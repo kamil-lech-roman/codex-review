@@ -139,6 +139,9 @@ def prepare(argv):
     rest, options, bad = parse_common(argv[1:])
     if bad is not None:
         return usage_error("prepare", "bad-option", "unrecognised or incomplete option", option=bad)
+    if "verify" in options and not options["verify"].strip():
+        return usage_error("prepare", "blank-verify",
+                           "--verify needs a command; a blank one is no command", option="--verify")
     if mode == "plan":
         return prepare_plan(rest, codex_path, options)
     if mode == "code":
@@ -882,6 +885,11 @@ def record_verification(argv):
                 payload.get("apply_sha256") == images.sha256_file(
                     os.path.join(job_dir, "apply.json")),
                 "stale-apply-digest", "submission does not carry this job's apply digest")
+            # Decided before the O(worktree) drift hash: a refusal here costs nothing, and the
+            # corrected submission meets the drift check below.
+            block = payload["verification"]
+            resolved_result = apply_module.verification_result(
+                block.get("result"), target, apply_record["changed_paths"])
             if apply_module.identity_sha(target) != apply_record["post_fix_sha"]:
                 state.write_json(os.path.join(job_dir, "invalidated.json"), {
                     "at_stage": "record-verification",
@@ -894,11 +902,6 @@ def record_verification(argv):
                     error={"code": "reference-drift", "category": "drift",
                            "message": "the tree moved after the apply was recorded",
                            "details": {"at_stage": "record-verification"}})
-            block = payload["verification"]
-            submitted = block.get("result")
-            resolved_result = apply_module.verification_result(
-                submitted, target, apply_record["application_result"],
-                apply_record["changed_paths"])
             apply_module.check_verification_evidence(resolved_result, block)
             if resolved_result in ("passed", "failed", "denied"):
                 apply_module.check_verification_command(job_dir, job_id, target, block)

@@ -226,7 +226,8 @@ closed, unlike at `record-apply`) — all real outcomes, none of them errors to 
 
 **The derivation decides the result, in this order:**
 
-1. no verify command (`--no-verify`, or no `--verify` given) → `not-run-explicitly`, **even
+1. no verify command (`--no-verify`, or no `--verify` given; a blank `--verify` is refused at
+   `prepare` with `blank-verify`, not read as no command) → `not-run-explicitly`, **even
    when nothing landed**;
 2. otherwise nothing landed → `not-applicable`;
 3. otherwise the command ran, and the sealed evidence picks `passed`, `failed` or `denied`
@@ -239,7 +240,9 @@ command exists, `not-applicable` where the command ran, or `passed` against a se
 says `failed` — is refused with exit `8` and `verification-result-contradicted`. Its details
 name both: `submitted` (only when it is a string; `submitted_type` otherwise), and `derived`
 or, in tier 3, `allowed`. No verification is recorded and the job stays open for a corrected
-submission; the refused attempt is journaled under `attempts/`.
+submission; the refused attempt is journaled under `attempts/`. This check runs before the
+drift check, so a submission that both contradicts and meets a moved tree is refused as
+contradicting first, and meets the drift (exit `4`) when corrected.
 
 ## Resuming
 

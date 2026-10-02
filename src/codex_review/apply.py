@@ -194,7 +194,6 @@ EVIDENCE_MATRIX = {
     "denied": (True, False, False, True),
     "not-run-explicitly": (False, False, False, False),
     "not-applicable": (False, False, False, False),
-    "not-reached": (False, False, False, False),
 }
 
 
@@ -260,42 +259,38 @@ def check_verification_evidence(result, block):
                 "a denial needs an asserter")
 
 
-def verification_result(submitted, target, application_result, moved):
-    """One precedence, total over every combination (§8).
+def verification_result(submitted, target, moved):
+    """One precedence, one check, total over every combination (§8).
 
-    The derivation is the source of truth: a submission naming a result it does not allow is
-    refused, naming both, rather than replaced. Where the derivation alone decides, an
-    omitted result is not a contradiction — a caller delivering partial results gets the
-    derived one. `scope-violation` never reaches here: record-apply closes it as
-    `not-reached` without an apply.json to verify.
+    The job derives which results are allowed: no verify command → `not-run-explicitly`
+    (even when nothing landed); otherwise nothing landed → `not-applicable`; otherwise the
+    command ran and the sealed evidence picks among `passed`/`failed`/`denied`. A submission
+    outside that set is refused, naming both, never replaced. Where the derivation leaves
+    one result, an omitted `result` is not a contradiction — a caller delivering partial
+    results gets the derived one. Every tier passes through the one check below, so a tier
+    added later cannot override a submission without being refused.
+
+    `not-reached` is never derived here: a scope violation closes at record-apply, without
+    an apply.json to verify.
     """
-    if application_result == "scope-violation":
-        return "not-reached"
     if target.get("verify_command") is None:
-        return _agree_with_derivation(submitted, "not-run-explicitly")
-    if not moved:
-        return _agree_with_derivation(submitted, "not-applicable")
-    # The command ran: the sealed evidence picks among these, so the result must be named.
-    if submitted not in RAN_RESULTS:
-        _refuse_contradicting(submitted, list(RAN_RESULTS))
+        allowed = ["not-run-explicitly"]
+    elif not moved:
+        allowed = ["not-applicable"]
+    else:
+        allowed = list(RAN_RESULTS)
+    if submitted is None and len(allowed) == 1:
+        return allowed[0]
+    if submitted not in allowed:
+        raise ContractViolation(
+            "verification-result-contradicted",
+            "the submitted result is not one the job allows (no verify command → "
+            "not-run-explicitly, then nothing landed → not-applicable, else the command ran "
+            "and the result is one of `allowed`)",
+            # Only a string is echoed: NaN or deep nesting cannot be trusted to survive the
+            # envelope, so anything else is named by type.
+            submitted=submitted if isinstance(submitted, str) else None,
+            submitted_type=type(submitted).__name__,
+            allowed=allowed,
+            **({"derived": allowed[0]} if len(allowed) == 1 else {}))
     return submitted
-
-
-def _agree_with_derivation(submitted, derived):
-    if submitted is not None and submitted != derived:
-        _refuse_contradicting(submitted, [derived], derived=derived)
-    return derived
-
-
-def _refuse_contradicting(submitted, allowed, **derived):
-    """Echo only a string back: anything else (NaN, a deeply nested array) cannot be
-    trusted to survive the envelope, so it is named by type instead."""
-    is_text = isinstance(submitted, str)
-    raise ContractViolation(
-        "verification-result-contradicted",
-        "the submitted result contradicts what the job derives (no verify command → "
-        "not-run-explicitly, then nothing landed → not-applicable, else the command ran "
-        "and the result is one of `allowed`)",
-        submitted=submitted if is_text else None,
-        submitted_type=type(submitted).__name__,
-        allowed=allowed, **derived)
