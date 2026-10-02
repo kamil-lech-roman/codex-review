@@ -139,6 +139,10 @@ def prepare(argv):
     rest, options, bad = parse_common(argv[1:])
     if bad is not None:
         return usage_error("prepare", "bad-option", "unrecognised or incomplete option", option=bad)
+    if "verify" in options and options.get("no_verify"):
+        return usage_error("prepare", "conflicting-options",
+                           "--verify and --no-verify contradict; give one",
+                           options=["--verify", "--no-verify"])
     if "verify" in options and not options["verify"].strip():
         return usage_error("prepare", "blank-verify",
                            "--verify needs a command; a blank one is no command", option="--verify")

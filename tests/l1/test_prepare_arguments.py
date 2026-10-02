@@ -59,3 +59,23 @@ def should_refuse_a_blank_verify_command_before_any_job_exists(
     assert result.exit_code == 2, result
     assert result.envelope["job_id"] is None
     assert result.envelope["error"]["code"] == "blank-verify", result
+
+
+@pytest.mark.parametrize("order", [("--verify", "true", "--no-verify"),
+                                   ("--no-verify", "--verify", "true")])
+def should_refuse_verify_together_with_no_verify_before_any_job_exists(
+        review, plan_file_factory, outside_any_repo, order):
+    """
+    given `--verify CMD` and `--no-verify` together, in either order
+    when prepare runs
+    then it exits 2 with no job — the options contradict, and one silently winning would
+    record a verify command the operator asked not to have, or drop one they asked for
+    """
+    plan = plan_file_factory("# a plan\n")
+
+    result = review("prepare", "plan", str(plan), *order, cwd=outside_any_repo)
+
+    assert result.exit_code == 2, result
+    assert result.envelope["job_id"] is None
+    assert result.envelope["error"]["code"] == "conflicting-options", result
+    assert sorted(result.envelope["error"]["details"]["options"]) == ["--no-verify", "--verify"]

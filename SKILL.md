@@ -226,7 +226,8 @@ closed, unlike at `record-apply`) — all real outcomes, none of them errors to 
 
 **The derivation decides the result, in this order:**
 
-1. no verify command (`--no-verify`, or no `--verify` given; a blank `--verify` is refused at
+1. no verify command (`--no-verify`, or no `--verify` given; both together are refused at
+   `prepare` with `conflicting-options`; a blank `--verify` is refused at
    `prepare` with `blank-verify`, not read as no command) → `not-run-explicitly`, **even
    when nothing landed**;
 2. otherwise nothing landed → `not-applicable`;
