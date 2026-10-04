@@ -3,12 +3,12 @@ name: codex-review
 description: Automatically review significant code changes with Codex before final handoff,
   or review a plan or code target on request. Verify each finding, apply accepted fixes and
   re-verify. Edits the working tree by default; pass --no-apply for a review-only run.
-argument-hint: "(plan <path> | code [--base <ref>|--uncommitted] [--head <commit>]) [COMMON] |
-  status [job] |
-  seal <job> <path> | record-probes|record-apply|record-verification <job> --*-file F |
+argument-hint: "(plan <path> | code [--base <ref>|--uncommitted] [--head <commit>]) [PREPARE] |
+  run <job> [--model M] [--effort E] | status [job] |
+  seal <job> <path> [--bytes N] | record-probes|record-apply|record-verification <job> --*-file F |
   abandon <job> --reason R [--denied-interactively]
-  ⟨COMMON = --verify CMD|--no-verify, --no-apply, --repo D|--no-repo, --model M, --effort E,
-  --max-bundle N, --max-artifact N⟩"
+  ⟨PREPARE = --verify CMD|--no-verify, --no-apply, --repo D|--no-repo, --model M, --effort E,
+  --max-bundle N, --max-artifact N, --note T — accepted by prepare only⟩"
 allowed-tools:
   - Bash(/bin/bash ${CLAUDE_SKILL_DIR}/review.sh:*)
   - Read
@@ -53,9 +53,16 @@ state. Steps 1–5 below apply to Codex rounds; use the linked recording procedu
 ### 1. Prepare — no tokens spent
 
 ```
-$R prepare plan <path> [COMMON]
-$R prepare code [--base <ref> | --uncommitted] [--head <commit>] [COMMON]
+$R prepare plan <path> [PREPARE]
+$R prepare code [--base <ref> | --uncommitted] [--head <commit>] [PREPARE]
 ```
+
+**Pass each option to the verb that consumes it.** `--no-apply`, `--verify`/`--no-verify`,
+`--note`, the capture limits and the target options are frozen into the job here and nowhere
+else; every verb refuses an option it does not consume with exit `2`, `bad-option`, naming the
+option in `error.details.option` and listing what that verb accepts in `error.details.accepted`.
+The refusal exists because `run <job> --no-apply` was once silently dropped, leaving a job in
+apply mode that its operator believed was review-only.
 
 **`--head <commit>`** names the commit you mean to review, and `prepare` refuses with
 `head-moved` if the repository has moved off it. The committed projection is `base..HEAD` of the
@@ -117,8 +124,12 @@ rule and no reader — and say so in `--note`.
 ### 2. Run — one Codex call
 
 ```
-$R run <job>
+$R run <job> [--model M] [--effort E]
 ```
+
+`--model` and `--effort` here override the prepared values for this call only: `run_metadata`
+records what was used, while `target.json` keeps what `prepare` froze. Prefer setting them at
+`prepare`, so the job records its own reviewer.
 
 Exit `0` gives `verdict`, `findings[]` and `run_metadata`. Exit `7` means the reviewer never
 answered — **the job stays at `prepared` and you may retry it**. When codex named a usage-limit

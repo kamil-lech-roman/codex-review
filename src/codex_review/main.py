@@ -136,9 +136,9 @@ def prepare(argv):
         )
 
     mode = argv[0]
-    rest, options, bad = parse_common(argv[1:])
+    rest, options, bad = parse_options("prepare", argv[1:])
     if bad is not None:
-        return usage_error("prepare", "bad-option", "unrecognised or incomplete option", option=bad)
+        return bad_option("prepare", bad)
     if "verify" in options and options.get("no_verify"):
         return usage_error("prepare", "conflicting-options",
                            "--verify and --no-verify contradict; give one",
@@ -153,39 +153,56 @@ def prepare(argv):
     return usage_error("prepare", "unrecognised-mode", "unrecognised target mode", mode=mode)
 
 
-def parse_common(argv):
-    """Splits the COMMON options (§1) from positional arguments."""
+#: Every option the driver knows, and whether it takes a value.
+OPTIONS = {
+    "--repo": True, "--no-repo": False, "--model": True, "--effort": True,
+    "--uncommitted": False, "--no-apply": False, "--no-verify": False, "--verify": True,
+    "--base": True, "--head": True, "--max-artifact": True, "--max-bundle": True,
+    "--note": True, "--bytes": True, "--reason": True, "--denied-interactively": False,
+    "--probes-file": True, "--apply-file": True, "--verification-file": True,
+}
+
+#: The options each verb consumes. Anything else is refused, never silently dropped.
+VERB_OPTIONS = {
+    "prepare": frozenset((
+        "--repo", "--no-repo", "--model", "--effort", "--uncommitted", "--no-apply",
+        "--no-verify", "--verify", "--base", "--head", "--max-artifact", "--max-bundle",
+        "--note",
+    )),
+    "run": frozenset(("--model", "--effort")),
+    "seal": frozenset(("--bytes",)),
+    "record-probes": frozenset(("--probes-file",)),
+    "record-apply": frozenset(("--apply-file",)),
+    "record-verification": frozenset(("--verification-file",)),
+    "status": frozenset(),
+    "abandon": frozenset(("--reason", "--denied-interactively")),
+}
+
+
+def bad_option(verb, token):
+    return usage_error(verb, "bad-option",
+                       "unrecognised, incomplete or not accepted by `{}`".format(verb),
+                       option=token, accepted=sorted(VERB_OPTIONS[verb]))
+
+
+def parse_options(verb, argv):
+    """Splits `verb`'s options (§1) from positional arguments; returns the offending token."""
     positional, options = [], {}
     index = 0
     while index < len(argv):
         token = argv[index]
-        if token == "--repo":
-            if index + 1 >= len(argv):
+        if token.startswith("--"):
+            if token not in VERB_OPTIONS[verb]:
                 return None, None, token
-            options["repo"] = argv[index + 1]
-            index += 2
-        elif token == "--denied-interactively":
-            options["denied_interactively"] = True
-            index += 1
-        elif token in ("--model", "--effort", "--bytes", "--reason"):
-            if index + 1 >= len(argv):
-                return None, None, token
-            options[token[2:]] = argv[index + 1]
-            index += 2
-        elif token in ("--uncommitted", "--no-apply", "--no-verify"):
-            options[token[2:].replace("-", "_")] = True
-            index += 1
-        elif token in ("--base", "--head", "--verify", "--max-artifact", "--max-bundle", "--note",
-                       "--probes-file", "--apply-file", "--verification-file"):
-            if index + 1 >= len(argv):
-                return None, None, token
-            options[token[2:].replace("-", "_")] = argv[index + 1]
-            index += 2
-        elif token == "--no-repo":
-            options["no_repo"] = True
-            index += 1
-        elif token.startswith("--"):
-            return None, None, token
+            name = token[2:].replace("-", "_")
+            if OPTIONS[token]:
+                if index + 1 >= len(argv):
+                    return None, None, token
+                options[name] = argv[index + 1]
+                index += 2
+            else:
+                options[name] = True
+                index += 1
         else:
             positional.append(token)
             index += 1
@@ -534,9 +551,9 @@ def load_target(job_dir):
 
 def abandon(argv):
     """Close a job deliberately (§7). Movement is recorded only when it can be determined."""
-    rest, options, bad = parse_common(argv)
+    rest, options, bad = parse_options("abandon", argv)
     if bad is not None:
-        return usage_error("abandon", "bad-option", "unrecognised option", option=bad)
+        return bad_option("abandon", bad)
     if not rest:
         return usage_error("abandon", "no-job", "`abandon` needs a job")
     if not options.get("reason"):
@@ -626,9 +643,9 @@ def record_attempt(job_dir, verb, raw, error):
 
 def record_probes(argv):
     """Record one annotation per reported finding, then derive probe_completion (§8)."""
-    rest, options, bad = parse_common(argv)
+    rest, options, bad = parse_options("record-probes", argv)
     if bad is not None:
-        return usage_error("record-probes", "bad-option", "unrecognised option", option=bad)
+        return bad_option("record-probes", bad)
     if not rest:
         return usage_error("record-probes", "no-job", "`record-probes` needs a job")
     if not options.get("probes_file"):
@@ -716,9 +733,9 @@ def record_probes(argv):
 
 def _open_recording(verb, argv, option, requires):
     """Shared preamble: resolve the job, refuse a closed one, load what is consumed."""
-    rest, options, bad = parse_common(argv)
+    rest, options, bad = parse_options(verb, argv)
     if bad is not None:
-        return None, usage_error(verb, "bad-option", "unrecognised option", option=bad)
+        return None, bad_option(verb, bad)
     if not rest:
         return None, usage_error(verb, "no-job", "`{}` needs a job".format(verb))
     if not options.get(option):
@@ -949,9 +966,9 @@ def record_verification(argv):
 
 def status(argv):
     """Read-only: validate, then derive (§5). Shared locks only."""
-    rest, options, bad = parse_common(argv)
+    rest, options, bad = parse_options("status", argv)
     if bad is not None:
-        return usage_error("status", "bad-option", "unrecognised option", option=bad)
+        return bad_option("status", bad)
 
     root = state.state_root()
     if not rest:
@@ -1003,9 +1020,9 @@ def listing(root):
 
 def seal(argv):
     """Copy evidence into write-once job storage, then render it (§9)."""
-    rest, options, bad = parse_common(argv)
+    rest, options, bad = parse_options("seal", argv)
     if bad is not None:
-        return usage_error("seal", "bad-option", "unrecognised or incomplete option", option=bad)
+        return bad_option("seal", bad)
     if len(rest) < 2:
         return usage_error("seal", "no-path", "`seal` needs a job and a path")
 
@@ -1039,9 +1056,9 @@ def seal(argv):
 
 def run(argv):
     """Send the frozen target to Codex, persist the reply, then validate it (§3, §8)."""
-    rest, options, bad = parse_common(argv)
+    rest, options, bad = parse_options("run", argv)
     if bad is not None:
-        return usage_error("run", "bad-option", "unrecognised or incomplete option", option=bad)
+        return bad_option("run", bad)
     if not rest:
         return usage_error("run", "no-job", "`run` needs a job")
 
