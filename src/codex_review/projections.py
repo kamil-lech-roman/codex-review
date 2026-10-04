@@ -68,9 +68,9 @@ def repo_identity(root):
         )
     return {
         "head_oid": head,
-        "ref_digest": images.sha256_bytes(refs.encode("utf-8")),
-        "index_digest": images.sha256_bytes(index.encode("utf-8")),
-        "worktree_digest": images.sha256_bytes("\n".join(worktree_parts).encode("utf-8")),
+        "ref_digest": images.sha256_bytes(refs.encode("utf-8", errors="surrogateescape")),
+        "index_digest": images.sha256_bytes(index.encode("utf-8", errors="surrogateescape")),
+        "worktree_digest": images.sha256_bytes("\n".join(worktree_parts).encode("utf-8", errors="surrogateescape")),
     }
 
 
@@ -107,6 +107,23 @@ def committed_changes(root, base):
     raw = git.run(("diff", "--raw", "--no-ext-diff", "--no-textconv", "-z", base, "HEAD"),
                   cwd=root).stdout
     return _parse_raw_z(raw, root, after_from_worktree=False)
+
+
+def combined_changes(root, base, retained_paths=()):
+    """Base-to-HEAD plus each uncommitted projection, without path deduplication."""
+    committed = committed_changes(root, base)
+    for entry in committed:
+        entry["projection"] = "committed"
+    order = {"committed": 0, "staged": 1, "worktree": 2, "untracked": 3}
+    entries = committed + uncommitted_changes(root)
+    captured = {entry['path'] for entry in entries}
+    for path in sorted(set(retained_paths) - captured):
+        image = images.image_of(os.path.join(root, path))
+        source = ('absent', path) if image['kind'] == images.KIND_ABSENT else worktree_source(root, path)
+        entries.append(dict(path=path, projection='retained', before=image, after=image,
+                            _before_source=source, _after_source=source))
+    order['retained'] = 4
+    return sorted(entries, key=lambda entry: (entry['path'], order[entry['projection']]))
 
 
 EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
@@ -216,8 +233,8 @@ def read_side(root, source):
     if kind == "blob":
         return _blob(root, value)
     if kind == "linktext":
-        return os.readlink(os.path.join(root, value)).encode("utf-8")
-    if kind == "gitlink":
+        return os.readlink(os.path.join(root, value)).encode("utf-8", errors="surrogateescape")
+    if kind in ("gitlink", "absent"):
         return b""
     with open(os.path.join(root, value), "rb") as handle:
         return handle.read()
@@ -235,11 +252,11 @@ def worktree_source(root, path):
 
 def enforce_limits(sizes, max_artifact, max_bundle):
     for path, size in sizes:
-        if size > max_artifact:
+        if max_artifact is not None and size > max_artifact:
             raise CaptureRefused("artifact-too-large", "an artifact exceeds the per-file cap",
                                  6, path=path, bytes=size, limit=max_artifact)
     total = sum(size for _path, size in sizes)
-    if total > max_bundle:
+    if max_bundle is not None and total > max_bundle:
         raise CaptureRefused("bundle-too-large", "the capture exceeds the bundle cap", 6,
                              bytes=total, limit=max_bundle)
 

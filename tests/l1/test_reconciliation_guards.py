@@ -6,6 +6,8 @@ import subprocess
 import threading
 from pathlib import Path
 
+from qualification_fixture import qualify_author
+
 import pytest
 
 RESPONSE = {
@@ -28,11 +30,12 @@ def probed(review, plan_file_factory, outside_any_repo, codex_reply):
     """A job at `probed` with F-1 accepted against the plan file."""
     def build(disposition="accepted"):
         plan = plan_file_factory("# a plan\n")
-        prepared = review("prepare", "plan", str(plan), cwd=outside_any_repo)
+        prepared = review("prepare", "plan", str(plan), "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
         job_id = prepared.envelope["job_id"]
         job_dir = Path(prepared.envelope["job_dir"])
         codex_reply(RESPONSE)
         review("run", job_id, fake={"CODEX_FAKE_RESPONSE": codex_reply.path})
+        qualify_author(job_dir, commands=['echo hi\n'])
         (job_dir / "staging").mkdir(parents=True, exist_ok=True)
         (job_dir / "staging" / "probe-F-1.sh").write_text("echo hi\n")
         (job_dir / "probes").mkdir(parents=True, exist_ok=True)
@@ -105,7 +108,7 @@ def should_not_credit_a_change_made_before_probing(review, probed, plan_file_fac
     then the earlier change is not counted as the fix
     """
     plan = plan_file_factory("# a plan\n")
-    prepared = review("prepare", "plan", str(plan), cwd=outside_any_repo)
+    prepared = review("prepare", "plan", str(plan), "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
     job_id = prepared.envelope["job_id"]
     job_dir = Path(prepared.envelope["job_dir"])
     codex_reply(RESPONSE)
@@ -113,6 +116,7 @@ def should_not_credit_a_change_made_before_probing(review, probed, plan_file_fac
 
     plan.write_text("# a plan\n\nchanged before probing\n")
 
+    qualify_author(job_dir, commands=['echo hi\n'])
     (job_dir / "staging").mkdir(parents=True, exist_ok=True)
     (job_dir / "staging" / "probe-F-1.sh").write_text("echo hi\n")
     (job_dir / "probes").mkdir(parents=True, exist_ok=True)
@@ -130,13 +134,10 @@ def should_not_credit_a_change_made_before_probing(review, probed, plan_file_fac
     path.write_text(json.dumps({
         "report_sha256": hashlib.sha256((job_dir / "report.json").read_bytes()).hexdigest(),
         "annotations": [annotation]}))
-    assert review("record-probes", job_id, "--probes-file", str(path)).exit_code == 0
-
-    result = submit_apply(review, job_id, job_dir,
-                          [{"finding_id": "F-1", "result": "applied"}])
-
-    assert result.exit_code == 11, result
-    assert json.loads((job_dir / "apply.json").read_text())["changed_paths"] == []
+    result = review("record-probes", job_id, "--probes-file", str(path))
+    assert result.exit_code == 4, result
+    assert not (job_dir / "probes.json").exists()
+    assert not (job_dir / "apply.json").exists()
 
 
 def should_refuse_verification_after_the_tree_moved_again(review, probed):

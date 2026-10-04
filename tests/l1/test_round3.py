@@ -5,6 +5,8 @@ import json
 import subprocess
 from pathlib import Path
 
+from qualification_fixture import qualify_author
+
 import pytest
 
 
@@ -25,9 +27,9 @@ def should_accept_the_advertised_workflow_options(review, plan_file_factory,
     then they are accepted rather than refused as unknown
     """
     plan = plan_file_factory()
-    assert review("prepare", "plan", str(plan), "--no-verify",
+    assert review("prepare", "plan", str(plan), "--no-verify", "--reason", "offline fixture does not require verification",
                   cwd=outside_any_repo).exit_code == 0
-    assert review("prepare", "plan", str(plan), "--no-apply",
+    assert review("prepare", "plan", str(plan), "--no-apply", "--no-verify", "--reason", "offline fixture does not require verification",
                   cwd=outside_any_repo).exit_code == 0
     result = review("prepare", "plan", str(plan), "--verify", "pytest -q",
                     cwd=outside_any_repo)
@@ -44,7 +46,7 @@ def should_carry_model_and_effort_from_prepare_to_run(review, plan_file_factory,
     then those values are used, not the defaults
     """
     prepared = review("prepare", "plan", str(plan_file_factory()),
-                      "--model", "gpt-6-astra", "--effort", "low", cwd=outside_any_repo)
+                      "--model", "gpt-6-astra", "--effort", "low", "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
     codex_reply({"verdict": "approve", "findings": [], "declared_scope": ["A0001"],
                  "verified_claims": []})
 
@@ -64,7 +66,7 @@ def should_refuse_an_oversize_plan(review, plan_file_factory, outside_any_repo):
     """
     plan = plan_file_factory("x" * (70 * 1024))
 
-    result = review("prepare", "plan", str(plan), cwd=outside_any_repo)
+    result = review("prepare", "plan", str(plan), '--max-artifact', '65536', "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
 
     assert result.exit_code == 6, result
 
@@ -79,7 +81,7 @@ def should_capture_an_untracked_file_behind_a_staged_deletion(review, make_repo)
     git(repo, "rm", "--cached", "-q", "settings.py")
     (repo / "settings.py").write_text("SETTING = 2\n")
 
-    result = review("prepare", "code", "--uncommitted", cwd=repo)
+    result = review("prepare", "code", "--uncommitted", "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     job_dir = Path(result.envelope["job_dir"])
@@ -102,7 +104,7 @@ def should_not_treat_a_declared_symlink_change_as_out_of_scope(review, make_repo
     git(repo, "commit", "-qm", "link")
     base = git(repo, "rev-parse", "HEAD~1").strip()
 
-    prepared = review("prepare", "code", "--base", base, cwd=repo)
+    prepared = review("prepare", "code", "--base", base, "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
     job_id = prepared.envelope["job_id"]
     job_dir = Path(prepared.envelope["job_dir"])
     artifacts = target_of(prepared)["artifacts"]
@@ -115,6 +117,7 @@ def should_not_treat_a_declared_symlink_change_as_out_of_scope(review, make_repo
     assert review("run", job_id,
                   fake={"CODEX_FAKE_RESPONSE": codex_reply.path}).exit_code == 0
 
+    qualify_author(job_dir, commands=['echo hi\n'])
     (job_dir / "staging").mkdir(parents=True, exist_ok=True)
     (job_dir / "staging" / "probe-F-1.sh").write_text("echo hi\n")
     (job_dir / "probes").mkdir(parents=True, exist_ok=True)
@@ -167,6 +170,7 @@ def should_require_evidence_for_a_verification_that_ran(review, plan_file_factor
                  "declared_scope": ["A0001"], "verified_claims": []})
     assert review("run", job_id,
                   fake={"CODEX_FAKE_RESPONSE": codex_reply.path}).exit_code == 0
+    qualify_author(job_dir, commands=['echo hi\n'])
     (job_dir / "staging").mkdir(parents=True, exist_ok=True)
     (job_dir / "staging" / "probe-F-1.sh").write_text("echo hi\n")
     (job_dir / "probes").mkdir(parents=True, exist_ok=True)

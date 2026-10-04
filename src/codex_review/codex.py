@@ -4,6 +4,10 @@ import os
 import shutil
 
 
+def authentication_settings():
+    return dict(environment_keys=[name for name in ('OPENAI_API_KEY', 'CODEX_API_KEY') if name in os.environ])
+
+
 def resolve():
     """`$CODEX_BIN`, else `PATH`. Returns an absolute path, or None if unresolvable.
 

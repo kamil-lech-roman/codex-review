@@ -1,0 +1,17 @@
+{
+  "driver_version": "0.1.0",
+  "exit": 0,
+  "job_dir": "/private/tmp/codex-sibling-control-8ujxflgb/review-state/b79b5347d78b9d64",
+  "job_id": "b79b5347d78b9d64",
+  "payload": {
+    "target": {
+      "artifact_count": 1,
+      "bytes": 539,
+      "mode": "plan",
+      "resolved_path": "/private/tmp/codex-sibling-control-8ujxflgb/read-control-plan.md",
+      "target_sha": "d3f13088d1b128497a476f7f4848167c1e24ab19f454b5566d599a8a69c59e85"
+    }
+  },
+  "schema_version": 1,
+  "verb": "prepare"
+}

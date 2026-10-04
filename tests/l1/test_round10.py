@@ -11,7 +11,7 @@ def should_refuse_a_target_with_no_artifacts(review, make_repo):
     """
     repo = make_repo({"src/app.py": "x = 1\n"})
 
-    result = review("prepare", "code", "--repo", str(repo), "--base", "HEAD", cwd=repo)
+    result = review("prepare", "code", "--repo", str(repo), "--base", "HEAD", "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 3, result
     assert "empty-target" in result.stdout
@@ -25,7 +25,7 @@ def should_refuse_an_empty_uncommitted_target(review, make_repo):
     """
     repo = make_repo({"src/app.py": "x = 1\n"})
 
-    result = review("prepare", "code", "--repo", str(repo), "--uncommitted", cwd=repo)
+    result = review("prepare", "code", "--repo", str(repo), "--uncommitted", "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 3, result
     assert "empty-target" in result.stdout

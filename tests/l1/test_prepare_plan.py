@@ -19,7 +19,7 @@ def should_publish_a_job_directly_under_the_state_root(review, state_root, plan_
     when prepare runs
     then a job is published as a direct child of the state root, carrying target.json
     """
-    result = review("prepare", "plan", str(plan_file))
+    result = review("prepare", "plan", str(plan_file), "--no-verify", "--reason", "offline fixture does not require verification")
 
     assert result.exit_code == 0, result
     job_dir = Path(result.envelope["job_dir"])
@@ -35,7 +35,7 @@ def should_leave_nothing_behind_in_staging(review, state_root, plan_file):
     when the job is published
     then the .staging build has been renamed away, not copied
     """
-    review("prepare", "plan", str(plan_file))
+    review("prepare", "plan", str(plan_file), "--no-verify", "--reason", "offline fixture does not require verification")
 
     staging = state_root / ".staging"
     assert not staging.exists() or list(staging.iterdir()) == []
@@ -47,7 +47,7 @@ def should_report_the_resolved_target_in_the_payload(review, plan_file):
     when prepare succeeds
     then the payload names the mode, resolved path, digest and size (§8)
     """
-    result = review("prepare", "plan", str(plan_file))
+    result = review("prepare", "plan", str(plan_file), "--no-verify", "--reason", "offline fixture does not require verification")
 
     target = result.envelope["payload"]["target"]
     assert target["mode"] == "plan"
@@ -62,7 +62,7 @@ def should_record_a_plan_image_of_kind_regular(review, plan_file):
     when prepare captures it
     then target.json records a PlanIdentity whose image kind is `regular` (§3)
     """
-    result = review("prepare", "plan", str(plan_file))
+    result = review("prepare", "plan", str(plan_file), "--no-verify", "--reason", "offline fixture does not require verification")
 
     target = json.loads((Path(result.envelope["job_dir"]) / "target.json").read_text())
     assert target["mode"] == "plan"
@@ -79,7 +79,7 @@ def should_refuse_a_non_numeric_capture_limit(review, plan_file_factory, outside
     plan = plan_file_factory("# a plan\n")
 
     for flag in ("--max-artifact", "--max-bundle"):
-        result = review("prepare", "plan", str(plan), "--no-repo", flag, "bad",
+        result = review("prepare", "plan", str(plan), "--no-repo", flag, "bad", "--no-verify", "--reason", "offline fixture does not require verification",
                         cwd=outside_any_repo)
 
         assert result.envelope is not None, (flag, result)

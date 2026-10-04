@@ -1,0 +1,155 @@
+{
+  "collected_at_utc": "2026-09-25T14:02:28.304768+00:00",
+  "reviewed_revision": "e1ceb83",
+  "source_sha256": {
+    "docs/plans/phase-1b.md": "e9992e26b13ba7accc74ae7232838aab0f0e90b7604b7dff9811bf2aab3d56db",
+    "src/codex_review/reviewer.py": "57ab4bf40e9dd8f3ccc78e5ba9d901f3c5ad86cb2eb6b457212ca6a39c68f56e",
+    "src/codex_review/main.py": "077615d6bff19ac51cc9a3ce733f714fbbd4a52ebbd7cd611bb920050b3853b5"
+  },
+  "control_python": {
+    "executable": "/Library/Developer/CommandLineTools/usr/bin/python3",
+    "version": "3.9.6 (default, Aug 25 2026, 21:26:21) \n[Clang 21.0.0 (clang-2100.3.34.2)]"
+  },
+  "job": {
+    "job_id": "0f2081cbfead400f",
+    "record_sha256": {
+      "report.json": "88c2aa26c3cfb4791e460fde51d013484a8721ed0dd8b1fcf20f1a598251e09e",
+      "target.json": "5f30662db81342d0de49bd78329fdd8def829f88fcf245eaa0176606e1fb0efc",
+      "verification.json": "10cffd39928044859ed022d441b889094c93254bca776f706a8c5130991dc8e2"
+    },
+    "verdict": "approve",
+    "finding_count": 0,
+    "run_metadata": {
+      "model": "gpt-6-astra",
+      "effort": "xhigh",
+      "elapsed_seconds": 10657.211,
+      "target_bytes": 25628
+    },
+    "artifacts": [
+      {
+        "id": "A0001",
+        "after_bytes": 13314
+      },
+      {
+        "id": "A0002",
+        "after_bytes": 12314
+      }
+    ],
+    "verification_result": "not-applicable",
+    "application_result": "none-accepted"
+  },
+  "controls": [
+    {
+      "case": "cpu_bound",
+      "child_source": "import time\nend=time.process_time()+0.5\nwhile time.process_time()<end: pass\n",
+      "wall_seconds": 0.5143022537231445,
+      "child": {
+        "pid": 45142,
+        "returncode": 0,
+        "cpu": {
+          "user_seconds": 0.21442799999999998,
+          "system_seconds": 0.29783899999999996
+        }
+      },
+      "aggregate_children_delta": {
+        "user_seconds": 0.21442799999999998,
+        "system_seconds": 0.29783899999999996
+      }
+    },
+    {
+      "case": "sleeping_process",
+      "child_source": "import time; time.sleep(0.65)",
+      "wall_seconds": 0.669342041015625,
+      "child": {
+        "pid": 45144,
+        "returncode": 0,
+        "cpu": {
+          "user_seconds": 0.010919,
+          "system_seconds": 0.003476
+        }
+      },
+      "aggregate_children_delta": {
+        "user_seconds": 0.010919000000000012,
+        "system_seconds": 0.0034760000000000346
+      }
+    },
+    {
+      "case": "blocked_pipe",
+      "child_source": "import sys; assert sys.stdin.buffer.read(1)==b\"x\"",
+      "wall_seconds": 0.6676380634307861,
+      "child": {
+        "pid": 45149,
+        "returncode": 0,
+        "cpu": {
+          "user_seconds": 0.013633,
+          "system_seconds": 0.005174
+        }
+      },
+      "aggregate_children_delta": {
+        "user_seconds": 0.013633000000000006,
+        "system_seconds": 0.005174000000000012
+      }
+    }
+  ],
+  "concurrent_child_control": {
+    "reviewer_source": "import time; time.sleep(0.9)",
+    "unrelated_source": "import time\nend=time.process_time()+0.5\nwhile time.process_time()<end: pass\n",
+    "wall_seconds": 0.9353442192077637,
+    "reviewer": {
+      "pid": 45150,
+      "returncode": 0,
+      "cpu": {
+        "user_seconds": 0.016848,
+        "system_seconds": 0.006927999999999999
+      }
+    },
+    "unrelated": {
+      "pid": 45151,
+      "returncode": 0,
+      "cpu": {
+        "user_seconds": 0.21656899999999998,
+        "system_seconds": 0.296858
+      }
+    },
+    "aggregate_children_delta": {
+      "user_seconds": 0.23341699999999996,
+      "system_seconds": 0.303786
+    }
+  },
+  "power_log_availability": {
+    "argv": [
+      "pmset",
+      "-g",
+      "log"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "first_record_prefix": "2026-09-21 20:58:35 +0200",
+    "last_record_prefix": "2026-09-25 16:02:28 +0200",
+    "matching_sleep_wake_lines": []
+  },
+  "caffeinate_manual": {
+    "argv": [
+      "man",
+      "caffeinate"
+    ],
+    "returncode": 0,
+    "formatted_stdout_sha256": "38ae784aea7be8a3333d734cb86a7a636336cce5ba9db9af5a5ac4b59336a901",
+    "idle_sleep_option_present": true,
+    "system_sleep_option_ac_restriction_present": true
+  },
+  "documentation": [
+    "https://docs.python.org/3/library/resource.html#resource.getrusage",
+    "https://docs.python.org/3/library/os.html#os.wait4"
+  ],
+  "collector_source": "import datetime\nimport hashlib\nimport json\nimport os\nimport pathlib\nimport resource\nimport subprocess\nimport sys\nimport time\n\nROOT = pathlib.Path('/private/tmp/codex-review-phase1b-duration')\nJOB = pathlib.Path.home() / '.codex-review/0f2081cbfead400f'\n\ndef sha(data):\n    return hashlib.sha256(data).hexdigest()\n\ndef cpu(usage):\n    return {'user_seconds': usage.ru_utime, 'system_seconds': usage.ru_stime}\n\ndef total(value):\n    return sum(value.values())\n\ndef spawn(code):\n    return subprocess.Popen([sys.executable, '-c', code], stdin=subprocess.PIPE,\n                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)\n\ndef reap(child):\n    pid, status, usage = os.wait4(child.pid, 0)\n    child.returncode = os.waitstatus_to_exitcode(status)\n    child.stdin.close()\n    assert pid == child.pid and child.returncode == 0\n    return {'pid': pid, 'returncode': child.returncode, 'cpu': cpu(usage)}\n\nbusy = 'import time\\nend=time.process_time()+0.5\\nwhile time.process_time()<end: pass\\n'\nidle = 'import time; time.sleep(0.65)'\nread = 'import sys; assert sys.stdin.buffer.read(1)==b\"x\"'\ncases = []\nfor name, code in [('cpu_bound', busy), ('sleeping_process', idle), ('blocked_pipe', read)]:\n    before = cpu(resource.getrusage(resource.RUSAGE_CHILDREN))\n    started = time.time()\n    child = spawn(code)\n    if name == 'blocked_pipe':\n        time.sleep(0.65)\n        child.stdin.write(b'x')\n        child.stdin.flush()\n    specific = reap(child)\n    wall = time.time() - started\n    after = cpu(resource.getrusage(resource.RUSAGE_CHILDREN))\n    delta = {k: after[k] - before[k] for k in before}\n    cases.append({'case': name, 'child_source': code, 'wall_seconds': wall,\n                  'child': specific, 'aggregate_children_delta': delta})\n    assert abs(total(delta) - total(specific['cpu'])) < 0.005\n\nbefore = cpu(resource.getrusage(resource.RUSAGE_CHILDREN))\nstarted = time.time()\nreviewer = spawn('import time; time.sleep(0.9)')\nunrelated = spawn(busy)\nunrelated_usage = reap(unrelated)\nreviewer_usage = reap(reviewer)\nwall = time.time() - started\nafter = cpu(resource.getrusage(resource.RUSAGE_CHILDREN))\ndelta = {k: after[k] - before[k] for k in before}\nconfound = {'reviewer_source': 'import time; time.sleep(0.9)',\n            'unrelated_source': busy, 'wall_seconds': wall,\n            'reviewer': reviewer_usage, 'unrelated': unrelated_usage,\n            'aggregate_children_delta': delta}\nassert total(delta) - total(reviewer_usage['cpu']) > 0.4\nassert abs(total(delta) - total(reviewer_usage['cpu']) -\n           total(unrelated_usage['cpu'])) < 0.005\nassert total(cases[0]['child']['cpu']) > 0.45\nassert all(c['wall_seconds'] > 0.6 and total(c['child']['cpu']) < 0.3\n           for c in cases[1:])\n\nreport = json.loads((JOB / 'report.json').read_text())\ntarget = json.loads((JOB / 'target.json').read_text())\nverification = json.loads((JOB / 'verification.json').read_text())\nartifacts = [{'id': a, 'after_bytes': (JOB / 'artifacts' / a / 'after').stat().st_size}\n             for a in target['artifacts']]\njob_evidence = {\n    'job_id': JOB.name,\n    'record_sha256': {name: sha((JOB / name).read_bytes()) for name in\n                      ['report.json', 'target.json', 'verification.json']},\n    'verdict': report['verdict'], 'finding_count': len(report['findings']),\n    'run_metadata': {k: report['run_metadata'][k] for k in\n                     ['model', 'effort', 'elapsed_seconds', 'target_bytes']},\n    'artifacts': artifacts,\n    'verification_result': verification['verification_result'],\n    'application_result': verification['application_result'],\n}\nassert report['run_metadata']['elapsed_seconds'] == 10657.211\nassert sum(a['after_bytes'] for a in artifacts) == 25628 and len(artifacts) == 2\n\np = subprocess.run(['pmset', '-g', 'log'], capture_output=True, text=True)\ndated = [line for line in p.stdout.splitlines() if line.startswith('2026-')]\npower = {'argv': ['pmset', '-g', 'log'], 'returncode': p.returncode,\n         'stderr': p.stderr, 'first_record_prefix': dated[0][:25] if dated else None,\n         'last_record_prefix': dated[-1][:25] if dated else None,\n         'matching_sleep_wake_lines': [line for line in dated if\n             line.startswith(('2026-09-18', '2026-09-19')) and\n             any(word in line for word in ['Sleep', 'Wake'])]}\np = subprocess.run(['man', 'caffeinate'], env=dict(os.environ, MANPAGER='cat'),\n                   capture_output=True)\nclean = subprocess.run(['col', '-b'], input=p.stdout, capture_output=True).stdout\nmanual = {'argv': ['man', 'caffeinate'], 'returncode': p.returncode,\n          'formatted_stdout_sha256': sha(clean),\n          'idle_sleep_option_present': b'prevent the system from idle sleeping' in clean,\n          'system_sleep_option_ac_restriction_present': b'running on AC power' in clean}\nassert manual['idle_sleep_option_present'] and manual['system_sleep_option_ac_restriction_present']\n\nsource = pathlib.Path(__file__).read_bytes()\nresult = {\n    'collected_at_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),\n    'reviewed_revision': 'e1ceb83',\n    'source_sha256': {name: sha((ROOT / name).read_bytes()) for name in\n                     ['docs/plans/phase-1b.md', 'src/codex_review/reviewer.py',\n                      'src/codex_review/main.py']},\n    'control_python': {'executable': sys.executable, 'version': sys.version},\n    'job': job_evidence, 'controls': cases, 'concurrent_child_control': confound,\n    'power_log_availability': power, 'caffeinate_manual': manual,\n    'documentation': ['https://docs.python.org/3/library/resource.html#resource.getrusage',\n                      'https://docs.python.org/3/library/os.html#os.wait4'],\n    'collector_source': source.decode(), 'collector_sha256': sha(source),\n    'limits': ['No host suspend, live reviewer or remote inference was exercised.',\n               'The retained power log has no matching September 18/19 sleep/wake records.',\n               'Local CPU cannot attribute a wait to system sleep, network or remote model work.',\n               'No historical CPU usage, exact sleep duration or causal attribution is recovered.',\n               'The suggested 164\u2013550-second comparison and historical caffeinate wrapper were not reverified.',\n               'wait4 demonstrates child attribution here; it is not a production API selection.'],\n}\npath = ROOT / 'docs/history/phase-1b-duration-evidence-2026-09-25.json'\npath.write_text(json.dumps(result, indent=2) + '\\n')\nprint(json.dumps({'archive': str(path), 'job': job_evidence,\n                  'controls': [{'case': c['case'], 'wall_seconds': c['wall_seconds'],\n                                'local_cpu_seconds': total(c['child']['cpu'])} for c in cases],\n                  'concurrent_child_cpu': {'reviewer': total(reviewer_usage['cpu']),\n                      'unrelated': total(unrelated_usage['cpu']), 'aggregate': total(delta)},\n                  'power_log_availability': power}, indent=2))\n",
+  "collector_sha256": "e0e726f302b3367f79f07ad174619c3dc7a5c7baacaaaa8c778b1dea2c5d37f3",
+  "limits": [
+    "No host suspend, live reviewer or remote inference was exercised.",
+    "The retained power log has no matching September 18/19 sleep/wake records.",
+    "Local CPU cannot attribute a wait to system sleep, network or remote model work.",
+    "No historical CPU usage, exact sleep duration or causal attribution is recovered.",
+    "The suggested 164\u2013550-second comparison and historical caffeinate wrapper were not reverified.",
+    "wait4 demonstrates child attribution here; it is not a production API selection."
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "kind": "selected historical evidence; not a new execution or original sealed artifact",
+  "source": {
+    "source_file": "phase-1b-recheck-evidence-2026-09-22.json",
+    "source_sha256": "f3e68e0cf7cef7caa15dc1ff0357240428df4ab0ae30880a850c9b0633878eda"
+  },
+  "selection": [
+    "collected_at",
+    "baseline",
+    "controls",
+    "not_exercised"
+  ],
+  "locator_substitutions": {
+    "private project Python executable": "<python>"
+  },
+  "observations": {
+    "collected_at": "2026-09-22T08:25:11.490525+00:00",
+    "baseline": "12c6a168689876000928e80f665c14372c38c7c2",
+    "controls": {
+      "python_bytecode": {
+        "before_import": {
+          "cached_module.py": "e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65"
+        },
+        "after_import": {
+          "__pycache__/cached_module.cpython-313.pyc": "3a68e7f7d0ce68880b92e561529ae96f0f30f3a03f2d9b4d709831a4a2363774",
+          "cached_module.py": "e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65"
+        },
+        "after_cache_only_mutation": {
+          "__pycache__/cached_module.cpython-313.pyc": "9991a4206dcd3bf04e47ab4817f3af267358c480a8d576a603f49d594587d055",
+          "cached_module.py": "e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65"
+        },
+        "first": {
+          "argv": [
+            "<python>",
+            "-c",
+            "import cached_module; print(cached_module.VALUE)"
+          ],
+          "returncode": 0,
+          "stdout": "1\n",
+          "stderr": ""
+        },
+        "mutate": {
+          "argv": [
+            "<python>",
+            "-B",
+            "-c",
+            "import marshal,pathlib; p=pathlib.Path(__import__(\"sys\").argv[1]); p.write_bytes(p.read_bytes()[:16]+marshal.dumps(compile(\"VALUE = 2\\n\", \"cached_module.py\", \"exec\")))",
+            "/private/tmp/phase1b-cache-control-j6a22lf0/__pycache__/cached_module.cpython-313.pyc"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "second_with_B": {
+          "argv": [
+            "<python>",
+            "-B",
+            "-c",
+            "import cached_module; print(cached_module.VALUE)"
+          ],
+          "returncode": 0,
+          "stdout": "2\n",
+          "stderr": ""
+        },
+        "source_unchanged": true,
+        "claim": "A normal import adds cache content. -B still reads a valid cache; changing only that executable cache changed the result. Synthetic counterexample, not a claim of corruption in the real environment."
+      },
+      "numba_signatures": {
+        "source_sha256": "e739fdb8d38db9253f0786692e11fc3f81c0ee707181b7e05c2e044295808110",
+        "source_unchanged": true,
+        "before": {},
+        "after_integer": {
+          "phase1b-cache-control-j6a22lf0_e21be6711db24227d79b02b57149cb7d5f14b687/numba_module.twice-2.py313.1.nbc": "af56bae2da55bb3be526a6a5c265834fbe7139f56a818437867a2ba8569c2633",
+          "phase1b-cache-control-j6a22lf0_e21be6711db24227d79b02b57149cb7d5f14b687/numba_module.twice-2.py313.nbi": "b3295b164db106446d15c0762fb58c6329f01d345f58470bc34a6b9dd9c0203f"
+        },
+        "after_float": {
+          "phase1b-cache-control-j6a22lf0_e21be6711db24227d79b02b57149cb7d5f14b687/numba_module.twice-2.py313.1.nbc": "af56bae2da55bb3be526a6a5c265834fbe7139f56a818437867a2ba8569c2633",
+          "phase1b-cache-control-j6a22lf0_e21be6711db24227d79b02b57149cb7d5f14b687/numba_module.twice-2.py313.2.nbc": "dedd6e0d48fb59588a986cf92b4a1fba468f066895449abb09d33189da46fd65",
+          "phase1b-cache-control-j6a22lf0_e21be6711db24227d79b02b57149cb7d5f14b687/numba_module.twice-2.py313.nbi": "dca122db46e57b5ef30b6665858cfc571b567c37faa326a9ef16899c81484c6b"
+        },
+        "added_by_float": [
+          "phase1b-cache-control-j6a22lf0_e21be6711db24227d79b02b57149cb7d5f14b687/numba_module.twice-2.py313.2.nbc"
+        ],
+        "changed_by_float": [
+          "phase1b-cache-control-j6a22lf0_e21be6711db24227d79b02b57149cb7d5f14b687/numba_module.twice-2.py313.nbi"
+        ],
+        "integer_run": {
+          "argv": [
+            "<python>",
+            "-B",
+            "-c",
+            "from numba_module import twice; print(twice(2))"
+          ],
+          "returncode": 0,
+          "stdout": "4\n",
+          "stderr": ""
+        },
+        "float_run": {
+          "argv": [
+            "<python>",
+            "-B",
+            "-c",
+            "from numba_module import twice; print(twice(2.5))"
+          ],
+          "returncode": 0,
+          "stdout": "5.0\n",
+          "stderr": ""
+        },
+        "claim": "Different ordinary call signatures add/change Numba cache bytes without changing source. Caches were redirected to an owned temporary directory."
+      }
+    },
+    "not_exercised": [
+      "Proposed dependency binder or exclusion enforcement",
+      "Live persistent Codex memory generation/injection",
+      "Auth in a disposable CODEX_HOME",
+      "Proposed loop counting/recovery implementation"
+    ]
+  }
+}

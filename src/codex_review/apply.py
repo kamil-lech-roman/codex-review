@@ -1,8 +1,9 @@
 """Section 11 — reconciling what was attempted against what the bytes say."""
 
 import os
+import json
 
-from codex_review import images, probes, projections, response
+from codex_review import context, images, probes, projections, response
 
 require = response._require
 ContractViolation = response.ContractViolation
@@ -11,12 +12,12 @@ RESULTS = ("applied", "no-change", "denied", "failed")
 
 #: Bumped when the shape of `pre_apply_baseline` changes. A baseline written by an older
 #: driver carries no version and is read as the worktree manifest it was.
-BASELINE_VERSION = 2
+BASELINE_VERSION = 3
 
 #: What a verification record cites, so the outcome stays checkable after
 #: staging is gone.
 VERIFICATION_CITATIONS = ("command_evidence_id", "output_evidence_id",
-                          "rc_evidence_id", "denial_kind", "asserted_by")
+                          "rc_evidence_id", "denial_kind", "asserted_by", "execution")
 #: Which results account for a change in their declared paths. `no-change` positively
 #: claims nothing landed, so it is the one outcome the bytes can refute.
 ACCOUNTS = {"applied": True, "denied": True, "failed": True, "no-change": False}
@@ -37,6 +38,11 @@ def identity_sha(target):
                 projections.repo_identity(target["context_repository"]).items())))
     else:
         parts = [repr(sorted(projections.repo_identity(target["repo_root"]).items()))]
+    if target.get('capture_contract', 1) >= 2:
+        parts.append(json.dumps(context.external_identity(target), sort_keys=True))
+        retained = context.retained_images(target)
+        if retained:
+            parts.append(json.dumps(retained, sort_keys=True))
     return images.sha256_bytes("\n".join(parts).encode("utf-8"))
 
 
@@ -46,8 +52,20 @@ def baseline(target):
     Both git projections, because both can hold a defect and each is corrected on its own:
     staging a fix moves the index and not the worktree.
     """
+    sampled = _baseline(target)
+    if target.get('capture_contract', 1) >= 2:
+        sampled['external_images'] = context.bound_images(target)
+        sampled['retained_images'] = context.retained_images(target)
+    return sampled
+
+
+def _baseline(target):
     if target["mode"] == "plan":
         path = target["plan_identity"]["plan_path"]
+        if target.get('capture_contract', 1) >= 2:
+            repository = target.get('context_repository')
+            return dict(plan_baseline_version=1, plan_image=images.image_of(path), repository=(
+                baseline(dict(mode='code', repo_root=repository)) if repository else None))
         return {path: images.image_of(path)}
     root = target["repo_root"]
     return {"baseline_version": BASELINE_VERSION,
@@ -65,7 +83,7 @@ def _sampled_projections(captured):
     """
     if not isinstance(captured, dict):
         return {"worktree": captured}
-    if captured.get("baseline_version") == BASELINE_VERSION:
+    if captured.get("baseline_version") in (2, BASELINE_VERSION):
         return captured["projections"]
     inner = captured.get("projections")
     if (set(captured) == {"projections"} and isinstance(inner, dict)
@@ -80,8 +98,24 @@ def changed_paths(target, base=None):
     Measured against the baseline rather than the capture: a change made before probing was
     not this apply's doing, and crediting it would let an untouched fix report as applied.
     """
+    moved = set(_changed_paths(target, base))
+    if base is not None and 'external_images' in base:
+        before, after = base['external_images'], context.bound_images(target)
+        moved.update(context.changed_image_paths(before, after))
+    if base is not None and 'retained_images' in base:
+        moved.update(context.changed_image_paths(base['retained_images'], context.retained_images(target)))
+    return sorted(moved)
+
+
+def _changed_paths(target, base=None):
     if target["mode"] == "plan":
         path = target["plan_identity"]["plan_path"]
+        if base and base.get('plan_baseline_version') == 1:
+            moved = (changed_paths(dict(mode='code', repo_root=target['context_repository']), base['repository'])
+                     if base['repository'] is not None else [])
+            if images.image_of(path) != base['plan_image']:
+                moved.append(path)
+            return sorted(set(moved))
         before = (base or {}).get(path, target["plan_identity"]["plan_image"])
         if images.image_of(path) != before:
             return [path]
@@ -109,6 +143,11 @@ def _declared(target, annotation):
         root = target["repo_root"]
     return [probes.resolve_keeping_link(os.path.join(root, p))
             for p in annotation.get("fix_paths", [])]
+
+
+def declared_paths(target, record):
+    return {path for annotation in record['annotations']
+            if annotation.get('disposition') == 'accepted' for path in _declared(target, annotation)}
 
 
 def reconcile(target, probes_record, payload, moved):
@@ -209,6 +248,25 @@ def sealed_bytes(job_dir, evidence_id):
         return handle.read()
 
 
+def check_sweep(job_dir, job_id, sweep):
+    require(isinstance(sweep, dict), 'missing-sibling-sweep', 'each loop apply result needs a sibling sweep')
+    for field in ('searched_scope', 'related_sites'):
+        value = sweep.get(field)
+        require(isinstance(value, list) and all(isinstance(p, str) and p.strip() for p in value),
+                'bad-sibling-sweep', 'sweep paths must be text arrays', field=field, expected='array of paths')
+    require(isinstance(sweep.get('rationale'), str) and sweep['rationale'].strip(),
+            'missing-rationale', 'sweep needs its assessment or why no related check applies')
+    citations = sweep.get('evidence_ids', [])
+    require(isinstance(citations, list) and (citations or not sweep['related_sites']),
+            'missing-sweep-evidence', 'related sites require sealed check evidence')
+    for citation in citations:
+        require(isinstance(citation, str) and probes.EVIDENCE_ID.fullmatch(citation),
+                'bad-evidence-id', 'sweep evidence must be an evidence nonce')
+        with open(os.path.join(job_dir, 'evidence', citation, 'metadata.json'), encoding='utf-8') as handle:
+            metadata = json.load(handle)
+        probes._rehash(job_dir, job_id, citation, metadata['source_path'])
+
+
 def check_verification_command(job_dir, job_id, target, block):
     """The sealed script must be the configured command byte-for-byte — no trimming and no
     equivalence rule, because each such rule is a place two different commands compare
@@ -238,6 +296,7 @@ def derive_verification(job_dir, job_id, block):
 def check_verification_evidence(result, block):
     """The matrix decides which citations a result may carry; `passed`/`failed` are then
     derived from the sealed rc by `derive_verification`, never asserted."""
+    probes.reject_execution_metadata(block)
     wants_command, wants_output, wants_rc, wants_denial = EVIDENCE_MATRIX[result]
     for key, wanted in (("command_evidence_id", wants_command),
                         ("output_evidence_id", wants_output),
@@ -260,22 +319,13 @@ def check_verification_evidence(result, block):
 
 
 def verification_result(submitted, target, moved):
-    """One precedence, one check, total over every combination (§8).
+    """Validate the submitted result against the job's derived outcomes.
 
-    The job derives which results are allowed: no verify command → `not-run-explicitly`
-    (even when nothing landed); otherwise nothing landed → `not-applicable`; otherwise the
-    command ran and the sealed evidence picks among `passed`/`failed`/`denied`. A submission
-    outside that set is refused, naming both, never replaced. Where the derivation leaves
-    one result, an omitted `result` is not a contradiction — a caller delivering partial
-    results gets the derived one. Every tier passes through the one check below, so a tier
-    added later cannot override a submission without being refused.
-
-    `not-reached` is never derived here: a scope violation closes at record-apply, without
-    an apply.json to verify.
+    Scope violations already close at apply and cannot reach this operation.
     """
     if target.get("verify_command") is None:
         allowed = ["not-run-explicitly"]
-    elif not moved:
+    elif not moved and not target.get('loop_id'):
         allowed = ["not-applicable"]
     else:
         allowed = list(RAN_RESULTS)
@@ -284,9 +334,7 @@ def verification_result(submitted, target, moved):
     if submitted not in allowed:
         raise ContractViolation(
             "verification-result-contradicted",
-            "the submitted result is not one the job allows (no verify command → "
-            "not-run-explicitly, then nothing landed → not-applicable, else the command ran "
-            "and the result is one of `allowed`)",
+            "the submitted result is not one the job allows",
             # Only a string is echoed: NaN or deep nesting cannot be trusted to survive the
             # envelope, so anything else is named by type.
             submitted=submitted if isinstance(submitted, str) else None,

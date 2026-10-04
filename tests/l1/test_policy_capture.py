@@ -17,7 +17,7 @@ def should_resolve_context_free_when_cwd_is_outside_any_repository(
     when prepare runs
     then no context repository is resolved and no policy commit is read
     """
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=outside_any_repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
 
     assert result.exit_code == 0, result
     target = target_of(result)
@@ -33,7 +33,7 @@ def should_still_write_a_synthesized_agents_file_context_free(
     when prepare runs
     then AGENTS.md is still written, stating that no repository policy was captured
     """
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=outside_any_repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
 
     agents = Path(result.envelope["job_dir"]) / "AGENTS.md"
     assert agents.is_file()
@@ -48,7 +48,7 @@ def should_hash_exactly_the_bytes_the_driver_wrote(
     when prepare records synthesized_policy_sha256
     then it digests exactly that file, so an audit of the job reproduces it
     """
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=outside_any_repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
 
     agents = Path(result.envelope["job_dir"]) / "AGENTS.md"
     expected = hashlib.sha256(agents.read_bytes()).hexdigest()
@@ -61,7 +61,7 @@ def should_resolve_the_repository_containing_cwd(review, plan_file_factory, git_
     when prepare runs for a plan target
     then that repository is the context and its HEAD is the policy commit
     """
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=git_repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=git_repo)
 
     assert result.exit_code == 0, result
     target = target_of(result)
@@ -78,7 +78,7 @@ def should_prefer_an_explicit_repo_flag_over_cwd(
     then --repo wins, because it is first in the resolution ladder
     """
     result = review(
-        "prepare", "plan", str(plan_file_factory()), "--repo", str(git_repo),
+        "prepare", "plan", str(plan_file_factory()), "--repo", str(git_repo), "--no-verify", "--reason", "offline fixture does not require verification",
         cwd=outside_any_repo,
     )
 

@@ -19,7 +19,7 @@ def should_record_a_note_on_the_target(review, plan_file_factory, outside_any_re
     then the text is recorded, so a round's prompt is reproducible from its target
     """
     result = review("prepare", "plan", str(plan_file_factory()),
-                    "--note", "experiments/ is reference material", cwd=outside_any_repo)
+                    "--note", "experiments/ is reference material", "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
 
     assert result.exit_code == 0, result
     assert target_of(result)["note"] == "experiments/ is reference material"
@@ -33,7 +33,7 @@ def should_carry_the_note_into_the_prompt_as_context(review, plan_file_factory,
     then the note appears, fenced as context rather than as instruction
     """
     prepared = review("prepare", "plan", str(plan_file_factory()),
-                      "--note", "the lockfile is generated", cwd=outside_any_repo)
+                      "--note", "the lockfile is generated", "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
     codex_reply({"verdict": "approve", "findings": [], "declared_scope": ["A0001"],
                  "verified_claims": []})
 
@@ -53,7 +53,7 @@ def should_omit_the_note_section_when_none_was_given(review, plan_file_factory,
     when run builds the prompt
     then no empty note section is emitted
     """
-    prepared = review("prepare", "plan", str(plan_file_factory()), cwd=outside_any_repo)
+    prepared = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
     codex_reply({"verdict": "approve", "findings": [], "declared_scope": ["A0001"],
                  "verified_claims": []})
 

@@ -1,0 +1,32 @@
+{
+  "driver_version": "0.1.0",
+  "exit": 0,
+  "job_dir": "/private/tmp/codex-sibling-control-8ujxflgb/review-state/b79b5347d78b9d64",
+  "job_id": "b79b5347d78b9d64",
+  "payload": {
+    "counts": {
+      "introduced": 0,
+      "pre_existing": 0
+    },
+    "findings": [],
+    "report_path": "/private/tmp/codex-sibling-control-8ujxflgb/review-state/b79b5347d78b9d64/report.json",
+    "report_sha256": "6e19cde31f48e586a9b6c5336c98efc367c3e53fdf0e12acafc9f0a6c9014566",
+    "run_metadata": {
+      "codex_path": "/Applications/ChatGPT.app/Contents/Resources/codex",
+      "codex_version": "codex-cli 0.155.0-alpha.9.2",
+      "driver_hash": "8e9777ddbbc99a2510f53ff2f1400b2d0714fd19578b93741f21b442f562a522",
+      "driver_version": "0.1.0",
+      "effective_policy_hash": "a182a9b24a9681443bf30038f94a5be31b6e1a47e6963e61fc4e023fffe66031",
+      "effort": "xhigh",
+      "elapsed_seconds": 59.604,
+      "model": "gpt-6-astra",
+      "prompt_sha256": "75034deb19ee886f100360fe23fd763e22defd3bf66ef842a78ce5e88d47373d",
+      "schema_sha256": "6f704286f701dc88ca9a6889e2513c80aa8cc587d7e3393ac7d2f1efff90117b",
+      "synthesized_policy_sha256": "76223222aed1a4866ed0d879e2a6bf29818995a797a0f2ff2732f996040a5fcf",
+      "target_bytes": 539
+    },
+    "verdict": "approve"
+  },
+  "schema_version": 1,
+  "verb": "run"
+}

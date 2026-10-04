@@ -26,13 +26,32 @@ def _require(condition, code, message, **details):
         raise ContractViolation(code, message, **details)
 
 
+def decimal_integer(value):
+    if not isinstance(value, str) or not value.isdecimal():
+        return None
+    try:
+        return int(value)
+    except ValueError:
+        return None
+
+
+def parse(raw_text, label="response"):
+    if isinstance(raw_text, bytes):
+        try:
+            raw_text = raw_text.decode("utf-8")
+        except UnicodeDecodeError as error:
+            raise ContractViolation("malformed-encoding", label + " is not UTF-8",
+                                    detail=str(error))
+    try:
+        return json.loads(raw_text)
+    except ValueError as error:
+        raise ContractViolation("malformed-json", label + " is not valid JSON",
+                                detail=str(error))
+
+
 def validate(raw_text, target):
     """Parse and check the response against §8. Returns the parsed object."""
-    try:
-        parsed = json.loads(raw_text)
-    except ValueError as error:
-        raise ContractViolation("malformed-json", "response is not valid JSON",
-                                detail=str(error))
+    parsed = parse(raw_text)
     _require(isinstance(parsed, dict), "not-an-object", "response is not a JSON object")
 
     verdict = parsed.get("verdict")
@@ -44,11 +63,13 @@ def validate(raw_text, target):
     artifacts = set(target.get("artifacts") or ())
     ids = set()
     introduced = []
-    for finding in findings:
+    for index, finding in enumerate(findings):
         _require(isinstance(finding, dict), "bad-finding", "a finding is not an object")
         missing = [f for f in FINDING_FIELDS if f not in finding]
         _require(not missing, "finding-missing-fields", "a finding is missing fields",
                  id=finding.get("id"), missing=missing)
+        for field in FINDING_FIELDS:
+            _text(finding[field], "findings[{}].{}".format(index, field), nullable=field == "artifact")
         _require(finding["id"] not in ids, "duplicate-finding-id",
                  "finding ids must be unique", id=finding["id"])
         ids.add(finding["id"])
@@ -74,6 +95,11 @@ def validate(raw_text, target):
 
     declared = parsed.get("declared_scope")
     _require(isinstance(declared, list), "bad-declared-scope", "declared_scope must be a list")
+    for index, value in enumerate(declared):
+        _text(value, "declared_scope[{}]".format(index))
+    _require(len(set(declared)) == len(declared) and not set(declared) - artifacts,
+             "bad-declared-scope", "scope must name each captured artifact exactly once",
+             field="declared_scope", expected=sorted(artifacts))
     uncovered = sorted(artifacts - set(declared))
     _require(not uncovered, "declared-scope-incomplete",
              "declared_scope does not cover the job's artifacts", uncovered=uncovered)
@@ -83,8 +109,13 @@ def validate(raw_text, target):
         _require(isinstance(claims, list), "bad-verified-claims",
                  "verified_claims must be a list for a plan target")
         context_free = target.get("context_repository") is None
-        for claim in claims:
+        for index, claim in enumerate(claims):
             _require(isinstance(claim, dict), "bad-claim", "a claim is not an object")
+            for field in ("claim", "result", "evidence", "finding_id"):
+                _require(field in claim, "claim-missing-field", "claim is missing a field",
+                         field="verified_claims[{}].{}".format(index, field), expected="required")
+                _text(claim[field], "verified_claims[{}].{}".format(index, field),
+                      nullable=field == "finding_id")
             result = claim.get("result")
             _require(result in CLAIM_RESULTS, "bad-claim-result",
                      "unrecognised claim result", result=result)
@@ -96,4 +127,25 @@ def validate(raw_text, target):
                 _require(claim.get("finding_id") in introduced, "refuted-without-finding",
                          "a refuted claim must name an introduced finding",
                          finding_id=claim.get("finding_id"))
+    from codex_review.reviewer import response_schema
+    _closed_objects(parsed, response_schema(target.get('mode')), 'response')
     return parsed
+
+
+def _closed_objects(value, schema, field):
+    if schema.get('type') == 'object' and isinstance(value, dict):
+        properties = schema['properties']
+        unknown = sorted(set(value) - set(properties))
+        _require(not unknown, 'unknown-response-fields', 'response contains unknown fields',
+                 field=field, unknown=unknown, expected=sorted(properties))
+        for key, child in value.items():
+            _closed_objects(child, properties[key], field + '.' + key)
+    elif schema.get('type') == 'array' and isinstance(value, list):
+        for index, child in enumerate(value):
+            _closed_objects(child, schema['items'], '{}[{}]'.format(field, index))
+
+
+def _text(value, field, nullable=False):
+    _require((nullable and value is None) or (isinstance(value, str) and bool(value.strip())),
+             "bad-field-type", "field must contain text", field=field,
+             expected="nonempty string or null" if nullable else "nonempty string")

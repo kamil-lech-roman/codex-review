@@ -15,7 +15,7 @@ def should_refuse_a_plan_target_whose_final_component_is_a_symlink(review, tmp_p
     link = tmp_path / "link-plan.md"
     link.symlink_to(referent)
 
-    result = review("prepare", "plan", str(link))
+    result = review("prepare", "plan", str(link), "--no-verify", "--reason", "offline fixture does not require verification")
 
     assert result.exit_code == 6, result
     details = result.envelope["error"]["details"]
@@ -36,7 +36,7 @@ def should_accept_a_plan_target_beneath_a_symlinked_ancestor(review, tmp_path):
     linked_dir = tmp_path / "linked-dir"
     linked_dir.symlink_to(real_dir, target_is_directory=True)
 
-    result = review("prepare", "plan", str(linked_dir / "design.md"))
+    result = review("prepare", "plan", str(linked_dir / "design.md"), "--no-verify", "--reason", "offline fixture does not require verification")
 
     assert result.exit_code == 0, result
     assert result.envelope["job_id"] is not None

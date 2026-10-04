@@ -18,12 +18,9 @@ the linked skill section owns the current loop procedure, including the later co
 
 The data below stands as the evidence for that, including where it is thin.
 
-This public summary retains the measured results. The raw job records and experimental
-runner remain private; the tables are not a publicly reproducible benchmark.
-
 Eight runs on one `target_sha`, reserve, effort the only difference, all verified comparable (one
 normalised prompt hash, one policy hash). Five `xhigh` runs, not three: two were driven by
-an experimental runner rather than by the driver, on the same model, effort, target and
+`experiments/1b-poc/spike.py` rather than by the driver, on the same model, effort, target and
 prompt.
 
 | effort | findings | input tokens |

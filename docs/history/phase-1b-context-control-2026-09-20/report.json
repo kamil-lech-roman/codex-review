@@ -1,0 +1,59 @@
+{
+  "declared_scope": [
+    "A0001"
+  ],
+  "findings": [],
+  "run_metadata": {
+    "codex_path": "/Applications/ChatGPT.app/Contents/Resources/codex",
+    "codex_version": "codex-cli 0.155.0-alpha.9.2",
+    "driver_hash": "8e9777ddbbc99a2510f53ff2f1400b2d0714fd19578b93741f21b442f562a522",
+    "driver_version": "0.1.0",
+    "effective_policy_hash": "a182a9b24a9681443bf30038f94a5be31b6e1a47e6963e61fc4e023fffe66031",
+    "effort": "xhigh",
+    "elapsed_seconds": 55.435,
+    "model": "gpt-6-astra",
+    "prompt_sha256": "52f8b84cf3ed6e4ff145b728ca0e5ec72f1c8b37be9b57ed59950c8cc8b73d12",
+    "schema_sha256": "6f704286f701dc88ca9a6889e2513c80aa8cc587d7e3393ac7d2f1efff90117b",
+    "synthesized_policy_sha256": "76223222aed1a4866ed0d879e2a6bf29818995a797a0f2ff2732f996040a5fcf",
+    "target_bytes": 498
+  },
+  "verdict": "approve",
+  "verified_claims": [
+    {
+      "claim": "repository-only-marker.txt exists and contains one line of control data.",
+      "evidence": "Read succeeded. Exact contents, including the terminal newline: \"41eb536d1edbb52540b6ffa00e8cd24b0f018aeb66a6ae1165ae67564754ea3d\\n\". Byte inspection confirmed one line.",
+      "finding_id": null,
+      "result": "holds"
+    },
+    {
+      "claim": "absent-control.txt is absent from the target repository.",
+      "evidence": "Read exited with code 1: \"cat: /private/tmp/codex-context-control-ntvx9uak/target-repository/absent-control.txt: No such file or directory\".",
+      "finding_id": null,
+      "result": "holds"
+    },
+    {
+      "claim": "Expected-result evidence: all expected outcomes are supported.",
+      "evidence": "Both diagnostic expectations were checked directly: the marker contains one line and the negative-control read fails because the file is absent. No unsupported implementation oracle remains.",
+      "finding_id": null,
+      "result": "holds"
+    },
+    {
+      "claim": "Material ambiguity: none prevents execution.",
+      "evidence": "A0001 identifies both files, the observations to record, and the fallback if access is denied.",
+      "finding_id": null,
+      "result": "holds"
+    },
+    {
+      "claim": "Acceptance behavior and its sources are stated.",
+      "evidence": "A0001 requires literal marker contents and the negative-control read outcome, sourced from direct filesystem reads. Both observations are recorded above.",
+      "finding_id": null,
+      "result": "holds"
+    },
+    {
+      "claim": "Open decisions: none requires settlement now or through implementation TDD.",
+      "evidence": "A0001 explicitly proposes a diagnostic baseline without implementation or edits. Its specified observations were obtainable; no implementation-blocking uncertainty remains.",
+      "finding_id": null,
+      "result": "holds"
+    }
+  ]
+}

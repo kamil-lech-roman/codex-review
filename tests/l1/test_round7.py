@@ -25,7 +25,7 @@ def should_refuse_a_policy_link_naming_a_parent_of_the_repository(review,
     (repo / "AGENTS.md").symlink_to("../notes.md")
     commit_all(repo)
 
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 5, result
     assert "An unrelated document." not in result.stdout
@@ -43,7 +43,7 @@ def should_refuse_a_policy_link_traversing_a_regular_file(review, plan_file_fact
     (repo / "AGENTS.md").symlink_to("plain.txt/../notes.md")
     commit_all(repo)
 
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 5, result
     assert "An unrelated document." not in result.stdout
@@ -66,7 +66,7 @@ def should_capture_a_repository_holding_a_non_utf8_filename(review, plan_file_fa
     subprocess.run(("git", "commit", "-qm", "odd"), cwd=str(repo), check=True,
                    capture_output=True)
 
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     assert "No policy files were present" in agents_text(result)

@@ -20,7 +20,7 @@ def should_refuse_a_policy_link_with_a_dot_component(review, plan_file_factory, 
     (repo / "AGENTS.md").symlink_to("notes.md/.")
     commit_all(repo)
 
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 5, result
     assert "An unrelated document." not in result.stdout

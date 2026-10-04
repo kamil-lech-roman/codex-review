@@ -28,7 +28,7 @@ VALID_RESPONSE = {
 
 @pytest.fixture
 def prepared_job(review, plan_file_factory, outside_any_repo):
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=outside_any_repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
     assert result.exit_code == 0, result
     return result.envelope["job_id"], Path(result.envelope["job_dir"])
 

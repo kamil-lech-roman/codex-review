@@ -5,6 +5,8 @@ import json
 import subprocess
 from pathlib import Path
 
+from qualification_fixture import qualify_author
+
 import pytest
 
 from codex_review import apply as apply_module
@@ -22,12 +24,15 @@ RESPONSE = {
 def probe_a_job(review, plan_file_factory, outside_any_repo, codex_reply, *prepare_args):
     """A plan job carried to `probed` with one accepted finding, ready for record-apply."""
     plan = plan_file_factory("# a plan\n")
+    if "--verify" not in prepare_args and "--no-verify" not in prepare_args:
+        prepare_args += ("--no-verify", "--reason", "offline inspection")
     prepared = review("prepare", "plan", str(plan), *prepare_args, cwd=outside_any_repo)
     job_id = prepared.envelope["job_id"]
     job_dir = Path(prepared.envelope["job_dir"])
     codex_reply(RESPONSE)
     review("run", job_id, fake={"CODEX_FAKE_RESPONSE": codex_reply.path})
 
+    qualify_author(job_dir, commands=['echo checking\n'])
     (job_dir / "staging").mkdir(parents=True, exist_ok=True)
     (job_dir / "staging" / "probe-F-1.sh").write_text("echo checking\n")
     command = review("seal", job_id, "staging/probe-F-1.sh").envelope["payload"]["evidence_id"]
@@ -203,7 +208,7 @@ def should_close_the_job_on_a_scope_violation(review, make_repo, codex_reply):
     subprocess.run(("git", "commit", "-qm", "two"), cwd=str(repo), check=True,
                    capture_output=True)
 
-    prepared = review("prepare", "code", "--base", base, cwd=repo)
+    prepared = review("prepare", "code", "--base", base, "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
     job_id = prepared.envelope["job_id"]
     job_dir = Path(prepared.envelope["job_dir"])
     codex_reply({
@@ -216,6 +221,7 @@ def should_close_the_job_on_a_scope_violation(review, make_repo, codex_reply):
     assert review("run", job_id,
                   fake={"CODEX_FAKE_RESPONSE": codex_reply.path}).exit_code == 0
 
+    qualify_author(job_dir, commands=['echo checking\n'])
     (job_dir / "staging").mkdir(parents=True, exist_ok=True)
     (job_dir / "staging" / "probe-F-1.sh").write_text("echo checking\n")
     command = review("seal", job_id, "staging/probe-F-1.sh").envelope["payload"]["evidence_id"]
@@ -504,8 +510,8 @@ def should_refuse_a_submission_that_is_not_an_object(review, probed, tmp_path):
     when a recording verb consumes it at the stage that reads its fields
     then it refuses with an envelope, rather than raising on the first field access
     """
-    job_id, _job_dir, _plan = probed
-    payload = tmp_path / "array.json"
+    job_id, job_dir, _plan = probed
+    payload = job_dir / "staging" / "array.json"
     payload.write_text("[]\n")
 
     result = review("record-apply", job_id, "--apply-file", str(payload))
@@ -524,7 +530,7 @@ def should_refuse_a_verification_submission_that_is_not_an_object(review, probed
     job_id, job_dir, plan = probed
     plan.write_text("# a plan\n\nfixed.\n")
     submit_apply(review, job_id, job_dir, [{"finding_id": "F-1", "result": "applied"}])
-    payload = tmp_path / "array.json"
+    payload = job_dir / "staging" / "array.json"
     payload.write_text("[]\n")
 
     result = review("record-verification", job_id, "--verification-file", str(payload))
@@ -642,16 +648,18 @@ def code_job_with_a_staged_defect(review, make_repo, codex_reply):
     subprocess.run(("git", "add", "f.py"), cwd=str(repo), check=True, capture_output=True)
     (repo / "f.py").write_text("def d(a, b):\n    return a / b\n")
 
-    prepared = review("prepare", "code", "--uncommitted", cwd=repo)
+    prepared = review("prepare", "code", "--uncommitted", "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
     assert prepared.exit_code == 0, prepared
     job_id = prepared.envelope["job_id"]
     job_dir = Path(prepared.envelope["job_dir"])
     captured = json.loads((job_dir / "target.json").read_text())
     reply = dict(RESPONSE, declared_scope=list(captured["artifacts"]))
+    del reply['verified_claims']  # Code responses use the code schema, without plan claims.
     codex_reply(reply)
     ran = review("run", job_id, fake={"CODEX_FAKE_RESPONSE": codex_reply.path})
     assert ran.exit_code == 0, ran
 
+    qualify_author(job_dir, commands=['echo checking\n'])
     (job_dir / "staging").mkdir(parents=True, exist_ok=True)
     (job_dir / "staging" / "probe-F-1.sh").write_text("echo checking\n")
     command = review("seal", job_id, "staging/probe-F-1.sh").envelope["payload"]["evidence_id"]
@@ -778,3 +786,34 @@ def should_derive_the_result_from_the_job_and_refuse_every_other_submission(
         assert refused.value.details["allowed"] == allowed
         assert refused.value.details["submitted"] == (
             submitted if isinstance(submitted, str) else None)
+
+
+@pytest.mark.parametrize('drift', [False, True])
+def should_check_sealed_result_only_after_drift(review, probed_with_verify, drift):
+    # given a changed plan, recorded apply, and sealed failure evidence
+    job_id, job_dir, plan = probed_with_verify
+    plan.write_text('# a plan\n\nfixed.\n')
+    applied = submit_apply(review, job_id, job_dir, [{'finding_id':'F-1','result':'applied'}])
+    assert applied.exit_code == 0, applied
+    citations = {}
+    for source, body, field in [('staging/verify.sh', 'true\n', 'command_evidence_id'),
+                                ('verify.out', 'controlled verification failure\n', 'output_evidence_id'),
+                                ('verify.rc', '1\n', 'rc_evidence_id')]:
+        (job_dir / source).write_text(body)
+        sealed = review('seal', job_id, source)
+        assert sealed.exit_code == 0, sealed
+        citations[field] = sealed.envelope['payload']['evidence_id']
+    if drift:
+        plan.write_text('# a plan\n\nchanged after apply.\n')
+    # when passed contradicts the sealed rc, then drift determines whether refusal is recoverable
+    result = record_verification(review, job_id, job_dir, dict(result='passed', **citations))
+    assert result.exit_code == (4 if drift else 8), result
+    assert result.envelope['error']['code'] == ('reference-drift' if drift else 'verification-result-contradicted')
+    assert (job_dir / 'invalidated.json').exists() == drift
+    corrected = record_verification(review, job_id, job_dir, dict(result='failed', **citations))
+    if drift:
+        assert corrected.exit_code == 8, corrected
+        assert not (job_dir / 'verification.json').exists()
+    else:
+        assert corrected.exit_code == 12, corrected
+        assert (job_dir / 'verification.json').exists()

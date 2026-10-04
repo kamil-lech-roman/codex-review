@@ -1,7 +1,9 @@
 """Section 3 — path images. Every preimage and postimage is {kind, git_mode, content_identity}."""
 
+import contextlib
 import hashlib
 import os
+import stat
 
 CHUNK = 1 << 20  # hashlib.file_digest is 3.11+, so read in chunks (§2)
 
@@ -11,9 +13,26 @@ KIND_GITLINK = "gitlink"
 KIND_ABSENT = "absent"
 
 
+@contextlib.contextmanager
+def regular_reader(path):
+    # Nonblocking open closes the stat/open race when a regular file becomes a FIFO.
+    if not stat.S_ISREG(os.stat(path).st_mode):
+        raise OSError('not a regular file: ' + os.fspath(path))
+    fd = os.open(path, os.O_RDONLY | os.O_NONBLOCK)
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            raise OSError('not a regular file: ' + os.fspath(path))
+        handle = os.fdopen(fd, 'rb')
+    except BaseException:
+        os.close(fd)
+        raise
+    with handle:
+        yield handle
+
+
 def sha256_file(path):
     digest = hashlib.sha256()
-    with open(path, "rb") as handle:
+    with regular_reader(path) as handle:
         for block in iter(lambda: handle.read(CHUNK), b""):
             digest.update(block)
     return digest.hexdigest()
@@ -26,7 +45,7 @@ def sha256_bytes(data):
 def image_of(path):
     """The image triple for a filesystem path, without consulting git."""
     if os.path.islink(path):
-        link_text = os.readlink(path).encode("utf-8")
+        link_text = os.fsencode(os.readlink(path))
         return {
             "kind": KIND_SYMLINK,
             "git_mode": "120000",

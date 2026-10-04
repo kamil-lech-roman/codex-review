@@ -17,7 +17,7 @@ RESPONSE = {
 
 
 def make_reviewed(review, plan, outside, codex_reply, response=None):
-    prepared = review("prepare", "plan", str(plan), cwd=outside)
+    prepared = review("prepare", "plan", str(plan), "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside)
     job_id = prepared.envelope["job_id"]
     job_dir = Path(prepared.envelope["job_dir"])
     codex_reply(response or RESPONSE)
@@ -27,6 +27,8 @@ def make_reviewed(review, plan, outside, codex_reply, response=None):
 
 
 def seal_all(review, job_id, job_dir, finding="F-1"):
+    from qualification_fixture import qualify_author
+    qualify_author(job_dir, commands=['echo hi\n'])
     (job_dir / "staging").mkdir(parents=True, exist_ok=True)
     (job_dir / "staging" / "probe-{}.sh".format(finding)).write_text("echo hi\n")
     (job_dir / "probes").mkdir(parents=True, exist_ok=True)

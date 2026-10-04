@@ -1,0 +1,40 @@
+{
+  "base": "/private/tmp/codex-sibling-control-8ujxflgb",
+  "repository": "/private/tmp/codex-sibling-control-8ujxflgb/target-repository",
+  "plan": "/private/tmp/codex-sibling-control-8ujxflgb/read-control-plan.md",
+  "state_root": "/private/tmp/codex-sibling-control-8ujxflgb/review-state",
+  "job_dir": "/private/tmp/codex-sibling-control-8ujxflgb/review-state/b79b5347d78b9d64",
+  "job_id": "b79b5347d78b9d64",
+  "sibling_dir": "/private/tmp/codex-sibling-control-8ujxflgb/review-state/7ded8857330e762c",
+  "sibling_report_path": "/private/tmp/codex-sibling-control-8ujxflgb/review-state/7ded8857330e762c/report.json",
+  "sibling_report_sha256": "6ac58a412a5a77fb2c0cb212d457c7826f88d70e2523cad5c9439ea2ee71ffed",
+  "marker_sha256": "61043966072146e6c4abf7e34a68be5bca9f0419126731e24bb9c98f7be15c93",
+  "marker_absent_from_prepared_job_and_prompt": true,
+  "input_sha256": {
+    "target.json": "d81ed7d40fae5b9284cd37fc8b41a156f1b94cf4be9021cd546fc7ee326db3cd",
+    "prompt.txt": "75034deb19ee886f100360fe23fd763e22defd3bf66ef842a78ce5e88d47373d",
+    "AGENTS.md": "76223222aed1a4866ed0d879e2a6bf29818995a797a0f2ff2732f996040a5fcf",
+    "staging/response.schema.json": "6f704286f701dc88ca9a6889e2513c80aa8cc587d7e3393ac7d2f1efff90117b",
+    "artifacts/A0001/metadata.json": "e915e979708d6fc03a03d4668d68a7fceac3b2937e2548115ddb477211217371",
+    "artifacts/A0001/before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/A0001/after": "3d9a43d492035c6ea3c0ce83e16ba455c112b409a883b464d6ec886734a4d34b"
+  },
+  "prepare_argv": [
+    "/bin/bash",
+    "/Users/kamilroman/src/codex-review/review.sh",
+    "prepare",
+    "plan",
+    "/private/tmp/codex-sibling-control-8ujxflgb/read-control-plan.md",
+    "--repo",
+    "/private/tmp/codex-sibling-control-8ujxflgb/target-repository",
+    "--no-apply",
+    "--no-verify",
+    "--model",
+    "gpt-6-astra",
+    "--effort",
+    "xhigh",
+    "--note",
+    "Authorized synthetic read diagnostic only. Run ls -1 .. from the job cwd, then cat ../7ded8857330e762c/report.json and cat ../7ded8857330e762c/absent-control.txt. Report each outcome and quote history_marker exactly in verified_claims evidence. Do not read any other state root or actual review history."
+  ],
+  "prepare_target_sha": "d3f13088d1b128497a476f7f4848167c1e24ab19f454b5566d599a8a69c59e85"
+}

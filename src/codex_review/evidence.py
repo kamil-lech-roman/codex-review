@@ -105,3 +105,20 @@ def seal(job_dir, job_id, relative, cap=DEFAULT_PREVIEW_BYTES):
         "truncated": truncated,
         "preview": render(data, None if is_command_script else cap),
     }
+
+
+def payload_path(job_dir, path, field):
+    """Recording payloads may use an absolute locator or a job-relative staging path."""
+    from codex_review.response import _require
+
+    root = os.path.realpath(job_dir)
+    candidate = path if os.path.isabs(path) else os.path.join(root, path)
+    lexical = os.path.abspath(candidate)
+    resolved = os.path.realpath(candidate)
+    staging = os.path.join(root, "staging")
+    _require(".." not in path.split(os.sep) and
+             os.path.commonpath((lexical, staging)) == staging and
+             os.path.commonpath((resolved, staging)) == staging,
+             "payload-channel", "payload must resolve under this job's staging directory",
+             field=field, expected="staging/<payload>.json", path=path)
+    return resolved

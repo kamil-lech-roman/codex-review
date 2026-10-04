@@ -1,0 +1,58 @@
+{
+  "kind": "derived aggregate of historical measurements, not a new run",
+  "source": {
+    "source_file": "phase-1b-usage-evidence-2026-09-18.json",
+    "source_sha256": "2d8094f52cd1a597755633d22964e9c585f931e049e540ad495535314986a741"
+  },
+  "observed_on": "2026-09-18",
+  "model": "gpt-6-astra",
+  "selection": "One matched set of three cold capture groups at xhigh and max; not a repeated experiment.",
+  "totals": {
+    "xhigh": {
+      "capture_before_after_bytes": 309500,
+      "input_tokens": 4129023,
+      "cached_input_tokens": 3725312,
+      "output_tokens": 25536,
+      "reasoning_output_tokens": 12814,
+      "reported_findings": 0,
+      "reviewer_seconds": 1236.435
+    },
+    "max": {
+      "capture_before_after_bytes": 309500,
+      "input_tokens": 4133888,
+      "cached_input_tokens": 3783680,
+      "output_tokens": 35446,
+      "reasoning_output_tokens": 20945,
+      "reported_findings": 3,
+      "reviewer_seconds": 1197.276
+    }
+  },
+  "pair_checks": [
+    {
+      "target_sha": true,
+      "prompt_sha256_normalised": true,
+      "effective_policy_hash": true,
+      "driver_hash": true,
+      "model": true
+    },
+    {
+      "target_sha": true,
+      "prompt_sha256_normalised": true,
+      "effective_policy_hash": true,
+      "driver_hash": true,
+      "model": true
+    },
+    {
+      "target_sha": true,
+      "prompt_sha256_normalised": true,
+      "effective_policy_hash": true,
+      "driver_hash": true,
+      "model": true
+    }
+  ],
+  "limits": [
+    "Token counts are provider-reported totals. Cached and output token composition differs; near-equal input totals do not establish equal monetary cost.",
+    "Reviewer seconds are sums of the three recorded call durations, not an independent measure of whole-workflow wall time.",
+    "Both arms are cold and effort differs; this pair does not separate freshness, effort and run-to-run variability."
+  ]
+}

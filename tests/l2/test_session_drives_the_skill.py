@@ -5,7 +5,7 @@ session, given only the skill, reaches them at all. Assertions are contracts: th
 the **driver itself** reports, an artifact present, an envelope recorded. Never exact
 content.
 
-These prompts invoke the skill by name so the test explicitly selects this workflow.
+The prompts explicitly invoke `/codex-review` to exercise the skill boundary.
 
 Each cell is paired with negative controls at the foot of this file: a clean stub that
 must make the cell **pass**, and one stub per assertion that breaks exactly that
@@ -21,11 +21,13 @@ import subprocess
 
 import pytest
 
+from codex_review import jobs
+
 SKILL_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def jobs_under(state):
-    return [p for p in state.iterdir() if p.is_dir() and not p.name.startswith(".")]
+    return [p for p in state.iterdir() if jobs.resolve(str(state), p.name) is not None]
 
 
 def driver_status(state, job_id):
@@ -105,6 +107,8 @@ def should_refuse_to_work_around_a_refusal(session, tmp_path):
 
 def _stub(state_dir, behaviour, returncode=0):
     state_dir.mkdir(exist_ok=True)
+    for name in ('blobs', 'qualifications', 'ownership', '.staging'):
+        (state_dir / name).mkdir()
 
     def run(prompt, timeout=600):
         behaviour(state_dir)

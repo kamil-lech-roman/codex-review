@@ -1,0 +1,106 @@
+{
+  "kind": "selected historical diagnostic output; executable locator replaced, not a new run",
+  "source": {
+    "source_file": "claude-auth-qualification-2026-09-22/codex-invalid-key-request.json",
+    "source_sha256": "326f4b60fa0941f35b9f9389dd740ae3058b923fc0f37e8558f2e8e99558d317"
+  },
+  "locator_substitution": "Historical absolute Claude executable replaced by <claude>; all other selected fields unchanged.",
+  "observations": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "binary_sha256": "06a96d5423f83770f120859f1c58e60d7252cc4c122aa13043b7e7cd716bc76a",
+    "parent_claude_variable_names": [],
+    "child_environment_names": [
+      "HOME",
+      "LANG",
+      "LC_ALL",
+      "LC_CTYPE",
+      "PATH",
+      "TMPDIR",
+      "USER"
+    ],
+    "command": [
+      "<claude>",
+      "--safe-mode",
+      "--restricted",
+      "--setting-sources",
+      "",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}",
+      "--settings",
+      "{}",
+      "auth",
+      "status",
+      "--json"
+    ],
+    "observations": [
+      {
+        "synthetic_api_key_present": false,
+        "exit_code": 0,
+        "status": {
+          "loggedIn": true,
+          "authMethod": "claude.ai",
+          "apiProvider": "firstParty",
+          "subscriptionType": "pro"
+        },
+        "stderr_present": false
+      },
+      {
+        "synthetic_api_key_present": true,
+        "exit_code": 0,
+        "status": {
+          "loggedIn": true,
+          "authMethod": "claude.ai",
+          "apiProvider": "firstParty",
+          "subscriptionType": null,
+          "apiKeySource": "ANTHROPIC_API_KEY"
+        },
+        "stderr_present": false
+      }
+    ],
+    "request_observation": {
+      "command": [
+        "<claude>",
+        "--safe-mode",
+        "--restricted",
+        "--setting-sources",
+        "",
+        "--strict-mcp-config",
+        "--mcp-config",
+        "{\"mcpServers\":{}}",
+        "--settings",
+        "{}",
+        "--print",
+        "--model",
+        "haiku",
+        "--effort",
+        "low",
+        "--tools",
+        "",
+        "--permission-mode",
+        "dontAsk",
+        "--permission-prompts",
+        "none",
+        "--no-session-persistence",
+        "--output-format",
+        "json",
+        "--system-prompt",
+        "Reply only OK."
+      ],
+      "synthetic_api_key_present": true,
+      "exit_code": 1,
+      "result": {
+        "type": "result",
+        "subtype": "success",
+        "is_error": true,
+        "result": "Invalid API key \u00b7 Fix external API key",
+        "terminal_reason": "api_error",
+        "total_cost_usd": 0,
+        "num_turns": 1,
+        "modelUsage": {}
+      },
+      "stderr_present": false
+    },
+    "scope": "one synthetic-key request; no full adapter or billing qualification"
+  }
+}

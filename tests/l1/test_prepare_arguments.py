@@ -9,7 +9,7 @@ def should_refuse_prepare_with_no_target(review):
     when the driver runs
     then it exits 2 with null identity, because no job was created
     """
-    result = review("prepare")
+    result = review("prepare", "--no-verify", "--reason", "offline fixture does not require verification")
 
     assert result.exit_code == 2
     assert result.envelope["verb"] == "prepare"
@@ -24,7 +24,7 @@ def should_refuse_a_plan_target_whose_path_is_missing(review, tmp_path):
     when the driver runs
     then it exits 3 — target resolution refused — with null identity
     """
-    result = review("prepare", "plan", str(tmp_path / "absent.md"))
+    result = review("prepare", "plan", str(tmp_path / "absent.md"), "--no-verify", "--reason", "offline fixture does not require verification")
 
     assert result.exit_code == 3
     assert result.envelope["verb"] == "prepare"
@@ -38,7 +38,7 @@ def should_refuse_a_plan_target_with_no_path(review):
     when the driver runs
     then it exits 2, an argument error rather than a resolution refusal
     """
-    result = review("prepare", "plan")
+    result = review("prepare", "plan", "--no-verify", "--reason", "offline fixture does not require verification")
 
     assert result.exit_code == 2
 

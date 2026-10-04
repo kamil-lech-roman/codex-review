@@ -14,7 +14,7 @@ def resolve(root, argument):
     None — reserved names, `.staging/`, and any directory another tool keeps in the root:
     "inside the state root" alone would accept all of them.
     """
-    if not argument:
+    if not isinstance(argument, str) or not argument or '..' in argument.split(os.sep):
         return None
     root = os.path.abspath(root)
     if os.path.isabs(argument):
@@ -29,7 +29,7 @@ def resolve(root, argument):
         job_dir = os.path.join(root, name)
     if not state.is_job_id(name):
         return None
-    if not os.path.isdir(job_dir):
+    if os.path.islink(job_dir) or not os.path.isdir(job_dir):
         return None
     return job_dir
 

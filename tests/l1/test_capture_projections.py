@@ -25,7 +25,7 @@ def should_capture_staged_and_worktree_as_separate_projections(review, make_repo
     git(repo, "add", "f.py")
     (repo / "f.py").write_text("def f():\n    return 2\n")
 
-    result = review("prepare", "code", "--uncommitted", cwd=repo)
+    result = review("prepare", "code", "--uncommitted", "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     job_dir = Path(result.envelope["job_dir"])
@@ -91,16 +91,16 @@ def should_reject_a_copy_that_does_not_match_the_confirming_sample(tmp_path):
     assert not projections.confirm_correspondence(str(root), entries, identity, copied)
 
 
-def should_close_a_job_whose_plan_was_deleted_after_review(
+def should_invalidate_a_job_whose_plan_was_deleted_before_review(
     review, plan_file_factory, outside_any_repo, codex_reply
 ):
     """
     given a plan deleted after capture
-    when the reviewer answers
-    then the frozen review is still recorded, because the bytes were frozen
+    when run checks applicability
+    then it refuses before review, retaining the frozen capture
     """
     plan = plan_file_factory("# a plan\n")
-    prepared = review("prepare", "plan", str(plan), cwd=outside_any_repo)
+    prepared = review("prepare", "plan", str(plan), "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
     job_id = prepared.envelope["job_id"]
     job_dir = Path(prepared.envelope["job_dir"])
     plan.unlink()
@@ -109,8 +109,9 @@ def should_close_a_job_whose_plan_was_deleted_after_review(
 
     result = review("run", job_id, fake={"CODEX_FAKE_RESPONSE": codex_reply.path})
 
-    assert result.exit_code == 0, result
-    assert (job_dir / "report.json").is_file()
+    assert result.exit_code == 4, result
+    assert not (job_dir / "report.json").exists()
+    assert (job_dir / "artifacts" / "A0001" / "after").read_text() == "# a plan\n"
 
 
 def should_capture_a_rename_destination_as_an_addition(review, make_repo):
@@ -125,7 +126,7 @@ def should_capture_a_rename_destination_as_an_addition(review, make_repo):
     git(repo, "-c", "user.email=t@example.com", "-c", "user.name=Test",
         "commit", "-qm", "rename")
 
-    result = review("prepare", "code", "--base", base, cwd=repo)
+    result = review("prepare", "code", "--base", base, "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     by_path = {a["path"]: a for a in target_of(result)["artifacts_detail"]}

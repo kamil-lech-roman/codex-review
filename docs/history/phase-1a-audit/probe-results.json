@@ -1,0 +1,222 @@
+{
+  "accept-delta": {
+    "driver_version": "0.1.0",
+    "error": {
+      "category": "milestone",
+      "code": "verb-not-built",
+      "details": {
+        "verb": "accept-delta"
+      },
+      "message": "this verb is not built yet"
+    },
+    "exit": 2,
+    "job_dir": null,
+    "job_id": null,
+    "schema_version": 1,
+    "verb": "accept-delta"
+  },
+  "break-lease": {
+    "driver_version": "0.1.0",
+    "error": {
+      "category": "milestone",
+      "code": "verb-not-built",
+      "details": {
+        "verb": "break-lease"
+      },
+      "message": "this verb is not built yet"
+    },
+    "exit": 2,
+    "job_dir": null,
+    "job_id": null,
+    "schema_version": 1,
+    "verb": "break-lease"
+  },
+  "malformed_semantic_response": {
+    "driver_version": "0.1.0",
+    "exit": 0,
+    "job_dir": "/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/review-audit-abrao9uc/state/a16d4b2db69813c1",
+    "job_id": "a16d4b2db69813c1",
+    "payload": {
+      "counts": {
+        "introduced": 1,
+        "pre_existing": 0
+      },
+      "findings": [
+        {
+          "artifact": "A0001",
+          "claim": "",
+          "classification": "introduced",
+          "evidence": "",
+          "failure_scenario": "",
+          "id": "F-1",
+          "severity": "major",
+          "status": "withdrawn",
+          "suggested_fix": ""
+        }
+      ],
+      "report_path": "/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/review-audit-abrao9uc/state/a16d4b2db69813c1/report.json",
+      "report_sha256": "30a7456749b5aee3b9afcab68904fe49e00b731a907b7da0c394f3a3754e8317",
+      "run_metadata": {
+        "codex_path": "/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/review-audit-abrao9uc/codex",
+        "codex_version": "audit-fake",
+        "driver_hash": "3b5c9801c6bf74746cfc249b5cab4c3aa91748800c23edacaf5c4a43536171fa",
+        "driver_version": "0.1.0",
+        "effective_policy_hash": "aa149a3e362abeafbcf22b8640fcb1e7e92da87f6d4572788d027d382c5daee5",
+        "effort": "xhigh",
+        "elapsed_seconds": 0.027,
+        "model": "gpt-6-astra",
+        "prompt_sha256": "15f1b7e3e25c47751c0358d6796d8d0af05a88fd05bbf1870810c779fedaae37",
+        "schema_sha256": "6f704286f701dc88ca9a6889e2513c80aa8cc587d7e3393ac7d2f1efff90117b",
+        "synthesized_policy_sha256": "23dfb4e12615ab884f4f14a942a0a5f91cf94686b81d11b83cd6b925b73d8ede",
+        "target_bytes": 16
+      },
+      "verdict": "changes-required"
+    },
+    "schema_version": 1,
+    "verb": "run"
+  },
+  "missing_verify_option": {
+    "driver_version": "0.1.0",
+    "exit": 0,
+    "job_dir": "/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/review-audit-abrao9uc/state/f1d8cb8ed8b69973",
+    "job_id": "f1d8cb8ed8b69973",
+    "payload": {
+      "target": {
+        "artifact_count": 1,
+        "bytes": 7,
+        "mode": "plan",
+        "resolved_path": "/private/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/review-audit-abrao9uc/without-verify.md",
+        "target_sha": "6d187e3dea580b85179225d1c04ff8f493a3e623a849e2212daf11f909c102ca"
+      }
+    },
+    "schema_version": 1,
+    "verb": "prepare"
+  },
+  "record_probes_after_drift_from_external_payload": {
+    "driver_version": "0.1.0",
+    "exit": 0,
+    "job_dir": "/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/review-audit-abrao9uc/state/2652b4817baa0a84",
+    "job_id": "2652b4817baa0a84",
+    "payload": {
+      "counts": {
+        "accepted": 0,
+        "inconclusive": 0,
+        "rejected": 0
+      },
+      "probe_completion": "complete",
+      "probes_sha256": "10680115a1e46086ca727d4aca05f24be12065d5fe9335b932512a5276b2eaa3"
+    },
+    "schema_version": 1,
+    "verb": "record-probes"
+  },
+  "run_after_target_drift": {
+    "driver_version": "0.1.0",
+    "exit": 0,
+    "job_dir": "/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/review-audit-abrao9uc/state/2652b4817baa0a84",
+    "job_id": "2652b4817baa0a84",
+    "payload": {
+      "counts": {
+        "introduced": 0,
+        "pre_existing": 0
+      },
+      "findings": [],
+      "report_path": "/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/review-audit-abrao9uc/state/2652b4817baa0a84/report.json",
+      "report_sha256": "d507020e7f94fbe79eb68183c77821acf308f424a0b54643a298dd3e65902ba5",
+      "run_metadata": {
+        "codex_path": "/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/review-audit-abrao9uc/codex",
+        "codex_version": "audit-fake",
+        "driver_hash": "3b5c9801c6bf74746cfc249b5cab4c3aa91748800c23edacaf5c4a43536171fa",
+        "driver_version": "0.1.0",
+        "effective_policy_hash": "aa149a3e362abeafbcf22b8640fcb1e7e92da87f6d4572788d027d382c5daee5",
+        "effort": "xhigh",
+        "elapsed_seconds": 0.288,
+        "model": "gpt-6-astra",
+        "prompt_sha256": "1a1b2b7496cd67e77f6f2b78ce8c3c96c17eb2ba77292479d64d356929ccb9f4",
+        "schema_sha256": "6f704286f701dc88ca9a6889e2513c80aa8cc587d7e3393ac7d2f1efff90117b",
+        "synthesized_policy_sha256": "23dfb4e12615ab884f4f14a942a0a5f91cf94686b81d11b83cd6b925b73d8ede",
+        "target_bytes": 16
+      },
+      "verdict": "approve"
+    },
+    "schema_version": 1,
+    "verb": "run"
+  },
+  "state_inside_repository": {
+    "driver_version": "0.1.0",
+    "exit": 0,
+    "job_dir": "/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/review-audit-abrao9uc/repo/state/d3940a905a4415a2",
+    "job_id": "d3940a905a4415a2",
+    "payload": {
+      "target": {
+        "artifact_count": 1,
+        "bytes": 13,
+        "mode": "code",
+        "resolved_path": "/private/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/review-audit-abrao9uc/repo",
+        "target_sha": "80070bdbeb3408b3caa4aea0a67cbbbfb01ff642591189286f611e140e6b1d0e"
+      }
+    },
+    "schema_version": 1,
+    "verb": "prepare"
+  },
+  "status_after_drift": {
+    "driver_version": "0.1.0",
+    "exit": 0,
+    "job_dir": "/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/review-audit-abrao9uc/state/2652b4817baa0a84",
+    "job_id": "2652b4817baa0a84",
+    "payload": {
+      "artifacts": [
+        "AGENTS.md",
+        "artifacts",
+        "logs",
+        "probes.json",
+        "prompt.txt",
+        "report.json",
+        "response.json",
+        "staging",
+        "target.json"
+      ],
+      "next_verb": "record-apply",
+      "resumable": true,
+      "stage": "probed",
+      "violations": []
+    },
+    "schema_version": 1,
+    "verb": "status"
+  },
+  "two_jobs_accept_same_plan_without_lease": [
+    {
+      "driver_version": "0.1.0",
+      "exit": 0,
+      "job_dir": "/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/review-audit-abrao9uc/state/884598709fbdc1a7",
+      "job_id": "884598709fbdc1a7",
+      "payload": {
+        "counts": {
+          "accepted": 1,
+          "inconclusive": 0,
+          "rejected": 0
+        },
+        "probe_completion": "complete",
+        "probes_sha256": "1da70ce17c3d4ce0e9755a33362c6cdf20ab692ac91f72ae96520bd7408418fe"
+      },
+      "schema_version": 1,
+      "verb": "record-probes"
+    },
+    {
+      "driver_version": "0.1.0",
+      "exit": 0,
+      "job_dir": "/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/review-audit-abrao9uc/state/53f44d7277891dee",
+      "job_id": "53f44d7277891dee",
+      "payload": {
+        "counts": {
+          "accepted": 1,
+          "inconclusive": 0,
+          "rejected": 0
+        },
+        "probe_completion": "complete",
+        "probes_sha256": "5d5c36e24d12a8d64710fdc6722daecb457a74af98dfbc357025e0b55b364cc9"
+      },
+      "schema_version": 1,
+      "verb": "record-probes"
+    }
+  ]
+}
