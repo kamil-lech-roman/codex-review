@@ -296,6 +296,12 @@ the evidence a single `approve` never was.
 "You agree with" is load-bearing. A finding checked against the code and refuted is not a defect,
 and must not block the loop; record the refutation and move on. See **Reporting back**.
 
+Read that definition with [the stopping rule](#when-the-loop-is-not-worth-continuing): wording
+that states only intent, and coverage of behaviour already covered, are an unbounded supply of
+things to agree with, so on a large instrument "nothing you agree with" can describe a state no
+amount of fixing reaches. Prose that asserts a number, a behaviour or a contract is not in that
+class — it is a correctness claim and it blocks the loop like any other.
+
 **Cost trial — Kamil's decision, 2026-10-01:** stop calling Codex on a piece of work after
 **two consecutive Codex rounds return `approve`**. Count the verdict, even when an approval
 includes an unaccepted finding; a non-approval or failed round breaks the streak. Track it across
@@ -326,6 +332,87 @@ one loop only: a small sample, not a general recall guarantee.
 
 Run at `xhigh`. `max` costs roughly twice as much for the same defects, and its best run was its
 cheapest — more reasoning did not buy more findings. `experiments/effort-ab/` has the numbers.
+
+## When the loop is not worth continuing
+
+Convergence is one exit. The other is that the loop has stopped buying correctness — and the
+author is the last to notice, because every round still produces work that feels like progress.
+
+One loop's numbers, as an illustration and not a basis for the thresholds below — a single
+sample, the same caveat the approval-streak trial carries (`quant-factory`, exit-policy branch,
+2026-10-05, 23 rounds, 48 commits): **34 commits landed in the oracle and the identity digest —
+the instruments built to verify the change — and 14 elsewhere, of which 3 in the exit interface
+the loop was convened to review.** The deliverable drew no upheld finding in any round and was
+separately measured behaviour-preserving against the code it replaced. Across rounds 14–21 most
+upheld findings were introduced by the previous round's own fix, and one comment was corrected,
+wrongly, three rounds running.
+
+**Recommend stopping, and hand the decision back, when at the end of a round both hold:**
+
+1. **The deliverable is verified.** The change under review has drawn no *upheld* finding for
+   three rounds, and whatever gate, oracle or reconciliation the work has runs clean on its tip.
+   Fix what "the deliverable" means at the **start** of the loop — the paths the task named — or
+   the boundary can be redrawn at stopping time to exclude whatever is still failing.
+2. **Nothing outstanding can produce a wrong result.** Applied with these three readings, or it
+   is not decidable and becomes a licence:
+   * **False assurance** means an **existing** check — a test, a gate, a docstring asserting a
+     number or a contract — that would still pass with the defect present. A *missing* check is
+     thinner coverage, not false assurance.
+   * **Latent** means the reviewer can name the input class or the call site that flips it. "No
+     test holds this line" is true of most lines and does not qualify.
+   * **Prose does not get a pass when it asserts a number, a behaviour or a contract.** That is
+     a correctness claim in a comment, and this document already treats a docstring stating a
+     measurement as one.
+
+   What genuinely does not qualify: naming, dead code, wording that states only intent, and
+   depth of coverage over behaviour already covered.
+
+That is the whole stopping test, and it is about the *state of the code*, never about where a
+defect came from. **An error is an error whatever its source.** A defect you introduced while
+fixing the previous round's defect is still a defect; a defect in the harness rather than in the
+reviewed change is still a defect, and more so when it can produce a wrong result; a statement
+you have corrected twice and got wrong both times must be corrected a third time. None of that
+is a reason to stop — Kamil, 2026-10-05, rejecting an earlier version of this rule that made all
+three a stopping condition.
+
+**Escalate instead of grinding.** Two counts say the loop has outrun *your* ability to close it,
+not that it should end:
+
+* **Repeat correction** — one statement or guard has been corrected three times or more, counted
+  over the whole loop, not a window.
+* **Self-inflicted majority** — over the last three rounds, more than half the upheld findings
+  were introduced by the immediately preceding fix round. Computable only if each round's record
+  names the commit that introduced each finding, so record that: "introduced by the range or
+  pre-existing" is too coarse to count with.
+
+On either, hand that one item to a **fresh subagent with a stronger model**: give it every
+previous attempt and why each was wrong, the measurements that refuted them, and the authority to
+rewrite the whole function rather than patch it again. Already on the strongest model: use a
+fresh subagent of the same model, with the same history and the same authority — the win is the
+empty context and the mandate to restructure, not the parameter count. It is a **fixer, not a
+judge**: its output still goes through a fresh round, so it never becomes the review note, which
+must stay free of fix history.
+
+Keep the loop open while it runs, but do **not advance** — no round on a tip you know still
+contains the item. One escalation per item; if it comes back unfixed, the item goes to the user
+with its severity under "Report, do not decide".
+
+**Report, do not decide.** Give the user every finding you are leaving unfixed with its severity,
+what the work's own gates measured, and — if most fixes have been landing in the harness rather
+than the reviewed change — that count, so they can judge whether the harness is still worth
+maintaining. Say plainly that you are recommending a stop rather than declaring convergence: the
+two are different claims and only one is about the code being right. Stopping is theirs to
+confirm.
+
+**Cost decides how a round is run — the base, the effort, the reviewer — never whether the loop
+continues.** This rule ends a loop with no correctness left to buy. It never ends one that still
+has some, however long it has taken and however self-inflicted.
+
+**Two habits that feed the self-inflicted count**, worth breaking before invoking this rule: a
+docstring that states a *measurement* rather than an intent is a claim nobody checks, so it goes
+in the commit message or a test name instead; and a test whose input makes it pass by accident —
+the planted value where the printer happens to show it, the single-element column that cannot
+tell `any` from `all` — records coverage it does not have, and the next round finds it.
 
 ## Handing off to a new session
 
