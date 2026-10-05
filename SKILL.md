@@ -298,9 +298,11 @@ and must not block the loop; record the refutation and move on. See **Reporting 
 
 Read that definition with [the stopping rule](#when-the-loop-is-not-worth-continuing): wording
 that states only intent, and coverage of behaviour already covered, are an unbounded supply of
-things to agree with, so on a large instrument "nothing you agree with" can describe a state no
-amount of fixing reaches. Prose that asserts a number, a behaviour or a contract is not in that
-class — it is a correctness claim and it blocks the loop like any other.
+things to agree with, so "nothing you agree with" can describe a state no amount of fixing
+reaches. That is not a licence to discount findings by where they live — a defect in the harness
+counts more than one in the change, not less, when it can produce a wrong result. Prose that
+asserts a number, a behaviour or a contract is a correctness claim and blocks the loop like any
+other.
 
 **Cost trial — Kamil's decision, 2026-10-01:** stop calling Codex on a piece of work after
 **two consecutive Codex rounds return `approve`**. Count the verdict, even when an approval
@@ -342,10 +344,11 @@ One loop's numbers, as an illustration and not a basis for the thresholds below 
 sample, the same caveat the approval-streak trial carries (`quant-factory`, exit-policy branch,
 2026-10-05, 23 rounds, 48 commits): **34 commits landed in the oracle and the identity digest —
 the instruments built to verify the change — and 14 elsewhere, of which 3 in the exit interface
-the loop was convened to review.** The deliverable drew no upheld finding in any round and was
-separately measured behaviour-preserving against the code it replaced. Across rounds 14–21 most
-upheld findings were introduced by the previous round's own fix, and one comment was corrected,
-wrongly, three rounds running.
+the loop was convened to review.** The deliverable drew no upheld finding in any round. One comment was
+corrected, wrongly, three rounds running — a whole-loop count, which the repeat-correction trigger
+can use. The self-inflicted share across those rounds was *not* recorded at the time and so cannot
+be stated here, which is the reason the trigger below requires `introduced_by` per finding rather
+than leaving it to recollection.
 
 **Recommend stopping, and hand the decision back, when at the end of a round both hold:**
 
@@ -355,17 +358,20 @@ wrongly, three rounds running.
    the boundary can be redrawn at stopping time to exclude whatever is still failing.
 2. **Nothing outstanding can produce a wrong result.** Applied with these three readings, or it
    is not decidable and becomes a licence:
-   * **False assurance** means an **existing** check — a test, a gate, a docstring asserting a
-     number or a contract — that would still pass with the defect present. A *missing* check is
-     thinner coverage, not false assurance.
+   * **False assurance** means an **existing** check — a test or a gate — that would still pass
+     with *the defect it claims to exclude* present in the code under test. The qualification is
+     load-bearing: without it "the defect" can be read as the weak check itself and the criterion
+     is circular. A *missing* check is thinner coverage, not false assurance.
    * **Latent** means the reviewer can name the input class or the call site that flips it. "No
      test holds this line" is true of most lines and does not qualify.
-   * **Prose does not get a pass when it asserts a number, a behaviour or a contract.** That is
-     a correctness claim in a comment, and this document already treats a docstring stating a
-     measurement as one.
+   * **Prose does not get a pass when it asserts a number, a behaviour or a contract.** The test:
+     prose is a correctness claim iff running the code or reading the library could show it false.
+     "Validates offsets" cannot; "rejects a negative offset" can. This document already treats a
+     docstring stating a measurement as a claim.
 
    What genuinely does not qualify: naming, dead code, wording that states only intent, and
-   depth of coverage over behaviour already covered.
+   depth of coverage over behaviour **already covered by a check that fails when that behaviour
+   breaks**. A missing boundary case is not "depth" — reading 2 settles whether it is a defect.
 
 That is the whole stopping test, and it is about the *state of the code*, never about where a
 defect came from. **An error is an error whatever its source.** A defect you introduced while
@@ -381,8 +387,11 @@ not that it should end:
 * **Repeat correction** — one statement or guard has been corrected three times or more, counted
   over the whole loop, not a window.
 * **Self-inflicted majority** — over the last three rounds, more than half the upheld findings
-  were introduced by the immediately preceding fix round. Computable only if each round's record
-  names the commit that introduced each finding, so record that: "introduced by the range or
+  were introduced by the immediately preceding fix round, out of **at least three** upheld
+  findings in that window. The floor matters: late in a loop one self-inflicted finding in three
+  rounds is a majority of one, and escalating a one-off wastes the escalation. Computable only if
+  each round's record names the commit that introduced each finding — `introduced_by` in the
+  [round record](references/claude-only-rounds.md), since "introduced by the range or
   pre-existing" is too coarse to count with.
 
 On either, hand that one item to a **fresh subagent with a stronger model**: give it every

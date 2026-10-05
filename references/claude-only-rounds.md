@@ -19,8 +19,11 @@ change the driver's lifecycle and evidence contracts for a trial that does not n
    debate or expected answer. Use an isolated checkout for probes that change files.
    Save its unedited report and the commands, outputs and exit codes of its checks.
 4. Check each observation against evidence. Record source (`claude`), classification
-   (`introduced` or `pre-existing`), disposition (`accepted`, `rejected` or `inconclusive`),
-   rationale and evidence paths separately. With no Codex call, `codex_findings` is
+   (`introduced` or `pre-existing`), `introduced_by` — the commit that introduced it, or
+   `"pre-existing"` — disposition (`accepted`, `rejected` or `inconclusive`), rationale and
+   evidence paths separately. `introduced_by` is what the loop's self-inflicted-majority
+   trigger counts; the coarse classification cannot distinguish a defect this loop's own
+   previous fix created from one the range inherited. With no Codex call, `codex_findings` is
    `null`, not an empty result attributed to Codex. After accepted fixes, save the diff
    or commit ids and verification commands, results and exit codes. Keep both the
    reviewed snapshot and the post-fix identity.
@@ -45,7 +48,9 @@ Minimum round record (fill in actual values; `null` means unknown or not applica
   "status": "complete",
   "report": {"path": "report.txt", "sha256": "..."},
   "codex_findings": null,
-  "observations": [],
+  "observations": [{"id": "...", "classification": "introduced",
+                    "introduced_by": "full commit id or pre-existing",
+                    "disposition": "accepted", "rationale": "...", "evidence": ["..."]}],
   "fixes": [],
   "verification": [],
   "completion_assessment": "..."
