@@ -64,7 +64,7 @@ def should_keep_streamed_identity_and_late_output_when_the_driver_dies(tmp_path)
         assert not (attempt / 'completion.json').exists()
         stop.touch()
         until(lambda: 'turn.completed' in (attempt / 'stdout.jsonl').read_text())
-        until(lambda: transport.process_state(launch) in ('absent', 'reused'))
+        until(lambda: transport.process_state(launch) in ('absent', 'reused', 'exited'))
         assert transport._thread(str(attempt / 'stdout.jsonl')) == thread
         assert not (attempt / 'completion.json').exists()  # output alone is not a driver completion receipt
     finally:
