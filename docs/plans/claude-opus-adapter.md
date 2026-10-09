@@ -1,7 +1,8 @@
-# Shared review core with a Claude/Opus adapter — revision 6
+# Shared review core with a Claude/Opus adapter — revision 7
 
-Revised from revision 5 (`47dfd06`) on 2026-09-23 to remove explicit reviewer CLI
-version collection and binary identity requirements under the user's revised D10.
+Revised on 2026-10-09 to specify history-policy defaults and ambient-instruction
+qualification. The user's D10 still excludes reviewer CLI version collection and
+binary identity requirements.
 This is the canonical plan for the adapter work; reviewer adapter implementation
 remains deferred.
 The running workflow remains defined by [SKILL.md](../../SKILL.md).
@@ -99,11 +100,14 @@ The shared core owns this policy, independent of the chosen reviewer.
 
 | Policy | Required behavior |
 | --- | --- |
-| `allowed` | Default for the requested Claude single-pass workflow. Give the reviewer repository access and supported read-only Git inspection. Do not force history consumption or supply prior-round narratives. |
+| `allowed` | Default for new Codex and Claude single-pass jobs when the option is omitted. For repository-backed jobs, give the reviewer repository access and supported read-only Git inspection. Do not force history consumption or supply prior-round narratives. |
 | `denied` | Files and captured changes remain available, while Git metadata and declared out-of-scope review-history artifacts are inaccessible through every enabled tool. For Claude, omit Bash. Refuse preparation if the driver cannot enforce this policy. |
 
-Legacy Codex jobs keep their original access behavior; do not rewrite records or
-claim retroactive confinement. The unchanged Codex driver does not gain a history
+Persist `history_access: "allowed"` for new jobs using that default. For legacy
+records without the field, status and projections display `unrecorded`; this is
+a display value, not a selectable policy or a reason to rewrite the record.
+Legacy Codex jobs keep their original access behavior without retroactive
+confinement. The unchanged Codex driver does not gain a history
 barrier through a metadata field: until demonstrated support exists, an explicit
 `denied` request must refuse before a model call.
 
@@ -195,14 +199,29 @@ rollback, attribute the change to the reviewer, or justify overwriting concurren
 Unchanged hashes are an integrity observation, not proof of sandbox activation;
 write-and-restore and network activity require prevention, not a final checksum.
 
-Deliver synthesized policy explicitly with `--append-system-prompt-file` because
-safe mode disables automatic discovery. Preserve the 32 KiB cap and define
+Deliver synthesized policy explicitly with `--append-system-prompt-file` and
+require automatic instruction discovery to be disabled under the qualified launch
+controls. Preserve the 32 KiB cap and define
 `synthesized_policy_sha256` over the exact delivered bytes. Driver-owned ambient
-provenance records disabled discovery honestly; do not hash `~/.codex/AGENTS.md` as
-Claude policy. Record managed-policy limitations rather than asserting complete
+provenance records disabled discovery only after the qualification below; do not
+hash `~/.codex/AGENTS.md` as Claude policy. Record managed-policy limitations rather
+than asserting complete
 ambient isolation. Authentication selection is governed by the contract below,
 not by whichever credential the parent environment happens to expose.
 Do not use `--bare`, which would break subscription authentication.
+
+### Ambient instruction qualification
+
+Use disposable homes and repositories to test each discovery source separately:
+`$HOME/.claude/CLAUDE.md`, uncommitted `CLAUDE.local.md`, and `.claude/rules/*.md`.
+Plant a distinct harmless directive in each fixture. A discovery-enabled positive
+control must demonstrate that the fixture and observation can detect its loading;
+repeat with the exact proposed launch controls and explicit synthesized policy.
+Retain configuration, raw events and any available instruction-loading evidence.
+Absence of a marker in the answer alone does not establish disabled discovery.
+If the observations cannot distinguish disabled discovery from an ignored directive,
+qualification remains unresolved and the launch configuration stays unsupported.
+Never place these fixtures in the user's real home or repository.
 
 ### Child environment
 
@@ -369,6 +388,7 @@ time; use `should_*` names and given/when/then structure.
    sanitized provenance, raw non-secret events, filesystem observations and a hash
    manifest. Include the job-write hole as a disposable negative control, its fix,
    read/history boundaries, command/network denial, and ordinary/linked Git layouts.
+   Include the [ambient instruction controls](#ambient-instruction-qualification).
    Requalify settings handling and authentication under this environment, including
    the [subscription-identity refusal check](#authentication-and-billing-route):
    compare a key-free subscription baseline with the synthetic-key diagnostic,
@@ -383,6 +403,8 @@ time; use `should_*` names and given/when/then structure.
    and partial-stream fixtures. Use only synthetic credentials in those fixtures;
    verify route binding, allowlist exclusion
    of unknown/conflicting parent variables, and secret exclusion.
+   Cover omitted history policy for new Codex jobs, the legacy `unrecorded` display
+   without record mutation, and refusal of unsupported explicit `denied` requests.
 5. Add the sibling skill and installation/discovery coverage. Reconcile CLI help,
    status, projections and provider-neutral public documentation.
 6. After the committed probe gate, run bounded live acceptance using the exact
@@ -390,8 +412,9 @@ time; use `should_*` names and given/when/then structure.
    Preserve command/configuration, logs, expected results and observed
    filesystem state. Live proof must cover both history policies, ordinary and linked
    worktrees, job/repository/Git write denial, command and network denial, exact file
-   reach, Git queries when allowed, policy delivery, subscription-route preflight
-   and structured results. Qualify explicit API mode separately; any live billable
+   reach, Git queries when allowed, policy delivery and qualified ambient discovery
+   isolation, subscription-route preflight and structured results. Qualify explicit
+   API mode separately; any live billable
    API acceptance call requires explicit opt-in.
 7. Exercise a complete host lifecycle through finding probes, apply and verification,
    including `--no-apply`; the reviewer remains unable to perform those host actions.

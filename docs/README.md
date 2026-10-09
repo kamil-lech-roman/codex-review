@@ -4,7 +4,7 @@
   checked job counts, Claude judge attribution and remeasurement for the skill's cost rule.
 - [Claude-only round records](../references/claude-only-rounds.md) — host-managed
   procedure selected by the [loop policy](../SKILL.md#when-the-loop-is-done).
-- [Claude/Opus adapter plan](plans/claude-opus-adapter.md) — revision 6; shared
+- [Claude/Opus adapter plan](plans/claude-opus-adapter.md) — revision 7; shared
   review core, explicit history/authentication policies and an allowlisted Claude
   environment; replacement probe evidence required, implementation deferred.
 - [Curated design evidence](evidence/README.md) — bounded controls and measurements,
