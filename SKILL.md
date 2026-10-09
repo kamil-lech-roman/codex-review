@@ -193,7 +193,10 @@ Write   <job_dir>/staging/apply.json          # results only; a verification blo
 $R record-apply <job> --apply-file <job_dir>/staging/apply.json
 ```
 
-The payload is `{ "report_sha256": "…", "probes_sha256": "…", "results": [ … ] }`.
+The payload is `{ "report_sha256": "…", "probes_sha256": "…", "results": [ … ] }`, with one
+result per accepted finding: `{ "finding_id": "F-N", "result": "applied" }`. `result` is one of
+`applied`, `no-change`, `denied` or `failed`; a `denied` result also needs `denial_kind`
+(`policy` or `interactive`) and `asserted_by`. With nothing accepted, `results` is `[]`.
 
 The driver recomputes what actually changed and reconciles it against what you reported. Say what
 happened, not what you intended: a `denied` or `failed` attempt that still moved bytes is a
