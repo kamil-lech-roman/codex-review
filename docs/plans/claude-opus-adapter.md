@@ -79,7 +79,7 @@ protections, malformed-settings handling and usage-limit envelopes remain unqual
   invalid successful response. Add provider-neutral `reviewer_path`,
   `details.reviewer` and provider-specific log locations.
   Preserve existing Codex codes and non-version `codex_*` metadata for Codex jobs only;
-  apply [D10](phase-1b.md#reviewer-cli-compatibility) after extraction. Historical
+  preserve [D10](phase-1b.md#reviewer-cli-compatibility) through extraction. Historical
   metadata remains readable. Claude gets `claude-*` codes.
   Reconcile public CLI/skill error documentation.
 - The shared `codex-review` skill follows its
@@ -113,7 +113,7 @@ layout, including linked-worktree metadata. Known review archives outside target
 scope must be covered explicitly. Never silently remove a target or normative
 companion to obtain cold eligibility; disclose the conflict instead.
 
-[Phase 1b D03](phase-1b.md#decisions-awaiting-the-user)
+[Phase 1b D03](phase-1b.md#decisions)
 continues to own cold eligibility. Availability of Git is not proof of consumption;
 the historical probe reported consumption of a planted prior-review subject, but
 its missing trace cannot now be checked. Access
@@ -377,8 +377,8 @@ time; use `should_*` names and given/when/then structure.
    must complete before step 6; test-driven implementation may refine the probes,
    but unsupported behavior must not be enabled on the strength of missing traces.
 4. Implement Claude, preparation-time provider/history/authentication routing, normalization,
-   protections and timeout handling. Apply D10 to both adapters: remove the inherited
-   Codex version query and version metadata; add no Claude equivalent. Use fake CLIs
+   protections and timeout handling. Preserve the Codex driver's existing D10 behavior:
+   no version query or version metadata; add no Claude equivalent. Use fake CLIs
    that record argv/stdin/environment and emit realistic success, failure, denial
    and partial-stream fixtures. Use only synthetic credentials in those fixtures;
    verify route binding, allowlist exclusion

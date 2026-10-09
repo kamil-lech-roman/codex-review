@@ -211,8 +211,9 @@ and after a run. CLI path/version/hash are excluded from round equivalence and
 qualification keys. An upgrade alone cannot invalidate qualification, discard a
 review, reset credit or require recapture. Version text already present in raw logs
 may remain there; new metadata omits dedicated CLI version fields. Historical
-records remain readable. Remove the existing Codex version query when implementing
-this contract; this planning revision does not change the running driver.
+records remain readable. The Codex driver already implements this behavior, checked
+by `tests/l1/test_phase1b_run.py::should_launch_resolved_executable_without_querying_its_version`;
+preserve it through extraction and apply it to future adapters.
 
 Keep response validation and the required launch, permission and authentication
 checks. Qualify configured capabilities; investigate observed incompatibility and
