@@ -5,6 +5,10 @@ Claude-only round. This is a host-managed review, not a new driver mode. The cur
 `run` resolves Codex and calls `reviewer.invoke`; introducing a second backend would
 change the driver's lifecycle and evidence contracts for a trial that does not need it.
 
+For an explicitly requested plan review, the [Claude plan PoC](claude-plan-poc.md)
+automates capture and invocation. Its `run.json` is input to the host record below;
+adjudication and loop completion remain host responsibilities.
+
 1. Create a uniquely named round directory in a task-owned evidence location outside
    the captured target, for example `~/.codex-review-judges/<loop-id>/<round-id>/`.
    Never reuse another session's directory or mutate its jobs. Keep the loop's ordered

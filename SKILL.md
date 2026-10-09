@@ -18,6 +18,15 @@ allowed-tools:
 
 # codex-review
 
+## Experimental Claude plan review
+
+When explicitly asked to use Claude for a **plan** review, follow the
+[Claude plan PoC](references/claude-plan-poc.md) and invoke `claude-review.sh`
+beside this skill. It defaults to Fable/high with subscription login and read-only
+file tools. It saves a single report for host adjudication; it does not implement
+the Codex job lifecycle, code reviews or an unattended review loop. Do not switch
+providers to work around a failed Codex job.
+
 ## Automatic code review
 
 Run this skill after each completed batch of significant code changes, before reporting the

@@ -2,6 +2,7 @@
 
 - [Getting started](../README.md) — requirements, installation, usage and tests.
 - [Skill workflow](../SKILL.md) — the canonical review and completion instructions.
+- [Claude plan PoC](../references/claude-plan-poc.md) — runnable single-round launcher.
 - [Claude-only rounds](../references/claude-only-rounds.md) — host-managed records.
 - [Approval-streak trial](../experiments/approval-streak/README.md) — public evidence
   summary, limitations and how to measure your own loop.

@@ -55,6 +55,10 @@ Use codex-review to review the code since origin/main and run the project's test
 Use codex-review to review the plan at docs/plan.md.
 ```
 
+For an explicitly requested Claude **plan** review, the experimental
+[`claude-review.sh` entry point](references/claude-plan-poc.md) defaults to Fable/high.
+It requires a subscription login to Claude and saves a report for host adjudication.
+
 The canonical workflow, options and completion policy are in [SKILL.md](SKILL.md).
 Use `--no-apply` for a review-only run; the normal workflow can edit files after
 the host has verified a finding. Commit authorization stays with the user.
@@ -82,8 +86,9 @@ you are authorized to submit.
 
 The [cost policy](SKILL.md#when-the-loop-is-done) can switch a loop to Claude-only
 rounds. Those rounds are host-managed and have a
-[separate recording procedure](references/claude-only-rounds.md); the driver itself
-always invokes Codex.
+[separate recording procedure](references/claude-only-rounds.md).
+`review.sh run` always invokes Codex. The separate Claude plan PoC does not create
+Codex jobs.
 
 ## Development
 
@@ -92,7 +97,7 @@ uv sync --frozen
 uv run pytest
 ```
 
-The default suite uses a fake Codex executable and does not call a model. Tests
+The default suite uses a fake reviewer executables and does not call a model. Tests
 marked `l2` start a real Claude session and are opt-in with `uv run pytest -m l2`.
 They consume model usage and require an authenticated Claude CLI.
 
