@@ -4,6 +4,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from qualification_fixture import qualify_author
+
 
 def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
@@ -12,6 +14,8 @@ def digest(path):
 def probed_with(review, plan_file_factory, outside_any_repo, codex_reply, *options):
     """Drive a plan job to `probed` with F-1 accepted, leaving the plan untouched."""
     plan = plan_file_factory("# a plan\n")
+    if "--verify" not in options and "--no-verify" not in options:
+        options += ("--no-verify", "--reason", "offline inspection")
     prepared = review("prepare", "plan", str(plan), *options, cwd=outside_any_repo)
     job_id = prepared.envelope["job_id"]
     job_dir = Path(prepared.envelope["job_dir"])
@@ -23,6 +27,7 @@ def probed_with(review, plan_file_factory, outside_any_repo, codex_reply, *optio
     assert review("run", job_id,
                   fake={"CODEX_FAKE_RESPONSE": codex_reply.path}).exit_code == 0
 
+    qualify_author(job_dir, commands=['echo hi\n'])
     (job_dir / "staging").mkdir(parents=True, exist_ok=True)
     (job_dir / "staging" / "probe-F-1.sh").write_text("echo hi\n")
     (job_dir / "probes").mkdir(parents=True, exist_ok=True)

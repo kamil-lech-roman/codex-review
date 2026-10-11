@@ -68,3 +68,21 @@ def publish(root, nonce, build_dir):
     os.rename(build_dir, published)
     _fsync_dir(root)
     return published
+
+
+def atomic_json(path, value):
+    atomic_bytes(path, (json.dumps(value, indent=2, sort_keys=True) + '\n').encode('utf-8'))
+
+
+def atomic_bytes(path, value):
+    temporary = path + "." + new_nonce() + ".tmp"
+    try:
+        with open(temporary, 'xb') as handle:
+            handle.write(value)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+        _fsync_dir(os.path.dirname(path))
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)

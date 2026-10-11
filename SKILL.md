@@ -7,8 +7,8 @@ argument-hint: "(plan <path> | code [--base <ref>|--uncommitted] [--head <commit
   run <job> [--model M] [--effort E] | status [job] |
   seal <job> <path> [--bytes N] | record-probes|record-apply|record-verification <job> --*-file F |
   abandon <job> --reason R [--denied-interactively]
-  ⟨PREPARE = --verify CMD|--no-verify, --no-apply, --repo D|--no-repo, --model M, --effort E,
-  --max-bundle N, --max-artifact N, --note T — accepted by prepare only⟩"
+  ⟨PREPARE = --verify CMD|--no-verify --reason R, --no-apply, --repo D|--no-repo, --model M, --effort E,
+  --max-bundle N, --max-artifact N, --note T, --companions-file F, --dependencies-file F⟩"
 allowed-tools:
   - Bash(/bin/bash ${CLAUDE_SKILL_DIR}/review.sh:*)
   - Read
@@ -68,8 +68,8 @@ $R prepare code [--base <ref> | --uncommitted] [--head <commit>] [PREPARE]
 
 **Pass each option to the verb that consumes it.** `--no-apply`, `--verify`/`--no-verify`,
 `--note`, the capture limits and the target options are frozen into the job here and nowhere
-else; every verb refuses an option it does not consume with exit `2`, `bad-option`, naming the
-option in `error.details.option` and listing what that verb accepts in `error.details.accepted`.
+else; an option outside the verb’s supported argument set refuses with exit `2`,
+`bad-option`, naming the option in `error.details.option` and listing what that verb accepts in `error.details.accepted`.
 The refusal exists because `run <job> --no-apply` was once silently dropped, leaving a job in
 apply mode that its operator believed was review-only.
 
@@ -81,9 +81,20 @@ them. Pass it whenever anything else may commit in the same checkout — another
 user — or prepare from a worktree pinned with `git worktree add --detach <dir> <commit>`, which
 gives the round a HEAD nothing else can move.
 
+New preparations require exactly one verification intent: `--verify CMD` or
+`--no-verify --reason R`; an opt-in loop also accepts `--defer-verify --reason R`.
+Declining is explicit and cannot be changed into later command selection.
+Code capture rejects conflicting `--base`/`--uncommitted`; every verb rejects options it cannot honor.
+
+Before a plan review, reconcile its named governing authorities with the supplied companion list;
+resolve omissions or ambiguity before preparing. Pass `--companions-file F`, a JSON array of
+`{"id": "stable-name", "path": "repo-relative-or-absolute"}` entries; without a repository, use
+absolute paths. Capture binds supplied identities and bytes, not completeness of the list.
+
 **`--note TEXT`** carries orienting context the capture cannot express — which paths are reference
-material rather than the change, what not to spend turns on, what an earlier round settled. It is
-context, not instruction: it cannot change what counts as a finding or how the verdict follows.
+material rather than the change, the current governing decisions and their rationale. For a qualifying cold round, exclude
+prior findings, verdicts and dispute narratives; classify mixed documents passage by passage under
+[D03](docs/plans/phase-1b.md#decisions). The note cannot suppress findings or change the verdict rules.
 Prefer it to narrowing the capture: a note redirects attention, where dropping paths from the
 target removes them from review entirely and the reviewer is never told they existed. What the
 capture holds is what was looked at, and that is the claim the report makes.
@@ -93,7 +104,8 @@ final and cheap: `2` arguments, `3` target resolution, `5` policy, `6` unsupport
 `7` codex unresolvable, `9` preflight.
 
 **Choose the base deliberately — it is the single biggest lever on what a review costs.**
-`--base` should name the commit the last review saw, so the target is the work done since. The
+For one-pass reviews, `--base` should name the commit the last review saw, so the target is
+the work done since. The
 empty tree makes every file an artifact and re-reviews the whole repository; on this repo that
 cost roughly twice as much per round and bought nothing, because every finding across two such
 rounds landed in a file the incremental delta already contained. Breadth is not free: attention
@@ -123,9 +135,8 @@ tell the reviewer it exists. Splitting one delta across N rounds costs more and 
   added to one HTML reader and not its neighbour, a number grammar hardened in one parser and not
   the other, a `Decimal`-context fix applied to a function whose sibling's docstring claimed "the
   same reasoning". All three are the unchanged-side class above, manufactured by the split itself.
-* **Size is not the reason to split.** `--max-artifact` and `--max-bundle` take the cap you need;
-  the defaults are fallbacks, not limits. Raise them to fit the delta and check the largest single
-  file against `--max-artifact` — a test module quietly grows past 64 KiB.
+* **Size is not the reason to split.** There are no default byte caps. Optional `--max-artifact`
+  and `--max-bundle` impose positive explicit limits; check the submitted scope and size before launch.
 
 Reach for a group only when the delta genuinely holds unrelated work — two features that share no
 rule and no reader — and say so in `--note`.
@@ -136,9 +147,10 @@ rule and no reader — and say so in `--note`.
 $R run <job> [--model M] [--effort E]
 ```
 
-`--model` and `--effort` here override the prepared values for this call only: `run_metadata`
+For one-pass jobs, `--model` and `--effort` here override the prepared values for this call only: `run_metadata`
 records what was used, while `target.json` keeps what `prepare` froze. Prefer setting them at
-`prepare`, so the job records its own reviewer.
+`prepare`, so the job records its own reviewer. Loop runs refuse these overrides: their
+model and effort come from the loop policy.
 
 Exit `0` gives `verdict`, `findings[]` and `run_metadata`. Exit `7` means the reviewer never
 answered — **the job stays at `prepared` and you may retry it**. When codex named a usage-limit
@@ -153,15 +165,39 @@ For each finding `F-N`, decide what observation would settle whether the claim i
 mkdir -p "$job_dir/staging" "$job_dir/probes"
 Write   <job_dir>/staging/probe-F-N.sh        # the command, via the Write tool
 $R seal <job> staging/probe-F-N.sh            # → ev_cmd, sealed BEFORE it runs
-rc=0; { ( cd "$exec_dir" && bash "$job_dir/evidence/$ev_cmd/content" ) > "$job_dir/probes/F-N.out" 2>&1; } || rc=$?
-printf '%s\n' "$rc" > "$job_dir/probes/F-N.rc"
+Run     execution.argv in execution.cwd    # host tool; capture probes/F-N.out and F-N.rc as below
 $R seal <job> probes/F-N.out
 $R seal <job> probes/F-N.rc
 ```
 
-`$exec_dir` is `target.json`'s, never the ambient shell's. The `{ ( … ) } || rc=$?` form is
-required, not stylistic: under inherited `errexit` the plain form writes `.out`, never writes
-`.rc`, and exits.
+For every new-job author execution, `seal` returns `execution`. Require `ready: true`;
+otherwise collect the matching [qualification controls](docs/plans/phase-1b.md#state-isolation-and-recovery)
+and reseal. Both runtime controls and the returned command-specific key must qualify;
+generic runtime evidence alone does not qualify a new command. Sealing alone grants no
+execution authority. Control collection uses separate
+staging slots and earns no review credit. Do not invent passing controls or bypass a refusal.
+
+Run the returned argument vector in its recorded cwd through the host's permission flow.
+It executes the sealed copy with fresh `PYTHONPYCACHEPREFIX` and `NUMBA_CACHE_DIR` values.
+Author launches clear the ambient environment and preserve only the explicitly returned
+`inherited_environment` (`PATH`, `HOME`, `TMPDIR`, locale, `TZ`, `VIRTUAL_ENV` when present),
+bound into qualification. Shell startup hooks and exported functions are not inherited.
+Additional runtime settings must be explicit in the sealed command and covered by its controls.
+Use the exact returned values; reseal for each execution, including retries. Commands that
+override or ignore those settings require separate qualification. Preserve both combined
+stdout/stderr and the shell status even when inherited `errexit` is set:
+
+```sh
+rc=0; { ( cd "$execution_cwd" && "${execution_argv[@]}" ) > "$output_path" 2>&1; } || rc=$?
+printf '%s\n' "$rc" > "$rc_path"
+```
+
+Build `execution_argv` as an array from the returned JSON argv, preserving each argument;
+never reconstruct it with `eval` or omit environment arguments. Use its returned cwd. Output/rc slots
+are `probes/F-N.out` / `probes/F-N.rc` for a probe, and `verify.out` / `verify.rc` for
+verification. The command evidence ID binds the retained execution settings; no new
+recording field is needed. Legacy captures without execution metadata retain their original
+sealed-command procedure.
 
 **Execute the sealed copy, never the original.** The sealed artifact *is* what ran.
 
@@ -177,10 +213,19 @@ Write   <job_dir>/staging/probes.json
 $R record-probes <job> --probes-file <job_dir>/staging/probes.json
 ```
 
+All recording payload paths resolve against the job, independently of cwd, and must remain
+under its `staging/` directory. An absolute path inside that directory is also accepted;
+traversal and symlink escapes are refused. `seal` uses job-relative evidence paths.
+
 The payload is `{ "report_sha256": "…", "annotations": [ … ] }`; every recording verb carries
 the digest of each record it consumes, and a stale or missing one is refused. Quote the digest
-the previous verb's envelope reported: `report_sha256` from `run`, `probes_sha256` from
+the previous verb's envelope reported: `report_sha256` from `run` (or current `status` after adjudication), `probes_sha256` from
 `record-probes`, `apply_sha256` from `record-apply`.
+
+Accepted fixes acquire durable exclusive ownership of the target's worktree (or plan directory
+outside Git), independently of repository-context selection, until closure or
+abandonment. Exit 16 refuses absent, unknown or conflicting ownership; another job may not steal it.
+Changed captured inputs before recording probes invalidate the job (exit 4).
 
 **Change nothing in the target before `record-probes` returns.** It binds the pre-apply baseline
 that `record-apply` diffs against, so a fix written first vanishes into that baseline and apply
@@ -191,6 +236,40 @@ the finding is `introduced`, the probe `executed`, the read `confirmed-introduce
 `fix_paths` non-empty. Anything less is `rejected` or `inconclusive` with a `rationale`.
 
 Exit `14` means at least one probe was denied; probing is `incomplete` but the job continues.
+
+For a loop dispute, use `rebut LOOP --round R --expected-generation G --rebuttal-file staging/rebuttal.json`
+after read assessment and before apply, following the plan's
+[rebuttal contract](docs/plans/phase-1b.md#findings-corrections-and-rebuttals). The payload is:
+
+```json
+{
+  "checkpoint_sha256": "from status",
+  "report_sha256": "original report digest",
+  "probes_sha256": null,
+  "claims": [{"reference": {"round": "origin round nonce", "local_id": "F-1"},
+              "rationale": "Why the cited evidence contradicts this claim",
+              "evidence_ids": ["sealed evidence nonce"]}]
+}
+```
+
+Use the probes digest instead of null if probes were already recorded. The reply exposes
+`adjudication` and an effective `report_sha256` through `status`; original reports stay intact.
+First follow `read_assessment_requirements` through the plan's
+[per-judgment read gate](docs/plans/phase-1b.md#state-isolation-and-recovery).
+Probe every effective finding, including new IDs, using that report digest and
+`adjudication_sha256`. If status exposes `previous_probes_sha256`, include it to append
+a probe revision. A rejection of a maintained claim additionally needs
+`reopening: {"rationale": "new actionable basis", "evidence_ids": ["sealed new evidence"]}`;
+this also applies to later-round refutation or recurrence decisions and carried probe
+annotations. Explicit user direction may instead add `asserted_by: "user"` and
+`authorization` to that block. Resealing identical evidence cannot reopen the dispute. A reviewer withdrawal alone
+does not substitute for the author's probe.
+
+A stalled dispute uses `continue --decision-file F` with `kind: "dispute-resolution"`,
+`round`, rebuttal `attempt`, `checkpoint_sha256`, `rationale`, `evidence_ids` and
+`asserted_by: "author"` for new actionable evidence, or `"user"` with a cited
+`authorization`. This releases investigation; it neither withdraws findings nor grants
+another rebuttal. Retiring an irrecoverable rebuttal preserves the original findings.
 
 ### 4. Apply what was accepted
 
@@ -211,6 +290,29 @@ The driver recomputes what actually changed and reconciles it against what you r
 happened, not what you intended: a `denied` or `failed` attempt that still moved bytes is a
 partial fix and is recordable. Exit `10` is a scope violation and closes the job. Exit `11` is
 `apply-incomplete` — real, and the job continues.
+Declared fixes may overlap companions or dependencies. `record-apply` retains their
+post-fix context separately for verification; unrelated context changes still refuse.
+Changed dependency bytes require matching execution qualification before verification.
+
+For a loop, each result also carries `sibling_sweep` with `searched_scope` and
+`related_sites` (path lists), `rationale`, and `evidence_ids` (sealed check IDs,
+required when related sites are listed). An empty site list still needs its rationale. Apply the plan's
+[pre-edit amendment rule](docs/plans/phase-1b.md#findings-corrections-and-rebuttals)
+through `amend-paths LOOP --round R --expected-generation G --amendment-file staging/amendment.json`:
+
+```json
+{
+  "checkpoint_sha256": "from status",
+  "report_sha256": "from run",
+  "probes_sha256": "from record-probes",
+  "additions": [{"finding_id": "F-1", "paths": ["sibling.py"],
+                 "rationale": "Why this finding needs the added path",
+                 "authority": "The existing authorization covering this edit"}]
+}
+```
+
+After an amendment, include the returned `amendments_sha256` in the apply payload.
+The original probes record and baseline remain the evidence cited by `probes_sha256`.
 
 ### 5. Verify, then close
 
@@ -219,8 +321,7 @@ Verification runs **only now**, after scope validation, because it executes repo
 ```
 Write   <job_dir>/staging/verify.sh           # exactly UTF-8(verify_command) + one "\n"
 $R seal <job> staging/verify.sh               # → ev_cmd
-rc=0; { ( cd "$exec_dir" && bash "$job_dir/evidence/$ev_cmd/content" ) > "$job_dir/verify.out" 2>&1; } || rc=$?
-printf '%s\n' "$rc" > "$job_dir/verify.rc"
+Run     execution.argv in execution.cwd    # same sealed-execution procedure; verify.out and verify.rc
 $R seal <job> verify.out ; $R seal <job> verify.rc
 Write   <job_dir>/staging/verification.json
 $R record-verification <job> --verification-file <job_dir>/staging/verification.json
@@ -238,35 +339,21 @@ one is refused rather than read as an empty block:
 
 `passed` and `failed` are **derived from the sealed `verify.rc`**, never asserted, and the
 driver enforces which evidence each result requires: `passed`/`failed` need all three ids,
-`denied` needs the command id plus its denial fields, and the non-run results take none.
-`not-reached` is the third non-run result, but the driver sets it alone (a scope violation
-closes at `record-apply`), so it is never submitted.
+`denied` needs the command id plus its denial fields, and the non-run results take none. `not-reached` is driver-owned: a scope violation
+closes at apply and never reaches verification submission.
 
-`record-verification` **always** closes the job, including under `--no-verify`
-(`not-run-explicitly`) and when nothing landed (`not-applicable`). Exits `12` failed, `13`
-denied, `14` probes incomplete, and `11` when the apply was `apply-incomplete` (the job is
-closed, unlike at `record-apply`) — all real outcomes, none of them errors to be worked around.
-
-**The derivation decides the result, in this order:**
-
-1. no verify command (`--no-verify`, or no `--verify` given; both together are refused at
-   `prepare` with `conflicting-options`; a blank `--verify` is refused at
-   `prepare` with `blank-verify`, not read as no command) → `not-run-explicitly`, **even
-   when nothing landed**;
-2. otherwise nothing landed → `not-applicable`;
-3. otherwise the command ran, and the sealed evidence picks `passed`, `failed` or `denied`
-   (a command the operator was refused is `denied`).
-
-Submit the derived result; where 1 or 2 decides alone you may omit `result` and the job
-closes with it. A `result` that names anything else — `not-applicable` on a job with no verify
-command, `not-run-explicitly` where a command exists but nothing landed, `passed` where no
-command exists, `not-applicable` where the command ran, or `passed` against a sealed `rc` that
-says `failed` — is refused with exit `8` and `verification-result-contradicted`. Its details
-name both: `submitted` (only when it is a string; `submitted_type` otherwise), and `derived`
-or, in tier 3, `allowed`. No verification is recorded and the job stays open for a corrected
-submission; the refused attempt is journaled under `attempts/`. This check runs before the
-drift check, so a submission that both contradicts and meets a moved tree is refused as
-contradicting first, and meets the drift (exit `4`) when corrected.
+A valid `record-verification` closes the job. No configured command derives
+`not-run-explicitly`; otherwise a one-pass job with no changes derives `not-applicable`.
+Configured loop verification still runs on unchanged candidates. In either derived
+non-run case `result` may be omitted. Otherwise sealed execution determines `passed`,
+`failed` or `denied`. A contradictory submission refuses with exit `8`,
+`verification-result-contradicted`; the job stays open and the refused attempt is
+retained. Configuration/changed-path contradictions are checked before tree drift;
+sealed-return-code contradictions are checked afterward. Drift returns exit `4` and
+closes the job. Contradiction details name `derived` or `allowed`, and `submitted`
+(strings only; other values use `submitted_type`).
+Closure exits are `12` failed, `13` denied, `14` probes incomplete, or `11` apply incomplete;
+they are outcomes, not errors to work around.
 
 ## Resuming
 
@@ -278,8 +365,78 @@ $R status <job>      # stage, resumable, next_verb
 `next_verb` is what to run next; `null` means the job is closed or needs a decision. Resume by
 doing that verb's step, never by repeating a completed one — every record is write-once.
 
-There is no `continue` verb and no `break-lease`: `status` plus the next verb is the whole
-resumption path, and a job you cannot finish is closed with `abandon`.
+One-pass jobs use `status` and the indicated recording verb. Opt-in Phase 1b loops use
+`status LOOP`, explicit `--round R` for round operations and `--expected-generation G`
+for every mutation. `continue` records decisions and returns the next operation; it does
+not launch a reviewer. Do not invoke member rounds through the one-pass interface.
+The [Phase 1b interface](docs/plans/phase-1b.md#skilldriver-interface) defines the new
+workflow; implementation acceptance remains outstanding. Neither workflow breaks another
+job's apply ownership.
+
+If `status.recording_recovery` is present, run `continue` to adopt the already-published
+author record. Do not repeat its command or edit.
+
+For `authorized-commit` or `drift-resolution`, the staged decision carries `round`,
+`checkpoint_sha256`, `target_sha256`, observed `candidate_sha256`, `old_head`, `new_head`,
+`authority`, `rationale` and sealed same-round `evidence_ids`. Optional `new_base` names a
+replacement comparison base. `equivalence` is `reset` (default), `matching` or `unresolved`;
+the driver independently compares matching recaptures. Optional `scope` replaces
+`companions`, `dependencies` or `expected_paths` (null removes the assertion), using
+the prepare declaration formats and a cited `scope_authority`. It records locator mappings
+and freezes newly declared inputs before recapture; later movement requires a new decision.
+Changed launch settings additionally require the exact `launch_key` exposed in
+`status.required_qualifications`; qualification alone does not authorize the transition.
+
+Fixed `finding-resolution` decisions bind `reference`, `reviewer_round`, `verification_round`,
+their `report_sha256` / `verification_sha256` and a rationale. When fresh verification
+is needed after the fix round, also bind `fix_round` and its `fix_apply_sha256`;
+earlier changed paths do not substitute for current qualified verification.
+
+Other `finding-resolution` dispositions also cite `evidence_ids` sealed in the current
+round and a rationale. `reassess` binds the current `reference` and `probes_sha256`:
+before apply it opens a new probe revision; after an unresolved completed round it
+permits recapture while retaining open findings. `recurring` / `refuted` bind an older
+`reference`, current `related_reference`, `origin_probes_sha256` and `probes_sha256`.
+For an unassessed finding retained across candidate drift, bind `origin_report_sha256`
+instead of the absent original probe digest; its original finding remains pending until resolved.
+Refutation requires an executed, qualified current counterexample on equivalent inputs;
+changed bytes require fixed closure. Recurrence links keep introduced and accepted predecessors open
+until independently closed, and cannot downgrade an accepted defect.
+When an earlier finding is absent from the current report, independent `refuted` or
+`accepted` decisions use an `assessment` with the normal probe annotation schema, `finding_id` and sealed
+slots named `retained-<origin-round>-<local-id>`. Bind `origin_report_sha256` and, if present,
+`origin_probes_sha256`; omit `related_reference`. The driver checks the original classification,
+equivalent inputs and qualified current execution, retaining the assessment separately from
+both reviewer reports. An inconclusive read cannot close the finding.
+Independent acceptance follows current `record-probes` and precedes apply. It adds an
+explicitly attributed retained finding to a separate work report, then returns
+`pending_probe_submission` for `record-probes`. Record that submission before editing:
+normal ownership, baseline, apply and verification checks still govern the fix, and the
+ledger keeps its original round/local-ID reference. The reviewer need not report it again.
+`out-of-scope` applies only to a pre-existing scope question: bind its `reference`
+and `probes_sha256`, cite current-round evidence, and supply `asserted_by: "user"`
+with the explicit `authorization`. It cannot waive an introduced defect.
+
+For an availability pause, `continue LOOP --expected-generation G` clears it only
+after the recorded `retry_after`. It neither launches nor refunds an attempt.
+`resolve-call` recovers the same deadline from retained output, anchored to the call's
+completion date even when recovery happens later.
+
+Call recovery decisions name `attempt`, `checkpoint_sha256` and `rationale`.
+`retire-attempt` additionally requires `asserted_by: "user"` and the explicit
+`authorization`. With no usable launch identity, also supply same-host
+`quiescence_host` and sealed `quiescence_evidence_ids` from inspected process evidence.
+That is a cited user assessment, never proof of non-launch; a matching live child
+still refuses retirement. Use `resolve-call` when a completion receipt exists.
+After identified process quiescence, a complete validated answer can also be recovered
+without a receipt; missing exit status and wall/CPU accounting remain unknown. Such
+an answer cannot be retired as unusable merely because its receipt was lost.
+Late retired output appears in `status.late_evidence`. Reconcile it through
+`resolve-call` with `attempt_evidence_sha256` from that entry after process quiescence;
+invalid/empty output requires explicit `disposition: "unusable"`. Valid late answers
+remain charged, earn no credit and retain unassessed findings without reopening the
+old job. Independently probe them in the current round, then use the finding relation
+above with `origin_report_sha256` in place of the absent original probe digest.
 
 ## Closing without finishing
 
@@ -292,41 +449,31 @@ to end an open job.
 
 ## When the loop is done
 
-**A Codex `approve` is not convergence or evidence that the code is right.** Measured on one
-frozen target, six runs found eight distinct defects between them and no single run found more
-than seven. In a four-run replication
-of the same design, where the per-defect counts were recorded, three of the seven defects found
-were reported by exactly one run. A clean round says what this run found; it does not establish
-correctness.
+The host selects the workflow. **When Codex executes this skill, the Claude-only cost
+trial below does not apply:** do not switch to Claude judges or stop Codex at its trial
+threshold. For opt-in driver loops, use the completion contract below.
 
-**Done is when a fresh conversation's first round reports nothing you agree with.** A round late
-in a conversation is judged by someone who has been arguing about this code for hours and will
-recognise a finding as one already discussed; a first round is not. Anything that round does
-find — that survives checking — restarts the count, so consecutive clean firsts accumulate into
-the evidence a single `approve` never was.
+A single `approve` establishes only that call's result. For an opt-in Phase 1b loop,
+use the driver's completion state under [D01/D06](docs/plans/phase-1b.md#decisions),
+not a manual count of approvals. Refuted findings can qualify; accepted findings,
+unresolved decisions and missing closure evidence cannot disappear behind later empty reports.
+Fresh input discipline is defined by D03; a targeted recheck earns no clean-round credit.
 
-"You agree with" is load-bearing. A finding checked against the code and refuted is not a defect,
-and must not block the loop; record the refutation and move on. See **Reporting back**.
+The [reserve effort experiment](experiments/effort-ab/) does not establish a cost or recall
+optimum for other models. Record observed usage by model/effort without extrapolating it.
 
-Read that definition with [the stopping rule](#when-the-loop-is-not-worth-continuing): wording
-that states only intent, and coverage of behaviour already covered, are an unbounded supply of
-things to agree with, so "nothing you agree with" can describe a state no amount of fixing
-reaches. That is not a licence to discount findings by where they live — a defect in the harness
-counts more than one in the change, not less, when it can produce a wrong result. Prose that
-asserts a number, a behaviour or a contract is a correctness claim and blocks the loop like any
-other.
+### Claude Code cost trial
 
-**Cost trial — Kamil's decision, 2026-10-01:** stop calling Codex on a piece of work after
+**Claude Code host only — cost trial, 2026-10-01:** stop calling Codex on a piece of work after
 **two consecutive Codex rounds return `approve`**. Count the verdict, even when an approval
 includes an unaccepted finding; a non-approval or failed round breaks the streak. Track it across
 conversation handoffs and fixes to that work. Once the threshold is reached, Codex stays off for
-the rest of that loop, including fixes found by the judge. This changes the cost of the loop,
-not the definition of done above.
+the rest of that loop, including fixes found by the judge.
 
 From then on, run **Claude-only rounds**: launch a new Claude subagent with no conversation
 history for each round. Give it the same agreed range (with the head advanced to include fixes),
 repository context and demanding judge brief as the combined round, removing only the Codex
-steps. Continue until a fresh conversation's first round reports nothing you agree with.
+steps.
 Do not substitute a Codex agent for Claude; if a fresh Claude judge is unavailable, report that
 the remaining review is incomplete.
 
@@ -344,8 +491,11 @@ Codex report or insert the judge's observations into a Codex job. The
 [trial evidence and remeasurement procedure](experiments/approval-streak/README.md) record
 one loop only: a small sample, not a general recall guarantee.
 
-Run at `xhigh`. `max` costs roughly twice as much for the same defects, and its best run was its
-cheapest — more reasoning did not buy more findings. `experiments/effort-ab/` has the numbers.
+For this host-managed trial, done means a fresh host conversation's first round reports
+no finding that survives checking. Subagent freshness alone does not establish host
+freshness. Use one-pass jobs and the linked outside-driver records; do not combine this
+trial with the opt-in driver's convergence count. Default to `xhigh` unless the user
+selects another effort.
 
 ## When the loop is not worth continuing
 

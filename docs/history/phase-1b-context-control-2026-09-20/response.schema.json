@@ -1,0 +1,115 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "declared_scope": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "findings": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "claim": {
+            "type": "string"
+          },
+          "classification": {
+            "enum": [
+              "introduced",
+              "pre-existing"
+            ],
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "failure_scenario": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "severity": {
+            "enum": [
+              "blocker",
+              "major",
+              "minor"
+            ],
+            "type": "string"
+          },
+          "suggested_fix": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "classification",
+          "severity",
+          "claim",
+          "failure_scenario",
+          "evidence",
+          "artifact",
+          "suggested_fix"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "verdict": {
+      "enum": [
+        "approve",
+        "changes-required"
+      ],
+      "type": "string"
+    },
+    "verified_claims": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "claim": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "finding_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "result": {
+            "enum": [
+              "holds",
+              "refuted",
+              "not-verifiable"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "claim",
+          "result",
+          "evidence",
+          "finding_id"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "declared_scope",
+    "findings",
+    "verdict",
+    "verified_claims"
+  ],
+  "type": "object"
+}

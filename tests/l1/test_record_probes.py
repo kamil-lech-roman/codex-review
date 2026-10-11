@@ -4,6 +4,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from qualification_fixture import qualify_author
+
 import pytest
 
 RESPONSE = {
@@ -19,7 +21,7 @@ RESPONSE = {
 @pytest.fixture
 def reviewed(review, plan_file_factory, outside_any_repo, codex_reply):
     plan = plan_file_factory("# a plan\n")
-    prepared = review("prepare", "plan", str(plan), cwd=outside_any_repo)
+    prepared = review("prepare", "plan", str(plan), "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
     job_id = prepared.envelope["job_id"]
     job_dir = Path(prepared.envelope["job_dir"])
     codex_reply(RESPONSE)
@@ -34,6 +36,7 @@ def report_sha(job_dir):
 
 def seal_probe(review, job_id, job_dir, finding="F-1", executed=True):
     """Write → seal command, output and rc, as section 9's flow requires."""
+    qualify_author(job_dir, commands=['echo checking\n'])
     (job_dir / "staging").mkdir(parents=True, exist_ok=True)
     (job_dir / "staging" / "probe-{}.sh".format(finding)).write_text("echo checking\n")
     ids = {"command_evidence_id": review(

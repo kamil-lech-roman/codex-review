@@ -53,7 +53,7 @@ def fake_codex(tmp_path):
         "    if a in ('-o', '--output-last-message') and i + 1 < len(argv):\n"
         "        out = argv[i + 1]\n"
         "reply = os.environ.get('CODEX_FAKE_RESPONSE')\n"
-        "body = open(reply).read() if reply and os.path.exists(reply) else '{}'\n"
+        "body = open(reply).read() if reply and os.path.exists(reply) else ''\n"
         "if out:\n"
         "    open(out, 'w').write(body)\n"
         "stdout = os.environ.get('CODEX_FAKE_STDOUT')\n"

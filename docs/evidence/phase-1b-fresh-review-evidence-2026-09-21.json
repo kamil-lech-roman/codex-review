@@ -1,0 +1,64 @@
+{
+  "kind": "selected historical evidence; not a new execution or original sealed artifact",
+  "source": {
+    "source_file": "phase-1b-fresh-review-evidence-2026-09-21.json",
+    "source_sha256": "bb850233e2ee5724ed2875f7072d11f2ef784dfe345f260f09360a8adab89309"
+  },
+  "selection": [
+    "checked_at",
+    "baseline",
+    "offline_controls",
+    "unexercised"
+  ],
+  "locator_substitutions": {
+    "private project Python executable": "<python>"
+  },
+  "observations": {
+    "checked_at": "2026-09-21",
+    "baseline": "ca8f856",
+    "offline_controls": {
+      "kind": "Offline fake-child control against unchanged reviewer.invoke; no real Codex call.",
+      "emitted_event": {
+        "type": "thread.started",
+        "thread_id": "11111111-1111-4111-8111-111111111111"
+      },
+      "fake_source": "#!/usr/bin/env python3\nimport json,os,pathlib,time\nprint('{\"type\": \"thread.started\", \"thread_id\": \"11111111-1111-4111-8111-111111111111\"}', flush=True)\npathlib.Path('/private/tmp/codex-interruption-control-nnsex0hn/ready.json').write_text(json.dumps({\"pid\":os.getpid(),\"parent_pid\":os.getppid()}))\ntime.sleep(30)\n",
+      "driver_process_source": "from codex_review import reviewer\nreviewer.invoke('/private/tmp/codex-interruption-control-nnsex0hn/fake-codex', '/private/tmp/codex-interruption-control-nnsex0hn/job', {\"mode\":\"code\", \"context_repository\":None}, \"offline-fake\", \"xhigh\")\n",
+      "ready_record": {
+        "pid": 3128,
+        "parent_pid": 3127
+      },
+      "driver_pid": 3127,
+      "driver_returncode": -9,
+      "log_exists_before_driver_kill": false,
+      "log_exists_after_driver_kill": false,
+      "stdout_flushed_before_ready": true,
+      "dependency_mutation": {
+        "before": {
+          "lock": "1bdf86043728f7123c93bec94e49d9abeb0264c7452aa1b498e0589cdb140a41",
+          "installed_manifest": "0161802b18fbf59da839e0998985b9f31d85c42a7d3a6af37728e34cd51d7e68",
+          "module": "e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65"
+        },
+        "after": {
+          "lock": "1bdf86043728f7123c93bec94e49d9abeb0264c7452aa1b498e0589cdb140a41",
+          "installed_manifest": "0161802b18fbf59da839e0998985b9f31d85c42a7d3a6af37728e34cd51d7e68",
+          "module": "3da6c4b355804b265ecef19dfe5945fe2790a8cc38dc9d0547fb1634c94cbbe7"
+        },
+        "unchanged_metadata_did_not_detect_source_change": true,
+        "kind": "Synthetic filesystem example, not an installed-package mutation."
+      },
+      "limitations": [
+        "Fake child exercises unchanged reviewer.invoke buffering, not a real Codex invocation or the proposed recovery implementation.",
+        "Killing this owned fake driver lost a flushed thread event; it does not establish any future streaming guarantee.",
+        "Dependency mutation is synthetic and proves unchanged metadata can coexist with changed source; no real environment was modified."
+      ]
+    },
+    "unexercised": [
+      "Proposed loop capture/dependency binding",
+      "Streaming recovery and pause resolvers",
+      "Persistent cold/resumed auth and write controls",
+      "Automatic memory/history injection control",
+      "Live loop convergence"
+    ]
+  }
+}

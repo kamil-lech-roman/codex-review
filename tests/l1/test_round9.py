@@ -18,7 +18,7 @@ def should_refuse_a_policy_file_that_is_not_utf8(review, plan_file_factory, make
     for argv in (("git", "add", "-A"), ("git", "commit", "-qm", "binary")):
         subprocess.run(argv, cwd=str(repo), check=True, capture_output=True)
 
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 5, result
     assert "policy-not-utf8" in result.stdout

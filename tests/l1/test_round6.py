@@ -29,7 +29,7 @@ def should_refuse_a_policy_link_that_traverses_a_directory_symlink(review,
     (repo / "AGENTS.md").symlink_to("alias/../notes.md")
     commit_all(repo)
 
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 5, result
     assert "An unrelated document." not in result.stdout
@@ -46,7 +46,7 @@ def should_ignore_an_unrelated_symlink_whose_target_is_not_utf8(review, plan_fil
     os.symlink(b"legacy-\xff.dat", bytes(repo / "asset.dat"))
     commit_all(repo)
 
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     assert "No policy files were present" in agents_text(result)

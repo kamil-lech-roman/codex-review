@@ -1,6 +1,6 @@
 # Recording a Claude-only round
 
-Use this procedure when [the loop policy](../SKILL.md#when-the-loop-is-done) selects a
+Use this procedure only when the Claude Code host is selected by [the loop policy](../SKILL.md#when-the-loop-is-done) selects a
 Claude-only round. This is a host-managed review, not a new driver mode. The current
 `run` resolves Codex and calls `reviewer.invoke`; introducing a second backend would
 change the driver's lifecycle and evidence contracts for a trial that does not need it.

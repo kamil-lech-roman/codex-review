@@ -1,0 +1,172 @@
+{
+  "kind": "selected historical evidence; not a new execution or original sealed artifact",
+  "source": {
+    "source_file": "phase-1b-qualification-evidence-2026-09-22.json",
+    "source_sha256": "551a75a5879b7017828030b7fbe73638a78fa76e40c636f886fbd6832c04f29f"
+  },
+  "selection": [
+    "collected_at",
+    "baseline",
+    "numba_source_sha256",
+    "controls",
+    "not_exercised",
+    "primary_docs"
+  ],
+  "locator_substitutions": {
+    "private project Python executable": "<python>"
+  },
+  "observations": {
+    "collected_at": "2026-09-22T08:53:34.315475+00:00",
+    "baseline": "cd85e9086540d69cca0ac802e48a235e3be2e359",
+    "numba_source_sha256": "026f46d8681711ff7d4ff981c54207536630e38cb6d8fb86b84f4191674635c6",
+    "controls": {
+      "python_bytecode": {
+        "seed": {
+          "argv": [
+            "<python>",
+            "-c",
+            "import example; print(example.VALUE)"
+          ],
+          "returncode": 0,
+          "stdout": "1\n",
+          "stderr": ""
+        },
+        "replace": {
+          "argv": [
+            "<python>",
+            "-B",
+            "-c",
+            "import marshal,pathlib,sys; p=pathlib.Path(sys.argv[1]); p.write_bytes(p.read_bytes()[:16]+marshal.dumps(compile(\"VALUE = 2\\n\",\"example.py\",\"exec\")))",
+            "/private/tmp/phase1b-redirect-control-8_li0unu/bytecode/__pycache__/example.cpython-313.pyc"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "plain": {
+          "argv": [
+            "<python>",
+            "-c",
+            "import example; print(example.VALUE)"
+          ],
+          "returncode": 0,
+          "stdout": "2\n",
+          "stderr": ""
+        },
+        "B": {
+          "argv": [
+            "<python>",
+            "-B",
+            "-c",
+            "import example; print(example.VALUE)"
+          ],
+          "returncode": 0,
+          "stdout": "2\n",
+          "stderr": ""
+        },
+        "fresh_prefix": {
+          "argv": [
+            "<python>",
+            "-c",
+            "import example; print(example.VALUE)"
+          ],
+          "returncode": 0,
+          "stdout": "1\n",
+          "stderr": ""
+        },
+        "E_ignores_prefix": {
+          "argv": [
+            "<python>",
+            "-E",
+            "-B",
+            "-c",
+            "import example; print(example.VALUE)"
+          ],
+          "returncode": 0,
+          "stdout": "2\n",
+          "stderr": ""
+        },
+        "source_sha256": "e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65",
+        "source_unchanged": true
+      },
+      "redirected_writes": {
+        "execution": {
+          "argv": [
+            "<python>",
+            "-c",
+            "from probe_nb import add; print(add(1,2)); print(add(1.0,2.0))"
+          ],
+          "returncode": 0,
+          "stdout": "[cache] index saved to '/private/tmp/phase1b-redirect-control-8_li0unu/numba/module_c83d7fe108186c8e0b398aa6875fc0b28d47d61a/probe_nb.add-2.py313.nbi'\n[cache] data saved to '/private/tmp/phase1b-redirect-control-8_li0unu/numba/module_c83d7fe108186c8e0b398aa6875fc0b28d47d61a/probe_nb.add-2.py313.1.nbc'\n3\n[cache] index loaded from '/private/tmp/phase1b-redirect-control-8_li0unu/numba/module_c83d7fe108186c8e0b398aa6875fc0b28d47d61a/probe_nb.add-2.py313.nbi'\n[cache] index loaded from '/private/tmp/phase1b-redirect-control-8_li0unu/numba/module_c83d7fe108186c8e0b398aa6875fc0b28d47d61a/probe_nb.add-2.py313.nbi'\n[cache] index saved to '/private/tmp/phase1b-redirect-control-8_li0unu/numba/module_c83d7fe108186c8e0b398aa6875fc0b28d47d61a/probe_nb.add-2.py313.nbi'\n[cache] data saved to '/private/tmp/phase1b-redirect-control-8_li0unu/numba/module_c83d7fe108186c8e0b398aa6875fc0b28d47d61a/probe_nb.add-2.py313.2.nbc'\n3.0\n",
+          "stderr": ""
+        },
+        "environment": {
+          "PYTHONPYCACHEPREFIX": "/private/tmp/phase1b-redirect-control-8_li0unu/pyc-7",
+          "NUMBA_CACHE_DIR": "/private/tmp/phase1b-redirect-control-8_li0unu/numba",
+          "NUMBA_DEBUG_CACHE": "1"
+        },
+        "module_before": {
+          "entries": 1,
+          "path_mode_size_mtime_sha256": "f50ba55a54937b2cb4fe949d7548648e43c7a6a57b96e26348594bf644d54140"
+        },
+        "module_after": {
+          "entries": 1,
+          "path_mode_size_mtime_sha256": "f50ba55a54937b2cb4fe949d7548648e43c7a6a57b96e26348594bf644d54140"
+        },
+        "module_unchanged": true,
+        "redirected_pyc_files": 686,
+        "redirected_numba_files": 3
+      },
+      "preexisting_numba": {
+        "warm": {
+          "argv": [
+            "<python>",
+            "-c",
+            "from cached_nb import add; print(add(1))"
+          ],
+          "returncode": 0,
+          "stdout": "[cache] index saved to '/private/tmp/phase1b-redirect-control-8_li0unu/warm-numba/stale-numba_fabc1ba30436b3b73f6e729098262bdf523aa2e4/cached_nb.add-3.py313.nbi'\n[cache] data saved to '/private/tmp/phase1b-redirect-control-8_li0unu/warm-numba/stale-numba_fabc1ba30436b3b73f6e729098262bdf523aa2e4/cached_nb.add-3.py313.1.nbc'\n3\n",
+          "stderr": ""
+        },
+        "in_tree": {
+          "argv": [
+            "<python>",
+            "-c",
+            "import cached_nb; print(\"source\",cached_nb.VALUE); print(\"result\",cached_nb.add(1))"
+          ],
+          "returncode": 0,
+          "stdout": "source 1\n[cache] index loaded from '/private/tmp/phase1b-redirect-control-8_li0unu/stale-numba/__pycache__/cached_nb.add-3.py313.nbi'\n[cache] data loaded from '/private/tmp/phase1b-redirect-control-8_li0unu/stale-numba/__pycache__/cached_nb.add-3.py313.1.nbc'\nresult 3\n",
+          "stderr": ""
+        },
+        "fresh_redirect": {
+          "argv": [
+            "<python>",
+            "-c",
+            "import cached_nb; print(\"source\",cached_nb.VALUE); print(\"result\",cached_nb.add(1))"
+          ],
+          "returncode": 0,
+          "stdout": "source 1\n[cache] index saved to '/private/tmp/phase1b-redirect-control-8_li0unu/fresh-numba/stale-numba_fabc1ba30436b3b73f6e729098262bdf523aa2e4/cached_nb.add-3.py313.nbi'\n[cache] data saved to '/private/tmp/phase1b-redirect-control-8_li0unu/fresh-numba/stale-numba_fabc1ba30436b3b73f6e729098262bdf523aa2e4/cached_nb.add-3.py313.1.nbc'\nresult 2\n",
+          "stderr": ""
+        },
+        "construction": "Warm cache with VALUE=2 was copied into the same module in-tree cache locator. Source VALUE=1 was then restored with the same mtime/size; fresh Python prefixes prevent module-bytecode reuse.",
+        "scope": "Synthetic source-backed njit function only; not vectorbt package coverage or a universal locator guarantee."
+      }
+    },
+    "not_exercised": [
+      "Proposed qualification registry and cache wrapper",
+      "Live Codex memory/auth controls",
+      "Vectorbt cache locators, environment-overriding descendants and arbitrary runtime caches"
+    ],
+    "primary_docs": [
+      {
+        "url": "https://docs.python.org/3.13/using/cmdline.html#envvar-PYTHONPYCACHEPREFIX",
+        "finding": "Python cache prefix relocates source bytecode caches; -E ignores PYTHON environment variables."
+      },
+      {
+        "url": "https://numba.readthedocs.io/en/stable/reference/envvars.html#envvar-NUMBA_CACHE_DIR",
+        "finding": "NUMBA_CACHE_DIR chooses a compilation-cache location; the installed locator must still be qualified."
+      }
+    ]
+  },
+  "selection_note": "Only cache-specific environment settings are retained; host PATH, home and user are omitted. Interpreter was Python 3.13.12. Original full-environment execution remains private."
+}

@@ -1,0 +1,1427 @@
+{
+  "audited_commit": "9057382",
+  "source_sha256": "61ff6f807d23fa4a711db35d51b009dbe0a219daf49054b298120c5fd7c9f3a2",
+  "meaning": "Coverage audit, not a test result. partial and changed-contract do not close the old obligation. No missing item is assumed superseded.",
+  "counts": {
+    "covered": 9,
+    "partial": 59,
+    "not-established": 19,
+    "gap": 24,
+    "changed-contract": 2
+  },
+  "requirements": [
+    {
+      "id": "T-01",
+      "source_line": 1638,
+      "requirement": "staged-only change is visible",
+      "assessment": "covered",
+      "evidence": [
+        "tests/l1/test_capture_projections.py",
+        "tests/l1/test_prepare_code.py"
+      ],
+      "remaining": "No carryover identified for this row."
+    },
+    {
+      "id": "T-02",
+      "source_line": 1639,
+      "requirement": "committed deletion preimage",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/projections.py",
+        "src/codex_review/images.py",
+        "tests/l1/test_capture_fidelity.py",
+        "tests/l1/test_capture_projections.py"
+      ],
+      "remaining": "Capture behavior exists; the complete named edge-case matrix, including mid-apply plan-kind drift, is not established by current tests."
+    },
+    {
+      "id": "T-03",
+      "source_line": 1640,
+      "requirement": "symlink captured as link text",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/projections.py",
+        "src/codex_review/images.py",
+        "tests/l1/test_capture_fidelity.py",
+        "tests/l1/test_capture_projections.py"
+      ],
+      "remaining": "Capture behavior exists; the complete named edge-case matrix, including mid-apply plan-kind drift, is not established by current tests."
+    },
+    {
+      "id": "T-04",
+      "source_line": 1641,
+      "requirement": "hostile paths",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/projections.py",
+        "src/codex_review/images.py",
+        "tests/l1/test_capture_fidelity.py",
+        "tests/l1/test_capture_projections.py"
+      ],
+      "remaining": "Capture behavior exists; the complete named edge-case matrix, including mid-apply plan-kind drift, is not established by current tests."
+    },
+    {
+      "id": "T-05",
+      "source_line": 1642,
+      "requirement": "mode-only change is an artifact",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/projections.py",
+        "src/codex_review/images.py",
+        "tests/l1/test_capture_fidelity.py",
+        "tests/l1/test_capture_projections.py"
+      ],
+      "remaining": "Capture behavior exists; the complete named edge-case matrix, including mid-apply plan-kind drift, is not established by current tests."
+    },
+    {
+      "id": "T-06",
+      "source_line": 1643,
+      "requirement": "kind transitions",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/projections.py",
+        "src/codex_review/images.py",
+        "tests/l1/test_capture_fidelity.py",
+        "tests/l1/test_capture_projections.py"
+      ],
+      "remaining": "Capture behavior exists; the complete named edge-case matrix, including mid-apply plan-kind drift, is not established by current tests."
+    },
+    {
+      "id": "T-07",
+      "source_line": 1644,
+      "requirement": "unmerged index refused",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/projections.py",
+        "src/codex_review/images.py",
+        "tests/l1/test_capture_fidelity.py",
+        "tests/l1/test_capture_projections.py"
+      ],
+      "remaining": "Capture behavior exists; the complete named edge-case matrix, including mid-apply plan-kind drift, is not established by current tests."
+    },
+    {
+      "id": "T-08",
+      "source_line": 1645,
+      "requirement": "intent-to-add refused",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/projections.py",
+        "src/codex_review/images.py",
+        "tests/l1/test_capture_fidelity.py",
+        "tests/l1/test_capture_projections.py"
+      ],
+      "remaining": "Capture behavior exists; the complete named edge-case matrix, including mid-apply plan-kind drift, is not established by current tests."
+    },
+    {
+      "id": "T-09",
+      "source_line": 1646,
+      "requirement": "capture race, both target kinds",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/main.py:prepare_code",
+        "src/codex_review/main.py:prepare_plan",
+        "tests/l1/test_capture_projections.py:should_reject_a_copy_that_does_not_match_the_confirming_sample"
+      ],
+      "remaining": "Correspondence check exists; no promised one-retry loop, and both full mixed-copy races are not exercised."
+    },
+    {
+      "id": "T-10",
+      "source_line": 1647,
+      "requirement": "unborn repo resolves",
+      "assessment": "covered",
+      "evidence": [
+        "tests/l1/test_capture_projections.py",
+        "tests/l1/test_prepare_code.py"
+      ],
+      "remaining": "No carryover identified for this row."
+    },
+    {
+      "id": "T-11",
+      "source_line": 1648,
+      "requirement": "no-upstream refused",
+      "assessment": "covered",
+      "evidence": [
+        "tests/l1/test_capture_projections.py",
+        "tests/l1/test_prepare_code.py"
+      ],
+      "remaining": "No carryover identified for this row."
+    },
+    {
+      "id": "T-12",
+      "source_line": 1649,
+      "requirement": "policy captured",
+      "assessment": "covered",
+      "evidence": [
+        "tests/l1/test_policy_sources.py"
+      ],
+      "remaining": "Root policy variants and override selection have direct tests."
+    },
+    {
+      "id": "T-13",
+      "source_line": 1650,
+      "requirement": "policy families refused",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/policy.py:capture",
+        "tests/l1/test_policy_sources.py"
+      ],
+      "remaining": "Conflicting families refused, but a deliberate same-source AGENTS-to-CLAUDE symlink exception is implemented and tested; reconcile the old blanket wording."
+    },
+    {
+      "id": "T-14",
+      "source_line": 1651,
+      "requirement": "rules/nesting/imports refused",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/policy.py",
+        "tests/l1/test_policy_sources.py"
+      ],
+      "remaining": "Some source/refusal cases tested; complete nested/import/boundary/ancestor/per-mode source matrix is not established."
+    },
+    {
+      "id": "T-15",
+      "source_line": 1652,
+      "requirement": "synthesized size limit",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/policy.py",
+        "tests/l1/test_policy_sources.py"
+      ],
+      "remaining": "Some source/refusal cases tested; complete nested/import/boundary/ancestor/per-mode source matrix is not established."
+    },
+    {
+      "id": "T-16",
+      "source_line": 1653,
+      "requirement": "policy noted-not-captured",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/policy.py",
+        "tests/l1/test_policy_sources.py"
+      ],
+      "remaining": "Some source/refusal cases tested; complete nested/import/boundary/ancestor/per-mode source matrix is not established."
+    },
+    {
+      "id": "T-17",
+      "source_line": 1654,
+      "requirement": "captured policy is honoured",
+      "assessment": "not-established",
+      "evidence": [
+        "tests/l1/test_run.py:should_invoke_codex_with_the_mandatory_flags",
+        "tests/l2/test_session_drives_the_skill.py"
+      ],
+      "remaining": "Fake argv checks do not establish live instruction compliance, isolation, or the negative-control CLI behavior."
+    },
+    {
+      "id": "T-18",
+      "source_line": 1655,
+      "requirement": "policy source per mode",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/policy.py",
+        "tests/l1/test_policy_sources.py"
+      ],
+      "remaining": "Some source/refusal cases tested; complete nested/import/boundary/ancestor/per-mode source matrix is not established."
+    },
+    {
+      "id": "T-19",
+      "source_line": 1656,
+      "requirement": "git-repo check",
+      "assessment": "not-established",
+      "evidence": [
+        "tests/l1/test_run.py:should_invoke_codex_with_the_mandatory_flags",
+        "tests/l2/test_session_drives_the_skill.py"
+      ],
+      "remaining": "Fake argv checks do not establish live instruction compliance, isolation, or the negative-control CLI behavior."
+    },
+    {
+      "id": "T-20",
+      "source_line": 1657,
+      "requirement": "reviewer env inert",
+      "assessment": "not-established",
+      "evidence": [
+        "tests/l1/test_run.py:should_invoke_codex_with_the_mandatory_flags",
+        "tests/l2/test_session_drives_the_skill.py"
+      ],
+      "remaining": "Fake argv checks do not establish live instruction compliance, isolation, or the negative-control CLI behavior."
+    },
+    {
+      "id": "T-21",
+      "source_line": 1658,
+      "requirement": "driver never writes",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:state_inside_repository",
+        "src/codex_review/state.py:state_root"
+      ],
+      "remaining": "State inside a repository is accepted. Full no-repository-write and runtime/permission claims remain unproved."
+    },
+    {
+      "id": "T-22",
+      "source_line": 1659,
+      "requirement": "hermetic git scope",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/git.py",
+        "src/codex_review/projections.py"
+      ],
+      "remaining": "Hermetic Git options are present; exact negative controls and missing-object behavior are not exercised."
+    },
+    {
+      "id": "T-23",
+      "source_line": 1660,
+      "requirement": "partial clone fails closed",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/git.py",
+        "src/codex_review/projections.py"
+      ],
+      "remaining": "Hermetic Git options are present; exact negative controls and missing-object behavior are not exercised."
+    },
+    {
+      "id": "T-24",
+      "source_line": 1661,
+      "requirement": "response schema",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:malformed_semantic_response",
+        "src/codex_review/response.py:validate"
+      ],
+      "remaining": "Driver accepts empty evidence, unknown fields and status. Output-schema prompting does not replace validation."
+    },
+    {
+      "id": "T-25",
+      "source_line": 1662,
+      "requirement": "verdict coherence both ways",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/response.py:validate",
+        "tests/l1/test_run.py"
+      ],
+      "remaining": "Coherence and claim binding implemented; complete negative matrix lacks direct tests."
+    },
+    {
+      "id": "T-26",
+      "source_line": 1663,
+      "requirement": "refuted binds to a finding",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/response.py:validate",
+        "tests/l1/test_run.py"
+      ],
+      "remaining": "Coherence and claim binding implemented; complete negative matrix lacks direct tests."
+    },
+    {
+      "id": "T-27",
+      "source_line": 1664,
+      "requirement": "raw response survives rejection",
+      "assessment": "covered",
+      "evidence": [
+        "tests/l1/test_run.py:should_persist_the_raw_response_before_validating_it",
+        "tests/l1/test_run.py:should_write_a_report_for_a_valid_response"
+      ],
+      "remaining": "Raw rejection and valid response paths exercised."
+    },
+    {
+      "id": "T-28",
+      "source_line": 1665,
+      "requirement": "verdict preserved verbatim",
+      "assessment": "covered",
+      "evidence": [
+        "tests/l1/test_run.py:should_persist_the_raw_response_before_validating_it",
+        "tests/l1/test_run.py:should_write_a_report_for_a_valid_response"
+      ],
+      "remaining": "Raw rejection and valid response paths exercised."
+    },
+    {
+      "id": "T-29",
+      "source_line": 1666,
+      "requirement": "1b vocabulary rejected",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:malformed_semantic_response",
+        "src/codex_review/response.py:validate"
+      ],
+      "remaining": "Driver accepts empty evidence, unknown fields and status. Output-schema prompting does not replace validation."
+    },
+    {
+      "id": "T-30",
+      "source_line": 1667,
+      "requirement": "`accepted` preconditions",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/probes.py",
+        "src/codex_review/apply.py:reconcile",
+        "tests/l1/test_record_probes.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_evidence_boundary.py"
+      ],
+      "remaining": "Core annotations, evidence and per-finding reconciliation exist; not every forbidden combination or shared-path overlap has a direct test."
+    },
+    {
+      "id": "T-31",
+      "source_line": 1668,
+      "requirement": "never-acceptable reads",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/probes.py",
+        "src/codex_review/apply.py:reconcile",
+        "tests/l1/test_record_probes.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_evidence_boundary.py"
+      ],
+      "remaining": "Core annotations, evidence and per-finding reconciliation exist; not every forbidden combination or shared-path overlap has a direct test."
+    },
+    {
+      "id": "T-32",
+      "source_line": 1669,
+      "requirement": "pre-existing schema",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/probes.py",
+        "src/codex_review/apply.py:reconcile",
+        "tests/l1/test_record_probes.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_evidence_boundary.py"
+      ],
+      "remaining": "Core annotations, evidence and per-finding reconciliation exist; not every forbidden combination or shared-path overlap has a direct test."
+    },
+    {
+      "id": "T-33",
+      "source_line": 1670,
+      "requirement": "`fix_paths` canonicalisation",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/probes.py",
+        "src/codex_review/apply.py:reconcile",
+        "tests/l1/test_record_probes.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_evidence_boundary.py"
+      ],
+      "remaining": "Core annotations, evidence and per-finding reconciliation exist; not every forbidden combination or shared-path overlap has a direct test."
+    },
+    {
+      "id": "T-34",
+      "source_line": 1671,
+      "requirement": "shared-path apply group",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/probes.py",
+        "src/codex_review/apply.py:reconcile",
+        "tests/l1/test_record_probes.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_evidence_boundary.py"
+      ],
+      "remaining": "Core annotations, evidence and per-finding reconciliation exist; not every forbidden combination or shared-path overlap has a direct test."
+    },
+    {
+      "id": "T-35",
+      "source_line": 1672,
+      "requirement": "declared scope precedes edits",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/probes.py",
+        "src/codex_review/apply.py:reconcile",
+        "tests/l1/test_record_probes.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_evidence_boundary.py"
+      ],
+      "remaining": "Core annotations, evidence and per-finding reconciliation exist; not every forbidden combination or shared-path overlap has a direct test."
+    },
+    {
+      "id": "T-36",
+      "source_line": 1673,
+      "requirement": "probe execution states",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/probes.py",
+        "src/codex_review/apply.py:reconcile",
+        "tests/l1/test_record_probes.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_evidence_boundary.py"
+      ],
+      "remaining": "Core annotations, evidence and per-finding reconciliation exist; not every forbidden combination or shared-path overlap has a direct test."
+    },
+    {
+      "id": "T-37",
+      "source_line": 1674,
+      "requirement": "denied probe keeps command",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/probes.py",
+        "src/codex_review/apply.py:reconcile",
+        "tests/l1/test_record_probes.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_evidence_boundary.py"
+      ],
+      "remaining": "Core annotations, evidence and per-finding reconciliation exist; not every forbidden combination or shared-path overlap has a direct test."
+    },
+    {
+      "id": "T-38",
+      "source_line": 1675,
+      "requirement": "denial evidence inverses",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/probes.py",
+        "src/codex_review/apply.py:reconcile",
+        "tests/l1/test_record_probes.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_evidence_boundary.py"
+      ],
+      "remaining": "Core annotations, evidence and per-finding reconciliation exist; not every forbidden combination or shared-path overlap has a direct test."
+    },
+    {
+      "id": "T-39",
+      "source_line": 1676,
+      "requirement": "driver derives, not believes",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/probes.py",
+        "src/codex_review/apply.py:reconcile",
+        "tests/l1/test_record_probes.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_evidence_boundary.py"
+      ],
+      "remaining": "Core annotations, evidence and per-finding reconciliation exist; not every forbidden combination or shared-path overlap has a direct test."
+    },
+    {
+      "id": "T-40",
+      "source_line": 1677,
+      "requirement": "errexit survives",
+      "assessment": "not-established",
+      "evidence": [
+        "SKILL.md:The flow",
+        "tests/l2/test_session_drives_the_skill.py"
+      ],
+      "remaining": "Documented wrappers are not the full live execution/errexit or sealed-command mutation tests."
+    },
+    {
+      "id": "T-41",
+      "source_line": 1678,
+      "requirement": "compound command captured",
+      "assessment": "not-established",
+      "evidence": [
+        "SKILL.md:The flow",
+        "tests/l2/test_session_drives_the_skill.py"
+      ],
+      "remaining": "Documented wrappers are not the full live execution/errexit or sealed-command mutation tests."
+    },
+    {
+      "id": "T-42",
+      "source_line": 1679,
+      "requirement": "seal closes the race",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/evidence.py",
+        "src/codex_review/probes.py",
+        "tests/l1/test_evidence_boundary.py",
+        "tests/l1/test_round4.py"
+      ],
+      "remaining": "Copies/origin/digest checks exist; complete post-seal mutation, all swaps and canonical-RC matrix not exercised."
+    },
+    {
+      "id": "T-43",
+      "source_line": 1680,
+      "requirement": "post-seal command edit",
+      "assessment": "not-established",
+      "evidence": [
+        "SKILL.md:The flow",
+        "tests/l2/test_session_drives_the_skill.py"
+      ],
+      "remaining": "Documented wrappers are not the full live execution/errexit or sealed-command mutation tests."
+    },
+    {
+      "id": "T-44",
+      "source_line": 1681,
+      "requirement": "evidence origin binding",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/evidence.py",
+        "src/codex_review/probes.py",
+        "tests/l1/test_evidence_boundary.py",
+        "tests/l1/test_round4.py"
+      ],
+      "remaining": "Copies/origin/digest checks exist; complete post-seal mutation, all swaps and canonical-RC matrix not exercised."
+    },
+    {
+      "id": "T-45",
+      "source_line": 1682,
+      "requirement": "seal path escapes",
+      "assessment": "covered",
+      "evidence": [
+        "tests/l1/test_seal.py",
+        "tests/l1/test_evidence_boundary.py"
+      ],
+      "remaining": "Containment and preview-limit behavior directly exercised."
+    },
+    {
+      "id": "T-46",
+      "source_line": 1683,
+      "requirement": "command preview cap",
+      "assessment": "covered",
+      "evidence": [
+        "tests/l1/test_seal.py",
+        "tests/l1/test_evidence_boundary.py"
+      ],
+      "remaining": "Containment and preview-limit behavior directly exercised."
+    },
+    {
+      "id": "T-47",
+      "source_line": 1684,
+      "requirement": "ordinary evidence bounded",
+      "assessment": "covered",
+      "evidence": [
+        "tests/l1/test_seal.py",
+        "tests/l1/test_evidence_boundary.py"
+      ],
+      "remaining": "Containment and preview-limit behavior directly exercised."
+    },
+    {
+      "id": "T-48",
+      "source_line": 1685,
+      "requirement": "payload channel validation",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:record_probes_after_drift_from_external_payload",
+        "src/codex_review/main.py:record_probes",
+        "src/codex_review/main.py:record_apply",
+        "src/codex_review/main.py:record_verification"
+      ],
+      "remaining": "Record payloads are opened directly; the required job/staging containment channel is not enforced."
+    },
+    {
+      "id": "T-49",
+      "source_line": 1686,
+      "requirement": "hostile staged payload",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/apply.py",
+        "tests/l1/test_round4.py",
+        "tests/l1/test_round5.py",
+        "tests/l1/test_record_apply.py"
+      ],
+      "remaining": "JSON transport and verification binding exist; complete hostile-text, newline and result/evidence matrices remain to exercise."
+    },
+    {
+      "id": "T-50",
+      "source_line": 1687,
+      "requirement": "`verify_command` binds across turns",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/apply.py",
+        "tests/l1/test_round4.py",
+        "tests/l1/test_round5.py",
+        "tests/l1/test_record_apply.py"
+      ],
+      "remaining": "JSON transport and verification binding exist; complete hostile-text, newline and result/evidence matrices remain to exercise."
+    },
+    {
+      "id": "T-51",
+      "source_line": 1688,
+      "requirement": "verify bytes exact",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/apply.py",
+        "tests/l1/test_round4.py",
+        "tests/l1/test_round5.py",
+        "tests/l1/test_record_apply.py"
+      ],
+      "remaining": "JSON transport and verification binding exist; complete hostile-text, newline and result/evidence matrices remain to exercise."
+    },
+    {
+      "id": "T-52",
+      "source_line": 1689,
+      "requirement": "verification matrix",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/apply.py",
+        "tests/l1/test_round4.py",
+        "tests/l1/test_round5.py",
+        "tests/l1/test_record_apply.py"
+      ],
+      "remaining": "JSON transport and verification binding exist; complete hostile-text, newline and result/evidence matrices remain to exercise."
+    },
+    {
+      "id": "T-53",
+      "source_line": 1690,
+      "requirement": "verification required",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:missing_verify_option",
+        "src/codex_review/main.py:prepare"
+      ],
+      "remaining": "Apply-enabled prepare accepts neither --verify nor --no-verify; old contract requires exit 2."
+    },
+    {
+      "id": "T-54",
+      "source_line": 1691,
+      "requirement": "wrapper vs inner rules",
+      "assessment": "not-established",
+      "evidence": [
+        "tests/l2/conftest.py",
+        "tests/l2/test_session_drives_the_skill.py"
+      ],
+      "remaining": "Only two live-session cells exist, both deselected in the audit run; six-mode/sandbox/staging/transition matrix is absent."
+    },
+    {
+      "id": "T-55",
+      "source_line": 1692,
+      "requirement": "sandbox permission cells",
+      "assessment": "not-established",
+      "evidence": [
+        "tests/l2/conftest.py",
+        "tests/l2/test_session_drives_the_skill.py"
+      ],
+      "remaining": "Only two live-session cells exist, both deselected in the audit run; six-mode/sandbox/staging/transition matrix is absent."
+    },
+    {
+      "id": "T-56",
+      "source_line": 1693,
+      "requirement": "staging per mode",
+      "assessment": "not-established",
+      "evidence": [
+        "tests/l2/conftest.py",
+        "tests/l2/test_session_drives_the_skill.py"
+      ],
+      "remaining": "Only two live-session cells exist, both deselected in the audit run; six-mode/sandbox/staging/transition matrix is absent."
+    },
+    {
+      "id": "T-57",
+      "source_line": 1694,
+      "requirement": "`dontAsk` stops at staging",
+      "assessment": "not-established",
+      "evidence": [
+        "tests/l2/conftest.py",
+        "tests/l2/test_session_drives_the_skill.py"
+      ],
+      "remaining": "Only two live-session cells exist, both deselected in the audit run; six-mode/sandbox/staging/transition matrix is absent."
+    },
+    {
+      "id": "T-58",
+      "source_line": 1695,
+      "requirement": "plan mode observable state",
+      "assessment": "not-established",
+      "evidence": [
+        "tests/l2/conftest.py",
+        "tests/l2/test_session_drives_the_skill.py"
+      ],
+      "remaining": "Only two live-session cells exist, both deselected in the audit run; six-mode/sandbox/staging/transition matrix is absent."
+    },
+    {
+      "id": "T-59",
+      "source_line": 1696,
+      "requirement": "all six modes \u00d7 sandbox",
+      "assessment": "not-established",
+      "evidence": [
+        "tests/l2/conftest.py",
+        "tests/l2/test_session_drives_the_skill.py"
+      ],
+      "remaining": "Only two live-session cells exist, both deselected in the audit run; six-mode/sandbox/staging/transition matrix is absent."
+    },
+    {
+      "id": "T-60",
+      "source_line": 1697,
+      "requirement": "sandbox transition continuation",
+      "assessment": "not-established",
+      "evidence": [
+        "tests/l2/conftest.py",
+        "tests/l2/test_session_drives_the_skill.py"
+      ],
+      "remaining": "Only two live-session cells exist, both deselected in the audit run; six-mode/sandbox/staging/transition matrix is absent."
+    },
+    {
+      "id": "T-61",
+      "source_line": 1698,
+      "requirement": "forced-`$TMPDIR` control",
+      "assessment": "not-established",
+      "evidence": [
+        "tests/l2/conftest.py",
+        "tests/l2/test_session_drives_the_skill.py"
+      ],
+      "remaining": "Only two live-session cells exist, both deselected in the audit run; six-mode/sandbox/staging/transition matrix is absent."
+    },
+    {
+      "id": "T-62",
+      "source_line": 1699,
+      "requirement": "handle interchangeability",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/jobs.py",
+        "src/codex_review/state.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_prepare_plan.py"
+      ],
+      "remaining": "Nonce/direct-child resolution, staging listing and atomic publication exist; complete per-verb/crash/polling matrix not exercised."
+    },
+    {
+      "id": "T-63",
+      "source_line": 1700,
+      "requirement": "reserved namespace",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/jobs.py",
+        "src/codex_review/state.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_prepare_plan.py"
+      ],
+      "remaining": "Nonce/direct-child resolution, staging listing and atomic publication exist; complete per-verb/crash/polling matrix not exercised."
+    },
+    {
+      "id": "T-64",
+      "source_line": 1701,
+      "requirement": "discovery and leftovers",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/jobs.py",
+        "src/codex_review/state.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_prepare_plan.py"
+      ],
+      "remaining": "Nonce/direct-child resolution, staging listing and atomic publication exist; complete per-verb/crash/polling matrix not exercised."
+    },
+    {
+      "id": "T-65",
+      "source_line": 1702,
+      "requirement": "atomic publish",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/jobs.py",
+        "src/codex_review/state.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_prepare_plan.py"
+      ],
+      "remaining": "Nonce/direct-child resolution, staging listing and atomic publication exist; complete per-verb/crash/polling matrix not exercised."
+    },
+    {
+      "id": "T-66",
+      "source_line": 1703,
+      "requirement": "worktree-only delta",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:accept-delta",
+        "src/codex_review/main.py:cli",
+        "src/codex_review/stage.py"
+      ],
+      "remaining": "No recovery-required state or implemented accept-delta protocol. Do not label superseded without a replacement decision."
+    },
+    {
+      "id": "T-67",
+      "source_line": 1704,
+      "requirement": "untracked creation",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:accept-delta",
+        "src/codex_review/main.py:cli",
+        "src/codex_review/stage.py"
+      ],
+      "remaining": "No recovery-required state or implemented accept-delta protocol. Do not label superseded without a replacement decision."
+    },
+    {
+      "id": "T-68",
+      "source_line": 1705,
+      "requirement": "index-only reset",
+      "assessment": "changed-contract",
+      "evidence": [
+        "src/codex_review/apply.py:baseline",
+        "tests/l1/test_record_apply.py:should_see_a_correction_that_lands_in_the_index"
+      ],
+      "remaining": "Current implementation explicitly allows accounted index fixes. Separate an intended staged fix from unrelated index/reference drift in 1b."
+    },
+    {
+      "id": "T-69",
+      "source_line": 1706,
+      "requirement": "HEAD-moving commit",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:run_after_target_drift",
+        "probe-results.json:record_probes_after_drift_from_external_payload",
+        "src/codex_review/main.py:run",
+        "src/codex_review/main.py:record_probes",
+        "src/codex_review/main.py:record_apply",
+        "tests/l1/test_reconciliation_guards.py"
+      ],
+      "remaining": "Only post-apply verification identity is checked. Frozen-review retention is deliberate, but safe applicability before probing/applying is still missing; context drift is not fully guarded."
+    },
+    {
+      "id": "T-70",
+      "source_line": 1707,
+      "requirement": "plan-target context drift",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:run_after_target_drift",
+        "probe-results.json:record_probes_after_drift_from_external_payload",
+        "src/codex_review/main.py:run",
+        "src/codex_review/main.py:record_probes",
+        "src/codex_review/main.py:record_apply",
+        "tests/l1/test_reconciliation_guards.py"
+      ],
+      "remaining": "Only post-apply verification identity is checked. Frozen-review retention is deliberate, but safe applicability before probing/applying is still missing; context drift is not fully guarded."
+    },
+    {
+      "id": "T-71",
+      "source_line": 1708,
+      "requirement": "plan-target drift per gap",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:run_after_target_drift",
+        "probe-results.json:record_probes_after_drift_from_external_payload",
+        "src/codex_review/main.py:run",
+        "src/codex_review/main.py:record_probes",
+        "src/codex_review/main.py:record_apply",
+        "tests/l1/test_reconciliation_guards.py"
+      ],
+      "remaining": "Only post-apply verification identity is checked. Frozen-review retention is deliberate, but safe applicability before probing/applying is still missing; context drift is not fully guarded."
+    },
+    {
+      "id": "T-72",
+      "source_line": 1709,
+      "requirement": "five invalidation checkpoints",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:run_after_target_drift",
+        "probe-results.json:record_probes_after_drift_from_external_payload",
+        "src/codex_review/main.py:run",
+        "src/codex_review/main.py:record_probes",
+        "src/codex_review/main.py:record_apply",
+        "tests/l1/test_reconciliation_guards.py"
+      ],
+      "remaining": "Only post-apply verification identity is checked. Frozen-review retention is deliberate, but safe applicability before probing/applying is still missing; context drift is not fully guarded."
+    },
+    {
+      "id": "T-73",
+      "source_line": 1710,
+      "requirement": "`at_stage` prerequisites",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/stage.py:validate",
+        "tests/l1/test_status.py"
+      ],
+      "remaining": "Some graph edges and mutual exclusion tested; complete invalidation prerequisites and schema validation absent."
+    },
+    {
+      "id": "T-74",
+      "source_line": 1711,
+      "requirement": "recovery digest-bound",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:accept-delta",
+        "src/codex_review/main.py:cli",
+        "src/codex_review/stage.py"
+      ],
+      "remaining": "No recovery-required state or implemented accept-delta protocol. Do not label superseded without a replacement decision."
+    },
+    {
+      "id": "T-75",
+      "source_line": 1712,
+      "requirement": "user supplies the digest",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:accept-delta",
+        "src/codex_review/main.py:cli",
+        "src/codex_review/stage.py"
+      ],
+      "remaining": "No recovery-required state or implemented accept-delta protocol. Do not label superseded without a replacement decision."
+    },
+    {
+      "id": "T-76",
+      "source_line": 1713,
+      "requirement": "recovery does not waive scope",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:accept-delta",
+        "src/codex_review/main.py:cli",
+        "src/codex_review/stage.py"
+      ],
+      "remaining": "No recovery-required state or implemented accept-delta protocol. Do not label superseded without a replacement decision."
+    },
+    {
+      "id": "T-77",
+      "source_line": 1714,
+      "requirement": "scope escape leaves the tree, unexecuted",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/apply.py:reconcile",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_reconciliation_guards.py"
+      ],
+      "remaining": "Scope violation and recomputation covered mechanically; host never-execute assertion and all overlapping declarers still need checks."
+    },
+    {
+      "id": "T-78",
+      "source_line": 1715,
+      "requirement": "recompute wins",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/apply.py:reconcile",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_reconciliation_guards.py"
+      ],
+      "remaining": "Scope violation and recomputation covered mechanically; host never-execute assertion and all overlapping declarers still need checks."
+    },
+    {
+      "id": "T-79",
+      "source_line": 1716,
+      "requirement": "zero-change outcomes",
+      "assessment": "changed-contract",
+      "evidence": [
+        "src/codex_review/apply.py:reconcile",
+        "tests/l1/test_reconciliation_guards.py:should_still_report_none_accepted_when_nothing_moved",
+        "tests/l1/test_round4.py:should_skip_the_apply_workflow_when_no_apply_was_requested"
+      ],
+      "remaining": "Zero findings currently normalize to none-accepted, not a distinct result. Preserve raw report count in 1b rather than claim the original row passed."
+    },
+    {
+      "id": "T-80",
+      "source_line": 1717,
+      "requirement": "exit precedence",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/stage.py",
+        "src/codex_review/main.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_abandon.py",
+        "tests/l1/test_lifecycle_guards.py"
+      ],
+      "remaining": "Current lifecycle, attempts, write-once and abandonment are exercised in part. Old recovery/lease arms, full exit matrix and every continuation/denial path are not all implemented or tested."
+    },
+    {
+      "id": "T-81",
+      "source_line": 1718,
+      "requirement": "exit-8 lifecycle by stage",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/stage.py",
+        "src/codex_review/main.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_abandon.py",
+        "tests/l1/test_lifecycle_guards.py"
+      ],
+      "remaining": "Current lifecycle, attempts, write-once and abandonment are exercised in part. Old recovery/lease arms, full exit matrix and every continuation/denial path are not all implemented or tested."
+    },
+    {
+      "id": "T-82",
+      "source_line": 1719,
+      "requirement": "rejected submission artifacts",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/stage.py",
+        "src/codex_review/main.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_abandon.py",
+        "tests/l1/test_lifecycle_guards.py"
+      ],
+      "remaining": "Current lifecycle, attempts, write-once and abandonment are exercised in part. Old recovery/lease arms, full exit matrix and every continuation/denial path are not all implemented or tested."
+    },
+    {
+      "id": "T-83",
+      "source_line": 1720,
+      "requirement": "write-once per record",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/stage.py",
+        "src/codex_review/main.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_abandon.py",
+        "tests/l1/test_lifecycle_guards.py"
+      ],
+      "remaining": "Current lifecycle, attempts, write-once and abandonment are exercised in part. Old recovery/lease arms, full exit matrix and every continuation/denial path are not all implemented or tested."
+    },
+    {
+      "id": "T-84",
+      "source_line": 1721,
+      "requirement": "status two-pass validation",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/stage.py",
+        "src/codex_review/main.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_abandon.py",
+        "tests/l1/test_lifecycle_guards.py"
+      ],
+      "remaining": "Current lifecycle, attempts, write-once and abandonment are exercised in part. Old recovery/lease arms, full exit matrix and every continuation/denial path are not all implemented or tested."
+    },
+    {
+      "id": "T-85",
+      "source_line": 1722,
+      "requirement": "status no-target",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/stage.py",
+        "src/codex_review/main.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_abandon.py",
+        "tests/l1/test_lifecycle_guards.py"
+      ],
+      "remaining": "Current lifecycle, attempts, write-once and abandonment are exercised in part. Old recovery/lease arms, full exit matrix and every continuation/denial path are not all implemented or tested."
+    },
+    {
+      "id": "T-86",
+      "source_line": 1723,
+      "requirement": "`resumable`/`next_verb` per row",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/stage.py",
+        "src/codex_review/main.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_abandon.py",
+        "tests/l1/test_lifecycle_guards.py"
+      ],
+      "remaining": "Current lifecycle, attempts, write-once and abandonment are exercised in part. Old recovery/lease arms, full exit matrix and every continuation/denial path are not all implemented or tested."
+    },
+    {
+      "id": "T-87",
+      "source_line": 1724,
+      "requirement": "`Lease` union arms",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:break-lease",
+        "probe-results.json:two_jobs_accept_same_plan_without_lease",
+        "src/codex_review/jobs.py:mutex",
+        "src/codex_review/main.py:record_probes"
+      ],
+      "remaining": "Per-job mutex only. No root-wide apply lease, contention handling, holder protocol or break-lease implementation."
+    },
+    {
+      "id": "T-88",
+      "source_line": 1725,
+      "requirement": "listing payload",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/stage.py",
+        "src/codex_review/main.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_abandon.py",
+        "tests/l1/test_lifecycle_guards.py"
+      ],
+      "remaining": "Current lifecycle, attempts, write-once and abandonment are exercised in part. Old recovery/lease arms, full exit matrix and every continuation/denial path are not all implemented or tested."
+    },
+    {
+      "id": "T-89",
+      "source_line": 1726,
+      "requirement": "pre-resolution null identity",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/stage.py",
+        "src/codex_review/main.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_abandon.py",
+        "tests/l1/test_lifecycle_guards.py"
+      ],
+      "remaining": "Current lifecycle, attempts, write-once and abandonment are exercised in part. Old recovery/lease arms, full exit matrix and every continuation/denial path are not all implemented or tested."
+    },
+    {
+      "id": "T-90",
+      "source_line": 1727,
+      "requirement": "bare `status` succeeds",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/stage.py",
+        "src/codex_review/main.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_abandon.py",
+        "tests/l1/test_lifecycle_guards.py"
+      ],
+      "remaining": "Current lifecycle, attempts, write-once and abandonment are exercised in part. Old recovery/lease arms, full exit matrix and every continuation/denial path are not all implemented or tested."
+    },
+    {
+      "id": "T-91",
+      "source_line": 1728,
+      "requirement": "interrupted job resumable",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/stage.py",
+        "src/codex_review/main.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_abandon.py",
+        "tests/l1/test_lifecycle_guards.py"
+      ],
+      "remaining": "Current lifecycle, attempts, write-once and abandonment are exercised in part. Old recovery/lease arms, full exit matrix and every continuation/denial path are not all implemented or tested."
+    },
+    {
+      "id": "T-92",
+      "source_line": 1729,
+      "requirement": "denial provenance paths",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/stage.py",
+        "src/codex_review/main.py",
+        "tests/l1/test_status.py",
+        "tests/l1/test_record_apply.py",
+        "tests/l1/test_abandon.py",
+        "tests/l1/test_lifecycle_guards.py"
+      ],
+      "remaining": "Current lifecycle, attempts, write-once and abandonment are exercised in part. Old recovery/lease arms, full exit matrix and every continuation/denial path are not all implemented or tested."
+    },
+    {
+      "id": "T-93",
+      "source_line": 1730,
+      "requirement": "lease contention",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:break-lease",
+        "probe-results.json:two_jobs_accept_same_plan_without_lease",
+        "src/codex_review/jobs.py:mutex",
+        "src/codex_review/main.py:record_probes"
+      ],
+      "remaining": "Per-job mutex only. No root-wide apply lease, contention handling, holder protocol or break-lease implementation."
+    },
+    {
+      "id": "T-94",
+      "source_line": 1731,
+      "requirement": "holder states",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:break-lease",
+        "probe-results.json:two_jobs_accept_same_plan_without_lease",
+        "src/codex_review/jobs.py:mutex",
+        "src/codex_review/main.py:record_probes"
+      ],
+      "remaining": "Per-job mutex only. No root-wide apply lease, contention handling, holder protocol or break-lease implementation."
+    },
+    {
+      "id": "T-95",
+      "source_line": 1732,
+      "requirement": "crash split",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:break-lease",
+        "probe-results.json:two_jobs_accept_same_plan_without_lease",
+        "src/codex_review/jobs.py:mutex",
+        "src/codex_review/main.py:record_probes"
+      ],
+      "remaining": "Per-job mutex only. No root-wide apply lease, contention handling, holder protocol or break-lease implementation."
+    },
+    {
+      "id": "T-96",
+      "source_line": 1733,
+      "requirement": "unreadable lock is held",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:break-lease",
+        "probe-results.json:two_jobs_accept_same_plan_without_lease",
+        "src/codex_review/jobs.py:mutex",
+        "src/codex_review/main.py:record_probes"
+      ],
+      "remaining": "Per-job mutex only. No root-wide apply lease, contention handling, holder protocol or break-lease implementation."
+    },
+    {
+      "id": "T-97",
+      "source_line": 1734,
+      "requirement": "release ordering",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:break-lease",
+        "probe-results.json:two_jobs_accept_same_plan_without_lease",
+        "src/codex_review/jobs.py:mutex",
+        "src/codex_review/main.py:record_probes"
+      ],
+      "remaining": "Per-job mutex only. No root-wide apply lease, contention handling, holder protocol or break-lease implementation."
+    },
+    {
+      "id": "T-98",
+      "source_line": 1735,
+      "requirement": "break token binding",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:break-lease",
+        "probe-results.json:two_jobs_accept_same_plan_without_lease",
+        "src/codex_review/jobs.py:mutex",
+        "src/codex_review/main.py:record_probes"
+      ],
+      "remaining": "Per-job mutex only. No root-wide apply lease, contention handling, holder protocol or break-lease implementation."
+    },
+    {
+      "id": "T-99",
+      "source_line": 1736,
+      "requirement": "break outcomes",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:break-lease",
+        "probe-results.json:two_jobs_accept_same_plan_without_lease",
+        "src/codex_review/jobs.py:mutex",
+        "src/codex_review/main.py:record_probes"
+      ],
+      "remaining": "Per-job mutex only. No root-wide apply lease, contention handling, holder protocol or break-lease implementation."
+    },
+    {
+      "id": "T-100",
+      "source_line": 1737,
+      "requirement": "absent lease",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:break-lease",
+        "probe-results.json:two_jobs_accept_same_plan_without_lease",
+        "src/codex_review/jobs.py:mutex",
+        "src/codex_review/main.py:record_probes"
+      ],
+      "remaining": "Per-job mutex only. No root-wide apply lease, contention handling, holder protocol or break-lease implementation."
+    },
+    {
+      "id": "T-101",
+      "source_line": 1738,
+      "requirement": "concurrent verbs",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/jobs.py:mutex",
+        "tests/l1/test_reconciliation_guards.py:should_write_exactly_one_terminal_record_under_contention",
+        "src/codex_review/main.py:listing"
+      ],
+      "remaining": "One contention case tested. run holds job lock during model call; bare listing takes no job locks; root lease/crash/concurrent-reader matrix absent."
+    },
+    {
+      "id": "T-102",
+      "source_line": 1739,
+      "requirement": "lock order and crash release",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/jobs.py:mutex",
+        "tests/l1/test_reconciliation_guards.py:should_write_exactly_one_terminal_record_under_contention",
+        "src/codex_review/main.py:listing"
+      ],
+      "remaining": "One contention case tested. run holds job lock during model call; bare listing takes no job locks; root lease/crash/concurrent-reader matrix absent."
+    },
+    {
+      "id": "T-103",
+      "source_line": 1740,
+      "requirement": "status never sees mid-write",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/jobs.py:mutex",
+        "tests/l1/test_reconciliation_guards.py:should_write_exactly_one_terminal_record_under_contention",
+        "src/codex_review/main.py:listing"
+      ],
+      "remaining": "One contention case tested. run holds job lock during model call; bare listing takes no job locks; root lease/crash/concurrent-reader matrix absent."
+    },
+    {
+      "id": "T-104",
+      "source_line": 1741,
+      "requirement": "tamper detection boundary",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/probes.py:_rehash",
+        "src/codex_review/main.py",
+        "tests/l1/test_seal.py",
+        "tests/l1/test_envelope.py",
+        "tests/l1/test_run_failures.py",
+        "tests/l1/test_prepare_code.py"
+      ],
+      "remaining": "Relevant primitives tested; full tamper/scope-boundary/oversize-plan-eval/per-verb envelope matrices are not established."
+    },
+    {
+      "id": "T-105",
+      "source_line": 1742,
+      "requirement": "scope-detection boundary",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/probes.py:_rehash",
+        "src/codex_review/main.py",
+        "tests/l1/test_seal.py",
+        "tests/l1/test_envelope.py",
+        "tests/l1/test_run_failures.py",
+        "tests/l1/test_prepare_code.py"
+      ],
+      "remaining": "Relevant primitives tested; full tamper/scope-boundary/oversize-plan-eval/per-verb envelope matrices are not established."
+    },
+    {
+      "id": "T-106",
+      "source_line": 1743,
+      "requirement": "plan fixture limits",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/probes.py:_rehash",
+        "src/codex_review/main.py",
+        "tests/l1/test_seal.py",
+        "tests/l1/test_envelope.py",
+        "tests/l1/test_run_failures.py",
+        "tests/l1/test_prepare_code.py"
+      ],
+      "remaining": "Relevant primitives tested; full tamper/scope-boundary/oversize-plan-eval/per-verb envelope matrices are not established."
+    },
+    {
+      "id": "T-107",
+      "source_line": 1744,
+      "requirement": "runtime environment",
+      "assessment": "gap",
+      "evidence": [
+        "probe-results.json:state_inside_repository",
+        "src/codex_review/state.py:state_root"
+      ],
+      "remaining": "State inside a repository is accepted. Full no-repository-write and runtime/permission claims remain unproved."
+    },
+    {
+      "id": "T-108",
+      "source_line": 1745,
+      "requirement": "envelope discipline",
+      "assessment": "partial",
+      "evidence": [
+        "src/codex_review/probes.py:_rehash",
+        "src/codex_review/main.py",
+        "tests/l1/test_seal.py",
+        "tests/l1/test_envelope.py",
+        "tests/l1/test_run_failures.py",
+        "tests/l1/test_prepare_code.py"
+      ],
+      "remaining": "Relevant primitives tested; full tamper/scope-boundary/oversize-plan-eval/per-verb envelope matrices are not established."
+    },
+    {
+      "id": "E-1",
+      "source_line": 1751,
+      "requirement": "seeded major defect in a code change",
+      "assessment": "not-established",
+      "evidence": [
+        "../codex-review-plan-2026-09-17.md:Section 14"
+      ],
+      "remaining": "Dogfooding records exist, but no identified controlled run establishes every clause of this named seeded live case."
+    },
+    {
+      "id": "E-2",
+      "source_line": 1752,
+      "requirement": "factual error in a plan **living inside its context repository**",
+      "assessment": "not-established",
+      "evidence": [
+        "../codex-review-plan-2026-09-17.md:Section 14"
+      ],
+      "remaining": "Dogfooding records exist, but no identified controlled run establishes every clause of this named seeded live case."
+    },
+    {
+      "id": "E-3",
+      "source_line": 1753,
+      "requirement": "clean change with false-positive bait",
+      "assessment": "not-established",
+      "evidence": [
+        "../codex-review-plan-2026-09-17.md:Section 14"
+      ],
+      "remaining": "Dogfooding records exist, but no identified controlled run establishes every clause of this named seeded live case."
+    },
+    {
+      "id": "E-4",
+      "source_line": 1754,
+      "requirement": "file containing instructions aimed at the reviewer",
+      "assessment": "not-established",
+      "evidence": [
+        "../codex-review-plan-2026-09-17.md:Section 14"
+      ],
+      "remaining": "Dogfooding records exist, but no identified controlled run establishes every clause of this named seeded live case."
+    },
+    {
+      "id": "E-5",
+      "source_line": 1755,
+      "requirement": "plausible-but-wrong finding a probe refutes",
+      "assessment": "not-established",
+      "evidence": [
+        "../codex-review-plan-2026-09-17.md:Section 14"
+      ],
+      "remaining": "Dogfooding records exist, but no identified controlled run establishes every clause of this named seeded live case."
+    }
+  ]
+}

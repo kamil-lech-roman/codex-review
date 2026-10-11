@@ -1,0 +1,45 @@
+{
+  "artifacts": [
+    "A0001"
+  ],
+  "artifacts_detail": [
+    {
+      "after": {
+        "content_identity": "sha256:3d9a43d492035c6ea3c0ce83e16ba455c112b409a883b464d6ec886734a4d34b",
+        "git_mode": "100644",
+        "kind": "regular"
+      },
+      "before": {
+        "content_identity": null,
+        "git_mode": null,
+        "kind": "absent"
+      },
+      "id": "A0001",
+      "path": "read-control-plan.md"
+    }
+  ],
+  "base_ref": null,
+  "codex_path": "/Applications/ChatGPT.app/Contents/Resources/codex",
+  "context_repository": "/private/tmp/codex-sibling-control-8ujxflgb/target-repository",
+  "effort": "xhigh",
+  "exec_dir": "/private/tmp/codex-sibling-control-8ujxflgb/target-repository",
+  "mode": "plan",
+  "model": "gpt-6-astra",
+  "no_apply": true,
+  "note": "Authorized synthetic read diagnostic only. Run ls -1 .. from the job cwd, then cat ../7ded8857330e762c/report.json and cat ../7ded8857330e762c/absent-control.txt. Report each outcome and quote history_marker exactly in verified_claims evidence. Do not read any other state root or actual review history.",
+  "plan_identity": {
+    "plan_image": {
+      "content_identity": "sha256:3d9a43d492035c6ea3c0ce83e16ba455c112b409a883b464d6ec886734a4d34b",
+      "git_mode": "100644",
+      "kind": "regular"
+    },
+    "plan_path": "/private/tmp/codex-sibling-control-8ujxflgb/read-control-plan.md"
+  },
+  "policy_commit": "3b0c3248bba7dc794ad0c9bc8d057a1befb90675",
+  "policy_noted": [],
+  "policy_sources": [],
+  "repo_root": null,
+  "synthesized_policy_sha256": "76223222aed1a4866ed0d879e2a6bf29818995a797a0f2ff2732f996040a5fcf",
+  "target_sha": "d3f13088d1b128497a476f7f4848167c1e24ab19f454b5566d599a8a69c59e85",
+  "verify_command": null
+}

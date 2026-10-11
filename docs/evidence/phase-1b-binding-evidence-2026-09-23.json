@@ -1,0 +1,217 @@
+{
+  "kind": "selected historical evidence; not a new execution or original sealed artifact",
+  "source": {
+    "source_file": "phase-1b-binding-evidence-2026-09-23.json",
+    "source_sha256": "d3a7dfcf4a6aa34b1541b7c570c062eec06ac0e267bc57bc87be7c7198889603"
+  },
+  "selection": [
+    "collected_at_utc",
+    "reviewed_revision",
+    "source_sha256",
+    "fixture",
+    "limits"
+  ],
+  "locator_substitutions": {
+    "private project Python executable": "<python>"
+  },
+  "observations": {
+    "collected_at_utc": "2026-09-23T21:15:21.094832+00:00",
+    "reviewed_revision": "3e653503c84d1e03f1a5c0890a536e8d1a0bd2f6",
+    "source_sha256": {
+      "projections.py": "49517dbad1e81b5abe52c5a61c6bcd28397266331a92b092598b01b6deffa94d",
+      "images.py": "0d3948c6af0d4b9c56d9bc618ba195c515655e3968de5b54005ee23c3fab8805",
+      "git.py": "ec8188d41046760949efeedf11639572b4586b2e8dc3926e8e9eb45cf567e5d5"
+    },
+    "fixture": {
+      "initial_files": {
+        ".gitignore": ".venv/\noutputs/\n.claude/worktrees/\n",
+        "source.py": "VALUE = 1\n",
+        "notes.txt": "untracked context\n",
+        ".venv/cache.pyc": "cache before\n",
+        ".venv/tracked.txt": "force tracked before\n",
+        "outputs/result.csv": "result before\n",
+        ".claude/worktrees/other/source.py": "nested before\n"
+      },
+      "ignored_mutated_paths": [
+        ".venv/cache.pyc",
+        "outputs/result.csv",
+        ".claude/worktrees/other/source.py"
+      ],
+      "ignored_created_path": ".venv/new-cache/child.pyc",
+      "baseline": {
+        "manifest": {
+          ".gitignore": {
+            "kind": "regular",
+            "git_mode": "100644",
+            "content_identity": "sha256:671f83297ea320d1c5e9c34cf22797b0ce5537a95f8749af60a7806fd8690b34"
+          },
+          ".venv/tracked.txt": {
+            "kind": "regular",
+            "git_mode": "100644",
+            "content_identity": "sha256:8c95c402a81e93ec3db361c9b02e5f7662ed95a6779ee8164c1b399ca45cb2e4"
+          },
+          "notes.txt": {
+            "kind": "regular",
+            "git_mode": "100644",
+            "content_identity": "sha256:2c32ade01e5c248642bb60b204ce8a5196993d6a5b5be1e8c91ba6cab7d4aa16"
+          },
+          "source.py": {
+            "kind": "regular",
+            "git_mode": "100644",
+            "content_identity": "sha256:e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65"
+          }
+        },
+        "repo_identity": {
+          "head_oid": "unborn",
+          "ref_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "index_digest": "e4ea5ec271b14ed65f78f6bf0ab311df27140b5f017a3730d6a2510cba06a402",
+          "worktree_digest": "2bb3ac926a44f5deb43279e23007ffc32ef697ba064bb346b323383d702375ea"
+        }
+      },
+      "after_ignored_mutations": {
+        "manifest": {
+          ".gitignore": {
+            "kind": "regular",
+            "git_mode": "100644",
+            "content_identity": "sha256:671f83297ea320d1c5e9c34cf22797b0ce5537a95f8749af60a7806fd8690b34"
+          },
+          ".venv/tracked.txt": {
+            "kind": "regular",
+            "git_mode": "100644",
+            "content_identity": "sha256:8c95c402a81e93ec3db361c9b02e5f7662ed95a6779ee8164c1b399ca45cb2e4"
+          },
+          "notes.txt": {
+            "kind": "regular",
+            "git_mode": "100644",
+            "content_identity": "sha256:2c32ade01e5c248642bb60b204ce8a5196993d6a5b5be1e8c91ba6cab7d4aa16"
+          },
+          "source.py": {
+            "kind": "regular",
+            "git_mode": "100644",
+            "content_identity": "sha256:e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65"
+          }
+        },
+        "repo_identity": {
+          "head_oid": "unborn",
+          "ref_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "index_digest": "e4ea5ec271b14ed65f78f6bf0ab311df27140b5f017a3730d6a2510cba06a402",
+          "worktree_digest": "2bb3ac926a44f5deb43279e23007ffc32ef697ba064bb346b323383d702375ea"
+        }
+      },
+      "visible_mutations": [
+        {
+          "path": "notes.txt",
+          "snapshot": {
+            "manifest": {
+              ".gitignore": {
+                "kind": "regular",
+                "git_mode": "100644",
+                "content_identity": "sha256:671f83297ea320d1c5e9c34cf22797b0ce5537a95f8749af60a7806fd8690b34"
+              },
+              ".venv/tracked.txt": {
+                "kind": "regular",
+                "git_mode": "100644",
+                "content_identity": "sha256:8c95c402a81e93ec3db361c9b02e5f7662ed95a6779ee8164c1b399ca45cb2e4"
+              },
+              "notes.txt": {
+                "kind": "regular",
+                "git_mode": "100644",
+                "content_identity": "sha256:39bb711e9c9d73366292f1d47acc10d2ba5dc0de68852f66295b3c52c83b2cb8"
+              },
+              "source.py": {
+                "kind": "regular",
+                "git_mode": "100644",
+                "content_identity": "sha256:e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65"
+              }
+            },
+            "repo_identity": {
+              "head_oid": "unborn",
+              "ref_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "index_digest": "e4ea5ec271b14ed65f78f6bf0ab311df27140b5f017a3730d6a2510cba06a402",
+              "worktree_digest": "7e9fae36a39b46ec232c65def61ef1b79c4d0f9a9998f875d77b005564bc0cbb"
+            }
+          }
+        },
+        {
+          "path": "source.py",
+          "snapshot": {
+            "manifest": {
+              ".gitignore": {
+                "kind": "regular",
+                "git_mode": "100644",
+                "content_identity": "sha256:671f83297ea320d1c5e9c34cf22797b0ce5537a95f8749af60a7806fd8690b34"
+              },
+              ".venv/tracked.txt": {
+                "kind": "regular",
+                "git_mode": "100644",
+                "content_identity": "sha256:8c95c402a81e93ec3db361c9b02e5f7662ed95a6779ee8164c1b399ca45cb2e4"
+              },
+              "notes.txt": {
+                "kind": "regular",
+                "git_mode": "100644",
+                "content_identity": "sha256:2c32ade01e5c248642bb60b204ce8a5196993d6a5b5be1e8c91ba6cab7d4aa16"
+              },
+              "source.py": {
+                "kind": "regular",
+                "git_mode": "100644",
+                "content_identity": "sha256:39bb711e9c9d73366292f1d47acc10d2ba5dc0de68852f66295b3c52c83b2cb8"
+              }
+            },
+            "repo_identity": {
+              "head_oid": "unborn",
+              "ref_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "index_digest": "e4ea5ec271b14ed65f78f6bf0ab311df27140b5f017a3730d6a2510cba06a402",
+              "worktree_digest": "b0768a906b51477645b084308d2f84ab349694c300dee28612ec8ad3b2f5e66e"
+            }
+          }
+        },
+        {
+          "path": ".venv/tracked.txt",
+          "snapshot": {
+            "manifest": {
+              ".gitignore": {
+                "kind": "regular",
+                "git_mode": "100644",
+                "content_identity": "sha256:671f83297ea320d1c5e9c34cf22797b0ce5537a95f8749af60a7806fd8690b34"
+              },
+              ".venv/tracked.txt": {
+                "kind": "regular",
+                "git_mode": "100644",
+                "content_identity": "sha256:39bb711e9c9d73366292f1d47acc10d2ba5dc0de68852f66295b3c52c83b2cb8"
+              },
+              "notes.txt": {
+                "kind": "regular",
+                "git_mode": "100644",
+                "content_identity": "sha256:2c32ade01e5c248642bb60b204ce8a5196993d6a5b5be1e8c91ba6cab7d4aa16"
+              },
+              "source.py": {
+                "kind": "regular",
+                "git_mode": "100644",
+                "content_identity": "sha256:e13df8c44af5dea1e412403910b99cc5a48f2ccbf68a66b3374d6ab9cef9fc65"
+              }
+            },
+            "repo_identity": {
+              "head_oid": "unborn",
+              "ref_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "index_digest": "e4ea5ec271b14ed65f78f6bf0ab311df27140b5f017a3730d6a2510cba06a402",
+              "worktree_digest": "a574a94b0f20de7a382a692705a9b36d0241b86c3939dfefa4d9e006a0c8835f"
+            }
+          }
+        }
+      ],
+      "checks": {
+        "ignored_changes_leave_manifest_and_identity_equal": true,
+        "notes.txt_changes_manifest_and_worktree_digest": true,
+        "source.py_changes_manifest_and_worktree_digest": true,
+        ".venv/tracked.txt_changes_manifest_and_worktree_digest": true,
+        "restored_visible_bytes_match_baseline": true,
+        "git_visible_membership": true
+      }
+    },
+    "limits": [
+      "Exercises existing Git-visible manifests, not proposed dependency capture or loop gates.",
+      "Real-target evidence is a read-only Git-visible census, not a full ignored-file size/mtime census.",
+      "No reviewer launch, filesystem confinement or external-write prevention is established."
+    ]
+  }
+}

@@ -23,6 +23,7 @@ def run(args, cwd, check=True, text=True):
         env=dict(os.environ, **HERMETIC_ENV),
         capture_output=True,
         text=text,
+        **({"encoding": "utf-8", "errors": "surrogateescape"} if text else {}),
         stdin=subprocess.DEVNULL,
     )
     if check and completed.returncode != 0:

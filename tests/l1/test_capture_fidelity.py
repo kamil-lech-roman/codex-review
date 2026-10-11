@@ -23,7 +23,7 @@ def should_freeze_the_plan_bytes_into_the_job(review, plan_file_factory, outside
     then the bytes are copied into the job, so a later edit cannot change what is reviewed
     """
     plan = plan_file_factory("# original\n")
-    result = review("prepare", "plan", str(plan), cwd=outside_any_repo)
+    result = review("prepare", "plan", str(plan), "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
     plan.write_text("# replaced\n")
 
     job_dir = Path(result.envelope["job_dir"])
@@ -45,7 +45,7 @@ def should_preserve_binary_content(review, make_repo):
     git(repo, "add", "-A")
     git(repo, "commit", "-qm", "binary")
 
-    result = review("prepare", "code", "--base", base, cwd=repo)
+    result = review("prepare", "code", "--base", base, "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     job_dir = Path(result.envelope["job_dir"])
@@ -66,7 +66,7 @@ def should_preserve_carriage_returns(review, make_repo):
     git(repo, "add", "-A")
     git(repo, "commit", "-qm", "crlf")
 
-    result = review("prepare", "code", "--base", base, cwd=repo)
+    result = review("prepare", "code", "--base", base, "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     job_dir = Path(result.envelope["job_dir"])
     detail = {a["path"]: a for a in target_of(result)["artifacts_detail"]}
@@ -85,7 +85,7 @@ def should_record_the_destination_of_a_rename(review, make_repo):
     git(repo, "mv", "pkg/old.py", "moved.py")
     git(repo, "commit", "-qm", "rename")
 
-    result = review("prepare", "code", "--base", base, cwd=repo)
+    result = review("prepare", "code", "--base", base, "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     paths = sorted(a["path"] for a in target_of(result)["artifacts_detail"])
@@ -103,7 +103,7 @@ def should_capture_a_symlink_as_its_link_text(review, make_repo, tmp_path):
     repo = make_repo({"a.py": "A = 1\n"})
     (repo / "link").symlink_to(secret)
 
-    result = review("prepare", "code", "--uncommitted", cwd=repo)
+    result = review("prepare", "code", "--uncommitted", "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     job_dir = Path(result.envelope["job_dir"])

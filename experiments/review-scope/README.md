@@ -5,8 +5,6 @@ drawn about which to prefer**, because the data cannot support one: scope and re
 are the same variable for three of the four whole-repository passes, and the two obvious cost
 denominators point in opposite directions.
 
-This public summary retains measured results; the raw review job records remain private.
-
 Three earlier versions of this file did draw conclusions. Thirteen review findings across
 three rounds established that all of them overstated the tables below, every time in the same
 direction. What is left is the tables and the things that have been tested and ruled out.

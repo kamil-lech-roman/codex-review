@@ -1,0 +1,121 @@
+{
+  "observed_on": "2026-09-20",
+  "baseline": "d5b201d",
+  "job_id": "5b056eaa24cd812b",
+  "run_metadata": {
+    "codex_path": "/Applications/ChatGPT.app/Contents/Resources/codex",
+    "codex_version": "codex-cli 0.155.0-alpha.9.2",
+    "driver_hash": "8e9777ddbbc99a2510f53ff2f1400b2d0714fd19578b93741f21b442f562a522",
+    "driver_version": "0.1.0",
+    "effective_policy_hash": "a182a9b24a9681443bf30038f94a5be31b6e1a47e6963e61fc4e023fffe66031",
+    "effort": "xhigh",
+    "elapsed_seconds": 55.435,
+    "model": "gpt-6-astra",
+    "prompt_sha256": "52f8b84cf3ed6e4ff145b728ca0e5ec72f1c8b37be9b57ed59950c8cc8b73d12",
+    "schema_sha256": "6f704286f701dc88ca9a6889e2513c80aa8cc587d7e3393ac7d2f1efff90117b",
+    "synthesized_policy_sha256": "76223222aed1a4866ed0d879e2a6bf29818995a797a0f2ff2732f996040a5fcf",
+    "target_bytes": 498
+  },
+  "reviewer_argv_policy": {
+    "source": "src/codex_review/reviewer.py: invoke",
+    "source_sha256": "57ab4bf40e9dd8f3ccc78e5ba9d901f3c5ad86cb2eb6b457212ca6a39c68f56e",
+    "sandbox": "read-only",
+    "cwd": "/private/tmp/codex-context-control-ntvx9uak/review-state/5b056eaa24cd812b",
+    "ephemeral": true,
+    "ignore_user_config": true,
+    "ignore_rules": true
+  },
+  "input_sha256": {
+    "target.json": "6511dfc7b6b54fad10bad3e2e118529e35d6a31cf88f6c12ff4e4832ab08a27f",
+    "AGENTS.md": "76223222aed1a4866ed0d879e2a6bf29818995a797a0f2ff2732f996040a5fcf",
+    "prompt.txt": "52f8b84cf3ed6e4ff145b728ca0e5ec72f1c8b37be9b57ed59950c8cc8b73d12",
+    "staging/response.schema.json": "6f704286f701dc88ca9a6889e2513c80aa8cc587d7e3393ac7d2f1efff90117b",
+    "artifacts/A0001/after": "235559d17f537a106231a908f8cff1036654eaef1a806da43035283d6b660efc",
+    "artifacts/A0001/before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "artifacts/A0001/metadata.json": "20bbee3417c2a4a43cd136894857b1ef5a7ad31cf5bc144657561f5ea3787456"
+  },
+  "random_marker_sha256": "bd7274956d22bfb1ea86f819fa4b61821058fcfcd039e7ec1647ab885a03bc8f",
+  "marker_absent_from_prepared_inputs_and_prompt": true,
+  "marker_unchanged_after_run": true,
+  "positive_read": {
+    "id": "item_2",
+    "type": "command_execution",
+    "command": "/bin/zsh -lc 'cat /private/tmp/codex-context-control-ntvx9uak/target-repository/repository-only-marker.txt'",
+    "aggregated_output": "41eb536d1edbb52540b6ffa00e8cd24b0f018aeb66a6ae1165ae67564754ea3d\n",
+    "exit_code": 0,
+    "status": "completed"
+  },
+  "negative_read": {
+    "id": "item_1",
+    "type": "command_execution",
+    "command": "/bin/zsh -lc 'cat /private/tmp/codex-context-control-ntvx9uak/target-repository/absent-control.txt'",
+    "aggregated_output": "cat: /private/tmp/codex-context-control-ntvx9uak/target-repository/absent-control.txt: No such file or directory\n",
+    "exit_code": 1,
+    "status": "failed"
+  },
+  "literal_answer_matches_marker": true,
+  "usage": [
+    {
+      "input_tokens": 86334,
+      "cached_input_tokens": 67200,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 1425,
+      "reasoning_output_tokens": 387
+    }
+  ],
+  "job_closed": true,
+  "changed_paths": [],
+  "archive_sha256": {
+    "setup.json": "45f29f40deaf25f0a0bc90695cd3b031311b1b7962802096953a6f541358b094",
+    "prepare-envelope.json": "b52f54225aa7678ec21a011fa1a3398a2dc37cb950e2db2e4d0b2b882bccea60",
+    "run-envelope.json": "209d9ccdec1f142e4054da1f5058a54a8b0352f44c3efcd589c0515c5dedfd06",
+    "target.json": "6511dfc7b6b54fad10bad3e2e118529e35d6a31cf88f6c12ff4e4832ab08a27f",
+    "AGENTS.md.txt": "76223222aed1a4866ed0d879e2a6bf29818995a797a0f2ff2732f996040a5fcf",
+    "prompt.txt": "52f8b84cf3ed6e4ff145b728ca0e5ec72f1c8b37be9b57ed59950c8cc8b73d12",
+    "response.schema.json": "6f704286f701dc88ca9a6889e2513c80aa8cc587d7e3393ac7d2f1efff90117b",
+    "codex.jsonl": "00b7aa164d241a2ffc26471ff34e030213101992e8895e741d347067b27b60e8",
+    "report.json": "3bc85f22f595c9fbccddb70a823643307e90077aea1074fe94a0311a0d72fd45",
+    "response.json": "322269065c7992e1ed2ae77ea0132623e1783f15f6adea824ea170d7822d49eb",
+    "verification.json": "33bc7d296c103087de43753bf92190d67ac07ad863c2fb372833b7bdb344b30b",
+    "target-plan.md": "235559d17f537a106231a908f8cff1036654eaef1a806da43035283d6b660efc",
+    "expected-marker.txt": "bd7274956d22bfb1ea86f819fa4b61821058fcfcd039e7ec1647ab885a03bc8f",
+    "prepared-inputs/target.json": "6511dfc7b6b54fad10bad3e2e118529e35d6a31cf88f6c12ff4e4832ab08a27f",
+    "prepared-inputs/AGENTS.md.txt": "76223222aed1a4866ed0d879e2a6bf29818995a797a0f2ff2732f996040a5fcf",
+    "prepared-inputs/prompt.txt": "52f8b84cf3ed6e4ff145b728ca0e5ec72f1c8b37be9b57ed59950c8cc8b73d12",
+    "prepared-inputs/staging/response.schema.json": "6f704286f701dc88ca9a6889e2513c80aa8cc587d7e3393ac7d2f1efff90117b",
+    "prepared-inputs/artifacts/A0001/after": "235559d17f537a106231a908f8cff1036654eaef1a806da43035283d6b660efc",
+    "prepared-inputs/artifacts/A0001/before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "prepared-inputs/artifacts/A0001/metadata.json": "20bbee3417c2a4a43cd136894857b1ef5a7ad31cf5bc144657561f5ea3787456"
+  },
+  "limits": [
+    "One live cold one-pass run on the recorded CLI/model; persistent/resumed sessions were not tested.",
+    "A read outside the job succeeded; this is not proof of unrestricted access to every path or an intentional write-denial control.",
+    "The whole-repository manifest remains a conservative policy, not an empirically minimal context set.",
+    "The target was a synthetic diagnostic, not the Phase 1b plan; approval is not a clean review of that plan."
+  ],
+  "companion_locator_example": {
+    "entries": [
+      {
+        "id": "execution-contract",
+        "absolute_path": "/private/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/companion-locators-90gj2hbx/checkout-a/docs/contract.md",
+        "repository_relative_path": "docs/contract.md",
+        "image": {
+          "kind": "regular",
+          "git_mode": "100644",
+          "content_identity": "sha256:56cb7f5069419de7a1f728dac49fd127a7f27c6f4139c3e94a9dc98368ef01a5"
+        }
+      },
+      {
+        "id": "execution-contract",
+        "absolute_path": "/private/var/folders/4b/_zfjgxbn4pl_trn3ysjf3l7w0000gn/T/companion-locators-90gj2hbx/checkout-b/docs/contract.md",
+        "repository_relative_path": "docs/contract.md",
+        "image": {
+          "kind": "regular",
+          "git_mode": "100644",
+          "content_identity": "sha256:56cb7f5069419de7a1f728dac49fd127a7f27c6f4139c3e94a9dc98368ef01a5"
+        }
+      }
+    ],
+    "kind": "filesystem image comparison using the existing image_of primitive; no new companion validator or loop migration implemented"
+  }
+}

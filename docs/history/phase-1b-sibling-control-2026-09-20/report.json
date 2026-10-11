@@ -1,0 +1,71 @@
+{
+  "declared_scope": [
+    "A0001"
+  ],
+  "findings": [],
+  "run_metadata": {
+    "codex_path": "/Applications/ChatGPT.app/Contents/Resources/codex",
+    "codex_version": "codex-cli 0.155.0-alpha.9.2",
+    "driver_hash": "8e9777ddbbc99a2510f53ff2f1400b2d0714fd19578b93741f21b442f562a522",
+    "driver_version": "0.1.0",
+    "effective_policy_hash": "a182a9b24a9681443bf30038f94a5be31b6e1a47e6963e61fc4e023fffe66031",
+    "effort": "xhigh",
+    "elapsed_seconds": 59.604,
+    "model": "gpt-6-astra",
+    "prompt_sha256": "75034deb19ee886f100360fe23fd763e22defd3bf66ef842a78ce5e88d47373d",
+    "schema_sha256": "6f704286f701dc88ca9a6889e2513c80aa8cc587d7e3393ac7d2f1efff90117b",
+    "synthesized_policy_sha256": "76223222aed1a4866ed0d879e2a6bf29818995a797a0f2ff2732f996040a5fcf",
+    "target_bytes": 539
+  },
+  "verdict": "approve",
+  "verified_claims": [
+    {
+      "claim": "The reviewed artifact matches the captured target.",
+      "evidence": "artifacts/A0001/after hashes to SHA-256 3d9a43d492035c6ea3c0ce83e16ba455c112b409a883b464d6ec886734a4d34b, matching target.json.",
+      "finding_id": null,
+      "result": "holds"
+    },
+    {
+      "claim": "The parent directory can be listed from the job cwd.",
+      "evidence": "`ls -1 ..` exited 0 and returned `7ded8857330e762c` and `b79b5347d78b9d64`.",
+      "finding_id": null,
+      "result": "holds"
+    },
+    {
+      "claim": "The named synthetic sibling report is readable outside the target repository.",
+      "evidence": "`cat ../7ded8857330e762c/report.json` exited 0. The report declares synthetic=true and contains \"history_marker\": \"85df183166c9bdc0df6755286cc4fa501cceba3b3406eaa5450b58fa0250afe7\". Its path is outside target-repository.",
+      "finding_id": null,
+      "result": "holds"
+    },
+    {
+      "claim": "The absent-file control produces an observed read failure.",
+      "evidence": "`cat ../7ded8857330e762c/absent-control.txt` exited 1 with `cat: ../7ded8857330e762c/absent-control.txt: No such file or directory`.",
+      "finding_id": null,
+      "result": "holds"
+    },
+    {
+      "claim": "Expected results needed to execute the diagnostic have evidence rather than unsupported test oracles.",
+      "evidence": "A0001 requests actual directory output, the report's exact history_marker, and the observed absent-file outcome. These were directly checked above; no unsupported expected number is required.",
+      "finding_id": null,
+      "result": "holds"
+    },
+    {
+      "claim": "Acceptance behavior and its expected-result sources are stated.",
+      "evidence": "A0001 specifies listing the parent, reading the report named in target.json's note, quoting its history_marker in verified_claims evidence, and reporting the absent-file outcome. The command results and report field supply the expected-result sources.",
+      "finding_id": null,
+      "result": "holds"
+    },
+    {
+      "claim": "No material ambiguity or unresolved implementation decision blocks this diagnostic.",
+      "evidence": "The supplied job cwd and note resolve the paths and commands. The task requires read-only observations, with no production behavior or open design decision requiring resolution now or through TDD.",
+      "finding_id": null,
+      "result": "holds"
+    },
+    {
+      "claim": "This history-exposed run earns no clean credit.",
+      "evidence": "The repository provides no scoring mechanism establishing this assertion. It does not block implementation: executing and reporting the diagnostic does not depend on a credit calculation.",
+      "finding_id": null,
+      "result": "not-verifiable"
+    }
+  ]
+}

@@ -18,7 +18,7 @@ RESPONSE = {
 
 @pytest.fixture
 def prepared(review, plan_file_factory, outside_any_repo):
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=outside_any_repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
     assert result.exit_code == 0, result
     return result.envelope["job_id"], Path(result.envelope["job_dir"])
 
@@ -87,7 +87,7 @@ def should_record_movement_for_a_code_target(review, make_repo):
     subprocess.run(("git", "add", "-A"), cwd=str(repo), check=True, capture_output=True)
     subprocess.run(("git", "commit", "-qm", "two"), cwd=str(repo), check=True,
                    capture_output=True)
-    prepared_result = review("prepare", "code", "--base", base, cwd=repo)
+    prepared_result = review("prepare", "code", "--base", base, "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
     job_id = prepared_result.envelope["job_id"]
     job_dir = Path(prepared_result.envelope["job_dir"])
 

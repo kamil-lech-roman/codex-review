@@ -1,0 +1,192 @@
+{
+  "rounds": [
+    {
+      "accepted": 0,
+      "base": "1e92ef575a0d75ceac31c7b241d564b0dc96a360",
+      "effort": "max",
+      "findings": 0,
+      "head": "4e0f3b73c12f5eda6213a0b2c94f615c9e8c5808",
+      "job_id": "9c1a26906a7422d7",
+      "model": "gpt-6-astra",
+      "source_sha256": {
+        "probes.json": "43ea3521899cc107a15eac4718c5ccba22fdd0b6db616df8c7952d4a57217c67",
+        "report.json": "8b25a7f0c24e8d071ae6c9cab98ebfa040aec0fe30e8fbe66e551340ba984d54",
+        "target.json": "a1ed5ab32e67b530682f2f43719d5153ae7ffd2e1e82daa5f4162926f20593fc"
+      },
+      "target_sha": "f4f2074a687b7243b3d82b87ded014955d9f8dc7a3b89ad1f0b42c6912a4e1d3",
+      "verdict": "approve"
+    },
+    {
+      "accepted": 1,
+      "base": "4e0f3b73c12f5eda6213a0b2c94f615c9e8c5808",
+      "effort": "max",
+      "findings": 1,
+      "head": "31238b4b660f39d342ece8ed6081ec08d3464dc1",
+      "job_id": "0b45b809f5bca57e",
+      "model": "gpt-6-astra",
+      "source_sha256": {
+        "probes.json": "89fdb6f5e9511405a8383338c6166100c8f99163a0f492aa067f0105922d5d24",
+        "report.json": "c845d7abf2fb1826e6456b6efa9f986ab375e974cf606bc850cf31507ed6b484",
+        "target.json": "6b128c509b5ad78f7e3e702dfcd602f1d7ad74394cb11656ccc58df733fea91f"
+      },
+      "target_sha": "c293d441d5ef584b9f6a430423668e8882bd9ed16002c97e923a072fff3db9b4",
+      "verdict": "changes-required"
+    },
+    {
+      "accepted": 0,
+      "base": "31238b4b660f39d342ece8ed6081ec08d3464dc1",
+      "effort": "max",
+      "findings": 0,
+      "head": "328300136acd84b394c4df4e8ec6e2a2044a432c",
+      "job_id": "b596875ab0cceda3",
+      "model": "gpt-6-astra",
+      "source_sha256": {
+        "probes.json": "aacf8e4af4c9de2420d4ffbb49d6c18dc992f8c8b0abbc0b3ebcefdb4aafb477",
+        "report.json": "c1790cac9f245b8ec286050b39079fff65ced07632d9d4bbffbd776bc9c83334",
+        "target.json": "dc08ba2fc5969ac060d46c8c870cb4f902d8bf29e3437285b3db3870045ed8d0"
+      },
+      "target_sha": "006ba89e37e67fa6463b7c59af85defaf648cf88edc804805cc3e5549ec8e204",
+      "verdict": "approve"
+    },
+    {
+      "accepted": 1,
+      "base": "328300136acd84b394c4df4e8ec6e2a2044a432c",
+      "effort": "max",
+      "findings": 2,
+      "head": "90c51351aba1b9282231cc233d2348a568eb8278",
+      "job_id": "7db4d59eefd7ce1e",
+      "model": "gpt-6-astra",
+      "source_sha256": {
+        "probes.json": "c493d9eef937464d986160f1ec4a7520c8260682b8f3fe07e8c7a9c5e7dde433",
+        "report.json": "177e143d2c2d4d137bb131f32ec9645e97cd61cfd34633a71ecc0ee3285c01cb",
+        "target.json": "badb453c990d24f5d7713fb53180b832b9eb9759e8e18573a53bfc625b300543"
+      },
+      "target_sha": "5a4113d1e3eed91873c9d84b845c21f0bcece377340e88c3673b362b54b15937",
+      "verdict": "changes-required"
+    },
+    {
+      "accepted": 0,
+      "base": "90c51351aba1b9282231cc233d2348a568eb8278",
+      "effort": "max",
+      "findings": 1,
+      "head": "6461c0441a4587dc8380b4c807a26b820f3d513c",
+      "job_id": "023d71e4a4deb660",
+      "model": "gpt-6-astra",
+      "source_sha256": {
+        "probes.json": "fe8c434d1c7af0ecdb5fa62f5a194a26783421630414c9bf6ccaebcc74bd96b2",
+        "report.json": "9c2e6305010c022298fe4788d63652ed83ceed7b84cfbc2c9a27d1b47c67ffc6",
+        "target.json": "019b0d72a7e9c255a04091fb80a4a4a092b518926a016d2b4220d8ddb3950f7f"
+      },
+      "target_sha": "901479f574605cbabcd9c21603b8398e1a3d0093361cfefb1867f84425c526b6",
+      "verdict": "approve"
+    },
+    {
+      "accepted": 0,
+      "base": "6461c0441a4587dc8380b4c807a26b820f3d513c",
+      "effort": "max",
+      "findings": 0,
+      "head": "408cb8b80fba193db02c1e1359ae3b4207ed27d6",
+      "job_id": "7f259f4a69fe79f2",
+      "model": "gpt-6-astra",
+      "source_sha256": {
+        "probes.json": "1e88b5573d83077990ca0b8c4cc50de3117ebf840afd7189592cf5fd19fb35e6",
+        "report.json": "c5f598f548e1556bffbff08885fe9ce2d2bd465e9a01921e3ccd3713b35e0299",
+        "target.json": "a304b313c60b34d4f3b8d7d571aadbd20d4261d3aa8ba4f0f62c34eafd3baed6"
+      },
+      "target_sha": "d1e8e4afa89ed8a600a8fde2246d7463f0e6de2fe119298a9c7eb5d8bc546432",
+      "verdict": "approve"
+    },
+    {
+      "accepted": 0,
+      "base": "408cb8b80fba193db02c1e1359ae3b4207ed27d6",
+      "effort": "max",
+      "findings": 0,
+      "head": "46c19686d9ac032a483c572b59eccf698ce48d26",
+      "job_id": "b85020626afd0f37",
+      "model": "gpt-6-astra",
+      "source_sha256": {
+        "probes.json": "1cff4bad29a68861e0fbaf6a10dee60394053ae099fb8ee80011706fb8684214",
+        "report.json": "557f977978200f079423fd30873cbb664b4faa173ceceb9b853d7e3b0eb8ef01",
+        "target.json": "979fcbbf2723de05fdbdd8414bb9d440108ff8303b53e38d0f1a70e8271161f7"
+      },
+      "target_sha": "742c46fae0a004482b3250d7d7621dc837cdab754710b26d98bc80331319bbb8",
+      "verdict": "approve"
+    },
+    {
+      "accepted": 0,
+      "base": "46c19686d9ac032a483c572b59eccf698ce48d26",
+      "effort": "max",
+      "findings": 0,
+      "head": "78186fda7ef62fbedef6e5ab8af80532b5a4ee90",
+      "job_id": "07859d21a6afc36f",
+      "model": "gpt-6-astra",
+      "source_sha256": {
+        "probes.json": "d9cf7bb82987b62ea9945ece6e3e17cfb1723194e4351c3df962a14f74ca4bb4",
+        "report.json": "26138773c509fa965f0d303836d933d9457649ffeb607306eb047db3cd86838c",
+        "target.json": "6f01999d9172ad7f99065d19f57214a003eab4391ee3de2411d959d0203abb3d"
+      },
+      "target_sha": "e57f5d09e8edfb4e7584835206671108a37a83554a29a3384c642ec095e92893",
+      "verdict": "approve"
+    },
+    {
+      "accepted": 0,
+      "base": "78186fda7ef62fbedef6e5ab8af80532b5a4ee90",
+      "effort": "max",
+      "findings": 0,
+      "head": "1676299c82bb2a60028b2c984f9443a04bd0466e",
+      "job_id": "d3bb16641f41c07d",
+      "model": "gpt-6-astra",
+      "source_sha256": {
+        "probes.json": "70185af77a070b6e4dbd13e923b2a49a7cf8f57ee8f059f46db288f4f6ce319e",
+        "report.json": "bfc406b8d6723226cde6fea6e66a0de5a28c5214a17e2d102968c033783f3587",
+        "target.json": "78219dfe997717d238ea342507419741dd0262e980ca50f6aa3932f147501d37"
+      },
+      "target_sha": "c104b494f4b2e53edf75b5fd7c075bf4bba281b7a80481c142b809a621984bfd",
+      "verdict": "approve"
+    },
+    {
+      "accepted": 0,
+      "base": "1e92ef575a0d75ceac31c7b241d564b0dc96a360",
+      "effort": "max",
+      "findings": 0,
+      "head": "1676299c82bb2a60028b2c984f9443a04bd0466e",
+      "job_id": "0e3eaa26d7b17df8",
+      "model": "gpt-6-astra",
+      "source_sha256": {
+        "probes.json": "d4cbfe954e5feb8d34540c5d46ea4101b74fac610b22e16478fe88a242226fc3",
+        "report.json": "8c32672ce7a6e3e2384c2b5b639c4ffca107338fb6dcf695a64b60d3adf1822f",
+        "target.json": "7e39f1e7bc828e3ec22e2d77d2655dcd26c4da49a87450a8f603bce07cab395b"
+      },
+      "target_sha": "41980061f6e0bed8cbe55a109c00fe35b531c34b46fa8171b6fa4ca084d8ef26",
+      "verdict": "approve"
+    },
+    {
+      "accepted": 0,
+      "base": "1e92ef575a0d75ceac31c7b241d564b0dc96a360",
+      "effort": "max",
+      "findings": 0,
+      "head": "5f14c76387efcc95c629218f19be687c8c2d94d7",
+      "job_id": "13c228b488527914",
+      "model": "gpt-6-astra",
+      "source_sha256": {
+        "probes.json": "e8d297e04480c8699a56623c7a76977515109399df3f6e4ebc979c7926bd36c0",
+        "report.json": "df597ad5c42b367967c72ee15e99edcb33d8ac494e6eda6a33e3efa148fdbbd7",
+        "target.json": "bf14f546bd3191be4c2dc3eab98443662707cdcb72db4ec2a4d1897802f3d85b"
+      },
+      "target_sha": "734d9e5a9a2e9bcb9ecc5d5a60911637ab4169ca73d38c02ae25a45fe6dd8855",
+      "verdict": "approve"
+    }
+  ],
+  "thresholds": {
+    "1": {
+      "missed_accepted": 2,
+      "saved_calls": 10,
+      "stop_after": "9c1a26906a7422d7"
+    },
+    "2": {
+      "missed_accepted": 0,
+      "saved_calls": 5,
+      "stop_after": "7f259f4a69fe79f2"
+    }
+  }
+}

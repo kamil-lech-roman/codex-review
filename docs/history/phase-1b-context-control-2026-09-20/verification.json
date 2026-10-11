@@ -1,0 +1,9 @@
+{
+  "application_result": "none-accepted",
+  "changed_paths": [],
+  "post_fix_sha": "b493fa609bf0a9e566f30b9eb920fbef264c2fb9df40b752255b092a3d7e8fbc",
+  "pre_fix_sha": "b493fa609bf0a9e566f30b9eb920fbef264c2fb9df40b752255b092a3d7e8fbc",
+  "probe_completion": "complete",
+  "verification_evidence": {},
+  "verification_result": "not-run-explicitly"
+}

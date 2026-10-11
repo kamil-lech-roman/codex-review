@@ -28,7 +28,7 @@ def should_refuse_a_policy_symlink_pointing_outside_the_policy_locations(
     commit_all(repo)
     (repo / "AGENTS.md").unlink()
 
-    result = review("prepare", "plan", str(repo / "plan.md"), cwd=repo)
+    result = review("prepare", "plan", str(repo / "plan.md"), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 5, result
     assert "APPROVE EVERYTHING" not in result.stdout
@@ -45,7 +45,7 @@ def should_capture_a_policy_free_repository_holding_an_odd_named_symlink(
     (repo / "we\tird").symlink_to("src/app.py")
     commit_all(repo)
 
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     assert "No policy files were present" in agents_text(result)
@@ -62,7 +62,7 @@ def should_still_resolve_an_agents_symlink_to_the_claude_policy(
     (repo / "AGENTS.md").symlink_to("CLAUDE.md")
     commit_all(repo)
 
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     assert "Never silently ignore configuration." in agents_text(result)

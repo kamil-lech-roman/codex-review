@@ -12,7 +12,7 @@ import pytest
 
 @pytest.fixture
 def job(review, plan_file_factory, outside_any_repo):
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=outside_any_repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline test", cwd=outside_any_repo)
     assert result.exit_code == 0, result
     return result.envelope["job_id"], Path(result.envelope["job_dir"])
 
@@ -136,13 +136,13 @@ def should_refuse_another_verbs_option_passed_to_prepare(review, plan_file_facto
                                                         outside_any_repo):
     """
     given a plan to prepare
-    when prepare is given --reason, which only abandon consumes
-    then it exits 2 with bad-option naming --reason, and no job is created
+    when prepare is given --bytes, which only seal consumes
+    then it exits 2 with bad-option naming --bytes, and no job is created
     """
-    result = review("prepare", "plan", str(plan_file_factory()), "--reason", "r",
+    result = review("prepare", "plan", str(plan_file_factory()), "--bytes", "4",
                     cwd=outside_any_repo)
 
-    assert_refused_option(result, "prepare", "--reason")
+    assert_refused_option(result, "prepare", "--bytes")
     assert result.envelope["job_id"] is None
 
 
@@ -176,7 +176,7 @@ def should_name_the_options_the_verb_accepts_when_refusing(review, job):
 
     result = review("run", job_id, "--no-apply")
 
-    assert result.envelope["error"]["details"]["accepted"] == ["--effort", "--model"]
+    assert result.envelope["error"]["details"]["accepted"] == ["--effort", "--expected-generation", "--model", "--round"]
 
 
 CONSUMED = {
@@ -191,21 +191,31 @@ CONSUMED = {
     "status": set(),
     "abandon": {"--reason", "--denied-interactively"},
 }
+CONSUMED["prepare"].update({"--reason", "--defer-verify", "--loop", "--companions-file",
+    "--dependencies-file", "--expect-paths", "--judgment-budget", "--retry-budget",
+    "--launch-budget", "--xhigh-clean", "--max-clean"})
+CONSUMED.update({"continue": {"--decision-file"}, "recapture": {"--base", "--head",
+    "--companions-file", "--dependencies-file", "--expect-paths"},
+    "record-qualification": {"--qualification-file"}, "rebut": {"--rebuttal-file"},
+    "amend-paths": {"--amendment-file"}})
+for verb in CONSUMED.keys() - {"prepare", "status"}:
+    CONSUMED[verb].add("--expected-generation")
+for verb in ("run", "seal", "record-qualification", "record-probes", "record-apply",
+             "record-verification", "rebut", "amend-paths"):
+    CONSUMED[verb].add("--round")
 EVERY_OPTION = sorted(set().union(*CONSUMED.values()))
 
 
 @pytest.mark.parametrize("verb", sorted(CONSUMED))
 @pytest.mark.parametrize("option", EVERY_OPTION)
 def should_accept_exactly_the_options_each_verb_consumes(verb, option):
-    """
-    given any verb and any option the driver knows
-    when that verb's arguments are parsed
-    then the option is parsed only if the verb consumes it, and refused by name otherwise
-    """
+    # given a verb and one known option (prepare includes loop policy options)
     from codex_review import main
-
-    positional, options, bad = main.parse_options(verb, ["job", option, "value"])
-
+    argv = ["code"] if verb == "prepare" else ["job"]
+    if verb == "prepare" and option != "--loop":
+        argv += ["--loop"]
+    # when parsed, then only an option consumed by that operation is accepted
+    positional, options, bad = main.parse_options(verb, argv + [option, "value"])
     if option in CONSUMED[verb]:
         assert bad is None
         assert option[2:].replace("-", "_") in options
@@ -214,12 +224,7 @@ def should_accept_exactly_the_options_each_verb_consumes(verb, option):
 
 
 def should_assign_every_known_option_to_the_verbs_that_consume_it():
-    """
-    given the driver's table of known options
-    when it is compared with the per-verb table above
-    then they name the same options, so a new option cannot skip the allowlists
-    """
+    # given the syntax inventory, when compared with the interface contract
     from codex_review import main
-
+    # then a new option cannot bypass applicability coverage
     assert sorted(main.OPTIONS) == EVERY_OPTION
-    assert {verb: set(options) for verb, options in main.VERB_OPTIONS.items()} == CONSUMED

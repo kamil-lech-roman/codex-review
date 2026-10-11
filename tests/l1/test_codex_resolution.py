@@ -10,7 +10,7 @@ def should_refuse_at_preflight_when_codex_cannot_be_resolved(review, plan_file_f
     when prepare runs
     then it exits 7 before any capture, with null identity because no job exists
     """
-    result = review("prepare", "plan", str(plan_file_factory()), codex_bin=None)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", codex_bin=None)
 
     assert result.exit_code == 7, result
     assert result.envelope["job_id"] is None
@@ -23,7 +23,7 @@ def should_prefer_codex_bin_over_path(review, plan_file_factory, fake_codex):
     when prepare runs
     then it resolves that binary and records its absolute path in target.json
     """
-    result = review("prepare", "plan", str(plan_file_factory()))
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification")
 
     assert result.exit_code == 0, result
     target = json.loads((Path(result.envelope["job_dir"]) / "target.json").read_text())
@@ -40,6 +40,6 @@ def should_refuse_a_codex_bin_that_is_not_executable(review, plan_file_factory, 
     not_executable.write_text("#!/bin/bash\n")
     not_executable.chmod(0o644)
 
-    result = review("prepare", "plan", str(plan_file_factory()), codex_bin=not_executable)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", codex_bin=not_executable)
 
     assert result.exit_code == 7, result

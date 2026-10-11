@@ -8,7 +8,7 @@ import pytest
 
 @pytest.fixture
 def prepared(review, plan_file_factory, outside_any_repo):
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=outside_any_repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=outside_any_repo)
     assert result.exit_code == 0, result
     return result.envelope["job_id"], Path(result.envelope["job_dir"])
 
@@ -169,3 +169,21 @@ def should_report_no_reset_time_for_a_failure_that_named_none(review, prepared):
     result = review("run", job_id, fake={"CODEX_FAKE_RC": "1"})
 
     assert result.envelope["error"]["details"]["retry_after"] is None
+
+
+def should_reject_non_utf8_response_with_an_envelope_and_preserve_bytes(
+        review, plan_file_factory, fake_codex):
+    from pathlib import Path
+    # given a completed provider reply containing an invalid UTF-8 byte
+    prepared = review('prepare', 'plan', str(plan_file_factory()), '--no-repo',
+                      '--no-verify', '--reason', 'malformed response control')
+    job = Path(prepared.envelope['job_dir'])
+    fake_codex.write_text(fake_codex.read_text().replace(
+        "open(out, 'w').write(body)", "open(out, 'wb').write(b'\\xff')"))
+    # when the driver collects the invocation
+    result = review('run', job.name)
+    # then the reply is a contract refusal with exact raw bytes, not a traceback
+    assert result.exit_code == 8, result
+    assert result.envelope['error']['code'] == 'malformed-encoding'
+    assert (job / 'response.json').read_bytes() == b'\xff'
+    assert not (job / 'report.json').exists()

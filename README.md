@@ -84,11 +84,10 @@ Keep that directory private. A Codex round submits review material to the config
 Codex backend, with the repository available as review context; review only material
 you are authorized to submit.
 
-The [cost policy](SKILL.md#when-the-loop-is-done) can switch a loop to Claude-only
-rounds. Those rounds are host-managed and have a
-[separate recording procedure](references/claude-only-rounds.md).
-`review.sh run` always invokes Codex. The separate Claude plan PoC does not create
-Codex jobs.
+The host-specific [cost policy](SKILL.md#when-the-loop-is-done) defines when Claude-only
+rounds apply. Those rounds are host-managed and have a
+[separate recording procedure](references/claude-only-rounds.md); the driver itself
+always invokes Codex. The separate Claude plan PoC does not create Codex jobs.
 
 ## Development
 
@@ -102,10 +101,11 @@ marked `l2` start a real Claude session and are opt-in with `uv run pytest -m l2
 They consume model usage and require an authenticated Claude CLI.
 
 [Documentation](docs/README.md) includes the review workflow and experiment summaries.
-This public release starts from a clean snapshot. Private development history,
-review transcripts, archived target captures and maintainer-specific plans are not
-included. Archive-integrity checks that require those private artifacts are not part
-of the public suite; the repository policy check is retained.
+The repository includes the opt-in
+[Phase 1b workflow](docs/plans/phase-1b.md), its retained audit evidence and integrity
+checks. Implementation acceptance remains tracked in that plan. See the
+[retention policy](docs/README.md#evidence-and-working-records) for private working
+records and curated public evidence.
 
 ## License
 

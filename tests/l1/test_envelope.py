@@ -54,7 +54,7 @@ def should_refuse_a_non_numeric_capture_limit(review, git_repo):
     """
     (git_repo / "changed.py").write_text("x = 1\n")
 
-    result = review("prepare", "code", "--uncommitted", "--max-artifact", "bad",
+    result = review("prepare", "code", "--uncommitted", "--max-artifact", "bad", "--no-verify", "--reason", "offline fixture does not require verification",
                     cwd=git_repo)
 
     assert result.envelope is not None, result

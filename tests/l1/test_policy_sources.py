@@ -22,7 +22,7 @@ def should_capture_a_root_claude_file(review, plan_file_factory, make_repo):
     then its text is carried inside the trusted block
     """
     repo = make_repo({"CLAUDE.md": CLAUDE})
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     assert "Never silently ignore configuration." in agents_text(result)
@@ -36,7 +36,7 @@ def should_capture_a_dot_claude_file(review, plan_file_factory, make_repo):
     then it is captured just the same
     """
     repo = make_repo({".claude/CLAUDE.md": CLAUDE})
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     assert target_of(result)["policy_sources"] == [".claude/CLAUDE.md"]
@@ -49,7 +49,7 @@ def should_refuse_both_claude_locations(review, plan_file_factory, make_repo):
     then it exits 5 naming both paths
     """
     repo = make_repo({"CLAUDE.md": CLAUDE, ".claude/CLAUDE.md": CLAUDE})
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 5, result
     named = json.dumps(result.envelope["error"]["details"])
@@ -63,7 +63,7 @@ def should_refuse_coexisting_policy_families(review, plan_file_factory, make_rep
     then it exits 5 — the reviewer must not be handed two competing policies
     """
     repo = make_repo({"CLAUDE.md": CLAUDE, "AGENTS.md": AGENTS})
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 5, result
 
@@ -81,7 +81,7 @@ def should_accept_an_agents_symlink_to_the_claude_file(review, plan_file_factory
     for argv in (("git", "add", "-A"), ("git", "commit", "-qm", "symlink")):
         subprocess.run(argv, cwd=str(repo), check=True, capture_output=True)
 
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
 
@@ -100,7 +100,7 @@ def should_read_the_policy_through_a_symlinked_claude_file(review, plan_file_fac
     for argv in (("git", "add", "-A"), ("git", "commit", "-qm", "symlink")):
         subprocess.run(argv, cwd=str(repo), check=True, capture_output=True)
 
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     assert "Prefer evidence over defaults." in agents_text(result)
@@ -113,7 +113,7 @@ def should_prefer_an_agents_override(review, plan_file_factory, make_repo):
     then the override is captured and the plain file is not
     """
     repo = make_repo({"AGENTS.md": AGENTS, "AGENTS.override.md": "# Override\n\nUse this.\n"})
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     assert target_of(result)["policy_sources"] == ["AGENTS.override.md"]
@@ -127,7 +127,7 @@ def should_refuse_claude_rules_directories(review, plan_file_factory, make_repo)
     then it exits 5 — nested rule files are not captured
     """
     repo = make_repo({"CLAUDE.md": CLAUDE, ".claude/rules/style.md": "# rules\n"})
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 5, result
 
@@ -139,7 +139,7 @@ def should_refuse_an_import_directive(review, plan_file_factory, make_repo):
     then it exits 5 rather than following a four-hop recursion
     """
     repo = make_repo({"CLAUDE.md": CLAUDE + "\n@import ./other.md\n"})
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 5, result
 
@@ -151,7 +151,7 @@ def should_refuse_an_oversize_synthesized_file(review, plan_file_factory, make_r
     then it exits 5, measuring the final file including wrapper text
     """
     repo = make_repo({"CLAUDE.md": "x" * (33 * 1024)})
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 5, result
 
@@ -163,7 +163,7 @@ def should_refuse_a_plan_target_that_is_itself_captured_policy(review, make_repo
     then it exits 5 — the target must not also be the instructions
     """
     repo = make_repo({"CLAUDE.md": CLAUDE})
-    result = review("prepare", "plan", str(repo / "CLAUDE.md"), cwd=repo)
+    result = review("prepare", "plan", str(repo / "CLAUDE.md"), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 5, result
 
@@ -175,7 +175,7 @@ def should_note_but_not_capture_a_local_override(review, plan_file_factory, make
     then it is recorded as noted, never captured
     """
     repo = make_repo({"CLAUDE.md": CLAUDE, "CLAUDE.local.md": "# local\n\nSecret preference.\n"})
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     assert "CLAUDE.local.md" in target_of(result)["policy_noted"]
@@ -191,7 +191,7 @@ def should_leave_no_staging_residue_when_policy_is_refused(
     then no .staging build remains, because a refusal is not a crash
     """
     repo = make_repo({"CLAUDE.md": "x" * (33 * 1024)})
-    result = review("prepare", "plan", str(plan_file_factory()), cwd=repo)
+    result = review("prepare", "plan", str(plan_file_factory()), "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 5
     staging = state_root / ".staging"

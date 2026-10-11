@@ -1,0 +1,14 @@
+{
+  "after": {
+    "content_identity": "sha256:235559d17f537a106231a908f8cff1036654eaef1a806da43035283d6b660efc",
+    "git_mode": "100644",
+    "kind": "regular"
+  },
+  "before": {
+    "content_identity": null,
+    "git_mode": null,
+    "kind": "absent"
+  },
+  "id": "A0001",
+  "path": "read-control-plan.md"
+}

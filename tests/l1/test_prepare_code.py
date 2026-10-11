@@ -34,7 +34,7 @@ def should_refuse_code_with_no_base_and_no_upstream(review, make_repo):
     then it exits 3 — target resolution refused
     """
     repo = make_repo()
-    result = review("prepare", "code", cwd=repo)
+    result = review("prepare", "code", "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 3, result
     assert result.envelope["job_id"] is None
@@ -48,7 +48,7 @@ def should_capture_the_committed_projection_against_a_base(review, repo_with_his
     """
     repo, base = repo_with_history
 
-    result = review("prepare", "code", "--base", base, cwd=repo)
+    result = review("prepare", "code", "--base", base, "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     target = target_of(result)
@@ -67,7 +67,7 @@ def should_record_before_and_after_images_per_artifact(review, repo_with_history
     """
     repo, base = repo_with_history
 
-    result = review("prepare", "code", "--base", base, cwd=repo)
+    result = review("prepare", "code", "--base", base, "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     job_dir = Path(result.envelope["job_dir"])
     detail = {a["path"]: a for a in target_of(result)["artifacts_detail"]}
@@ -90,7 +90,7 @@ def should_record_a_repo_identity_with_four_projections(review, repo_with_histor
     """
     repo, base = repo_with_history
 
-    result = review("prepare", "code", "--base", base, cwd=repo)
+    result = review("prepare", "code", "--base", base, "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     identity = target_of(result)["repo_identity"]
     assert len(identity["head_oid"]) == 40
@@ -109,7 +109,7 @@ def should_refuse_an_oversize_artifact(review, repo_with_history):
     git(repo, "add", "-A")
     git(repo, "commit", "-qm", "big")
 
-    result = review("prepare", "code", "--base", base, cwd=repo)
+    result = review("prepare", "code", "--base", base, '--max-artifact', '65536', "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 6, result
     assert "big.txt" in json.dumps(result.envelope["error"]["details"])
@@ -127,7 +127,7 @@ def should_refuse_an_oversize_bundle(review, repo_with_history):
     git(repo, "add", "-A")
     git(repo, "commit", "-qm", "bulk")
 
-    result = review("prepare", "code", "--base", base, cwd=repo)
+    result = review("prepare", "code", "--base", base, '--max-bundle', '262144', "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 6, result
 
@@ -144,7 +144,7 @@ def should_capture_uncommitted_work(review, make_repo):
     git(repo, "add", "b.py")
     (repo / "c.py").write_text("C = 1\n")
 
-    result = review("prepare", "code", "--uncommitted", cwd=repo)
+    result = review("prepare", "code", "--uncommitted", "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     paths = sorted(a["path"] for a in target_of(result)["artifacts_detail"])
@@ -166,7 +166,7 @@ def should_capture_the_initial_commit_before_any_commit_exists(review, tmp_path)
     (root / "f.py").write_text("def f():\n    return 1\n")
     run("git", "add", "f.py")
 
-    result = review("prepare", "code", "--uncommitted", cwd=root)
+    result = review("prepare", "code", "--uncommitted", "--no-verify", "--reason", "offline fixture does not require verification", cwd=root)
 
     assert result.envelope is not None, result
     assert result.stderr == "", result.stderr
@@ -187,7 +187,7 @@ def should_refuse_a_target_whose_head_is_not_the_pinned_commit(review, repo_with
     """
     repo, base = repo_with_history
 
-    result = review("prepare", "code", "--base", base, "--head", base, cwd=repo)
+    result = review("prepare", "code", "--base", base, "--head", base, "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 3, result
     assert result.envelope["job_id"] is None
@@ -209,7 +209,7 @@ def should_refuse_uncommitted_capture_when_head_is_not_the_pinned_commit(
     git(repo, "add", "src/thing.py")
 
     result = review("prepare", "code", "--uncommitted", "--head", stale_head,
-                    "--no-verify", cwd=repo)
+                    "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 3, result
     assert result.envelope["error"]["code"] == "head-moved"
@@ -229,7 +229,7 @@ def should_capture_a_target_whose_head_is_the_pinned_commit(review, repo_with_hi
     repo, base = repo_with_history
     head = git(repo, "rev-parse", "HEAD").strip()
 
-    result = review("prepare", "code", "--base", base, "--head", head, cwd=repo)
+    result = review("prepare", "code", "--base", base, "--head", head, "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
     assert target_of(result)["repo_identity"]["head_oid"] == head
@@ -244,7 +244,7 @@ def should_accept_a_pinned_head_named_by_an_abbreviation(review, repo_with_histo
     repo, base = repo_with_history
     short = git(repo, "rev-parse", "--short", "HEAD").strip()
 
-    result = review("prepare", "code", "--base", base, "--head", short, cwd=repo)
+    result = review("prepare", "code", "--base", base, "--head", short, "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 0, result
 
@@ -257,7 +257,7 @@ def should_refuse_a_pinned_head_that_does_not_resolve(review, repo_with_history)
     """
     repo, base = repo_with_history
 
-    result = review("prepare", "code", "--base", base, "--head", "no-such-ref", cwd=repo)
+    result = review("prepare", "code", "--base", base, "--head", "no-such-ref", "--no-verify", "--reason", "offline fixture does not require verification", cwd=repo)
 
     assert result.exit_code == 3, result
     assert result.stderr == "", result.stderr
@@ -272,7 +272,7 @@ def should_refuse_a_pinned_head_on_a_plan_target(review, plan_file_factory, git_
     """
     plan = plan_file_factory()
 
-    result = review("prepare", "plan", str(plan), "--head", "HEAD", cwd=git_repo)
+    result = review("prepare", "plan", str(plan), "--head", "HEAD", "--no-verify", "--reason", "offline fixture does not require verification", cwd=git_repo)
 
     assert result.exit_code == 2, result
-    assert result.envelope["error"]["code"] == "head-not-applicable"
+    assert result.envelope["error"]["code"] == "bad-option"

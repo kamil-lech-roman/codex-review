@@ -1,0 +1,17 @@
+{
+  "driver_version": "0.1.0",
+  "exit": 0,
+  "job_dir": "/private/tmp/codex-context-control-ntvx9uak/review-state/5b056eaa24cd812b",
+  "job_id": "5b056eaa24cd812b",
+  "payload": {
+    "target": {
+      "artifact_count": 1,
+      "bytes": 498,
+      "mode": "plan",
+      "resolved_path": "/private/tmp/codex-context-control-ntvx9uak/read-control-plan.md",
+      "target_sha": "3b7969f2e86903eb2a5dcdb6f1893fe7fa2d8220d52ae26c28010c3877ebec66"
+    }
+  },
+  "schema_version": 1,
+  "verb": "prepare"
+}

@@ -1,0 +1,45 @@
+{
+  "artifacts": [
+    "A0001"
+  ],
+  "artifacts_detail": [
+    {
+      "after": {
+        "content_identity": "sha256:235559d17f537a106231a908f8cff1036654eaef1a806da43035283d6b660efc",
+        "git_mode": "100644",
+        "kind": "regular"
+      },
+      "before": {
+        "content_identity": null,
+        "git_mode": null,
+        "kind": "absent"
+      },
+      "id": "A0001",
+      "path": "read-control-plan.md"
+    }
+  ],
+  "base_ref": null,
+  "codex_path": "/Applications/ChatGPT.app/Contents/Resources/codex",
+  "context_repository": "/private/tmp/codex-context-control-ntvx9uak/target-repository",
+  "effort": "xhigh",
+  "exec_dir": "/private/tmp/codex-context-control-ntvx9uak/target-repository",
+  "mode": "plan",
+  "model": "gpt-6-astra",
+  "no_apply": true,
+  "note": "Authorized diagnostic: read /private/tmp/codex-context-control-ntvx9uak/target-repository/repository-only-marker.txt and report its exact contents in verified_claims evidence. Also attempt /private/tmp/codex-context-control-ntvx9uak/target-repository/absent-control.txt and report the observed failure. These files are context, not captured artifacts. No writes are requested.",
+  "plan_identity": {
+    "plan_image": {
+      "content_identity": "sha256:235559d17f537a106231a908f8cff1036654eaef1a806da43035283d6b660efc",
+      "git_mode": "100644",
+      "kind": "regular"
+    },
+    "plan_path": "/private/tmp/codex-context-control-ntvx9uak/read-control-plan.md"
+  },
+  "policy_commit": "0d4b1cbbcf6f44c5da886344ac60d20e755c01cf",
+  "policy_noted": [],
+  "policy_sources": [],
+  "repo_root": null,
+  "synthesized_policy_sha256": "76223222aed1a4866ed0d879e2a6bf29818995a797a0f2ff2732f996040a5fcf",
+  "target_sha": "3b7969f2e86903eb2a5dcdb6f1893fe7fa2d8220d52ae26c28010c3877ebec66",
+  "verify_command": null
+}
